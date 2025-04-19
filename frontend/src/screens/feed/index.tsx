@@ -1,4 +1,4 @@
-import { FlatList, View, Dimensions, ViewToken } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, TouchableWithoutFeedback } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState } from "react";
