@@ -4,7 +4,7 @@ import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState } from "react";
 import { getFeed, getPostsByUserId } from "../../services/posts";
 import { Post } from "../../../types";
-import { RouteProp } from "@react-navigation/native";
+import { RouteProp, useIsFocused, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
 import { HomeStackParamList } from "../../navigation/home";
 import {
@@ -42,6 +42,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (profile && creator) {
@@ -50,6 +51,24 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
       getFeed().then((posts) => setPosts(posts));
     }
   }, []);
+
+  // Pause all videos when screen loses focus
+  useEffect(() => {
+    if (!isFocused) {
+      // When the screen is not focused, pause all videos
+      Object.keys(mediaRefs.current).forEach((key) => {
+        const media = mediaRefs.current[key];
+        if (media) {
+          media.stop();
+        }
+      });
+    } else {
+      // When the screen regains focus, play the currently visible video
+      if (posts.length > 0 && mediaRefs.current[posts[0].id]) {
+        mediaRefs.current[posts[0].id]?.play();
+      }
+    }
+  }, [isFocused, posts]);
 
   /**
    * Called any time a new post is shown when a user scrolls
