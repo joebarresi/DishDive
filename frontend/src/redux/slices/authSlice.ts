@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -44,7 +45,13 @@ export const login = createAsyncThunk(
   "auth/login",
   async (payload: { email: string; password: string }) => {
     const { email, password } = payload;
-    await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    try {
+      const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      return userCredential.user;
+    } catch (error: any) {
+      console.error("Login error:", error);
+      throw new Error(error.message || "Failed to sign in");
+    }
   },
 );
 
@@ -52,8 +59,27 @@ export const register = createAsyncThunk(
   "auth/register",
   async (payload: { email: string; password: string }) => {
     const { email, password } = payload;
-    await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
+      return userCredential.user;
+    } catch (error: any) {
+      console.error("Register error:", error);
+      throw new Error(error.message || "Failed to create account");
+    }
   },
+);
+
+export const signOut = createAsyncThunk(
+  "auth/signOut",
+  async (_, { dispatch }) => {
+    try {
+      await firebaseSignOut(FIREBASE_AUTH);
+      dispatch(setUserState({ currentUser: null, loaded: true }));
+    } catch (error) {
+      console.error("Sign out error:", error);
+      throw error;
+    }
+  }
 );
 
 interface AuthState {

@@ -1,4 +1,4 @@
-import { FlatList, View, Dimensions, ViewToken, TouchableWithoutFeedback } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -11,7 +11,7 @@ import {
   CurrentUserProfileItemInViewContext,
   FeedStackParamList,
 } from "../../navigation/feed";
-import useMaterialNavBarHeight from "../../hooks/useMaterialNavBarHeight";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type FeedScreenRouteProp =
   | RouteProp<RootStackParamList, "userPosts">
@@ -41,6 +41,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (profile && creator) {
@@ -56,26 +57,41 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
    * the post that is viewable and stop all the others
    */
   const onViewableItemsChanged = useRef(
-    ({ changed }: { changed: PostViewToken[] }) => {
-      changed.forEach((element) => {
-        const cell = mediaRefs.current[element.key];
-
-        if (cell) {
-          if (element.isViewable) {
-            if (!profile && setCurrentUserProfileItemInView) {
-              setCurrentUserProfileItemInView(element.item.creator);
-            }
-            cell.play();
-          } else {
+    ({ viewableItems, changed }: { viewableItems: PostViewToken[], changed: PostViewToken[] }) => {
+      // Stop all videos first
+      if (changed.length > 0) {
+        changed.forEach((element) => {
+          const cell = mediaRefs.current[element.key];
+          if (cell && !element.isViewable) {
             cell.stop();
           }
+        });
+      }
+      
+      // Only play the first viewable video
+      if (viewableItems.length > 0) {
+        const firstViewableItem = viewableItems[0];
+        const cell = mediaRefs.current[firstViewableItem.key];
+        
+        if (cell) {
+          if (!profile && setCurrentUserProfileItemInView) {
+            setCurrentUserProfileItemInView(firstViewableItem.item.creator);
+          }
+          cell.play();
         }
-      });
+      }
     },
   );
 
-  const feedItemHeight =
-    Dimensions.get("window").height - useMaterialNavBarHeight(profile);
+  // Calculate the exact screen height for each item
+  const screenHeight = Dimensions.get("window").height;
+  const statusBarHeight = StatusBar.currentHeight || (Platform.OS === 'ios' ? insets.top : 0);
+  const bottomTabHeight = profile ? 0 : 49; // Standard height for bottom tab bar
+  const bottomInset = insets.bottom;
+  
+  // Calculate the exact height needed for the video to fit properly
+  const feedItemHeight = screenHeight - bottomTabHeight - bottomInset;
+
   /**
    * renders the item shown in the FlatList
    *
@@ -101,19 +117,24 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <FlatList
         data={posts}
-        windowSize={4}
-        initialNumToRender={2}
+        windowSize={3}
+        initialNumToRender={1}
         maxToRenderPerBatch={2}
         removeClippedSubviews
         viewabilityConfig={{
-          itemVisiblePercentThreshold: 0,
+          itemVisiblePercentThreshold: 50, // Item is considered viewable when 50% or more is visible
+          minimumViewTime: 300, // Item must be visible for at least 300ms to be considered viewable
         }}
         renderItem={renderItem}
-        pagingEnabled
+        pagingEnabled={true}
+        snapToInterval={feedItemHeight}
+        snapToAlignment="start"
+        decelerationRate="fast"
+        showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
-        decelerationRate={"fast"}
         onViewableItemsChanged={onViewableItemsChanged.current}
       />
     </View>

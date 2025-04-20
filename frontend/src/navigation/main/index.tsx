@@ -14,6 +14,7 @@ import Modal from "../../components/modal";
 import FeedScreen from "../../screens/feed";
 import ProfileScreen from "../../screens/profile";
 import ChatSingleScreen from "../../screens/chat/single";
+import SettingsScreen from "../../screens/settings";
 
 export type RootStackParamList = {
   home: undefined;
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   editProfile: undefined;
   editProfileField: { title: string; field: string; value: string };
   chatSingle: { chatId?: string; contactId?: string };
+  settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -85,6 +87,11 @@ export default function Route() {
             <Stack.Screen
               name="chatSingle"
               component={ChatSingleScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="settings"
+              component={SettingsScreen}
               options={{ headerShown: false }}
             />
           </>

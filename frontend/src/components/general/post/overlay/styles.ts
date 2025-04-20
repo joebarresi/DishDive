@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     bottom: 0,
     paddingLeft: 20,
-    paddingBottom: 20,
+    paddingBottom: 50, // Increased from 20 to ensure content is visible
     paddingRight: 10,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -17,10 +17,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   description: {
     marginTop: 10,
     color: "white",
+    maxWidth: Dimensions.get("window").width * 0.7, // Limit width to prevent overflow
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   avatar: {
     height: 50,
@@ -46,6 +53,9 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     marginTop: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
 

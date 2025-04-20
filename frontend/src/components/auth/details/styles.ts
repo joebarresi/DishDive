@@ -5,6 +5,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingTop: 20,
   },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
+    marginBottom: 10,
+  },
   textInput: {
     borderColor: "lightgray",
     borderBottomWidth: 1,
@@ -13,8 +24,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 20,
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderColor: "lightgray",
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+    marginTop: 20,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
   button: {
-    marginTop: 80,
+    marginTop: 40,
     borderColor: "lightgray",
     borderWidth: 1,
     borderStyle: "solid",
@@ -22,6 +49,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: "center",
     backgroundColor: "red",
+    borderRadius: 5,
   },
   buttonText: {
     color: "white",
