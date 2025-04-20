@@ -2,15 +2,6 @@ This project is to be the app for all things cooking. It's a fork of a react-nat
 
 ## Setup & Usage
 
-### Cloud Environment - Firebase
-
-Firebase is used for data/file storage and authentication. To get started, set up your own Firebase project using [this tutorial](https://youtube.com/watch?v=HrN1Fvjp2CE&t=762).
-
-Next, you'll need to update two configuration files to point to your new Firebase project:
-
-- Update the Project ID (located in Firebase Project settings) in [`backend/.firebaserc`](backend/.firebaserc).
-- Update the firebaseConfig (located in Firebase Project settings under Your apps) in [`frontend/firebaseConfig.ts`](frontend/firebaseConfig.ts).
-
 ### Backend - Firebase Functions
 
 Install the Firebase CLI tools globally to be able to manage and deploy Firebase services from your local machine.
