@@ -1,27 +1,4 @@
-<h1>
-  <img src="https://github.com/kirkwat/tiktok/assets/60279003/c36ab6a7-056a-4c3c-ad88-bf8fd53ea274" width="56" height="56" style="vertical-align:bottom">
-  TikTok made with React Native and Firebase
-</h1>
-
-This project is a TikTok clone built using React Native, Expo, TypeScript, Firebase, and Redux. Building off of [SimCoder's TikTok clone tutorial](https://github.com/SimCoderYoutube/TiktokClone), this implementation is refactored to incorporate TypeScript and updated to utilize Firebase v10 and Redux Toolkit.
-
-<p align="center">
-  <img src="https://github.com/kirkwat/tiktok/assets/60279003/24265ba0-d014-4e8c-bed8-ddf099850fb4">
-</p>
-
-## Features
-
-- Authentication
-- Post videos using camera or gallery
-- User profiles
-  - View user posts
-  - Follow/unfollow
-  - View user stats (following/followers/likes)
-- Feed
-  - Explore posts from other users
-  - Like/comment on posts
-- Directly message users
-- User search by email
+This project is to be the app for all things cooking. It's a fork of a react-native tiktok with filling in missing implementations.
 
 ## Setup & Usage
 
