@@ -7,22 +7,18 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-// import {onRequest} from "firebase-functions/v2/https";
-// import * as logger from "firebase-functions/logger";
-
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
+// Initialize Firebase Admin SDK first, before any other imports
 admin.initializeApp();
 const db = admin.firestore();
+
+// Import recipe generator functionality after admin initialization
+import { generateRecipeFromVideo } from "./recipeGenerator";
+
+// Export the recipe generator function
+export { generateRecipeFromVideo };
 
 /**
  * Function that triggers when a 'like' or 'comment' is added to a post.

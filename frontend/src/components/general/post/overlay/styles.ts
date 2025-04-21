@@ -57,6 +57,27 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  modalContent: {
+    width: "90%",
+    height: "80%",
+    backgroundColor: "#000",
+    borderRadius: 10,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#FF4D67",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1000,
+  },
 });
 
 export default styles;

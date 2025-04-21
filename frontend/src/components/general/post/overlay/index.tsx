@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 import { Post, User } from "../../../../../types";
@@ -12,6 +12,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { Avatar } from "react-native-paper";
+import RecipeView from "../../recipe";
+import { doc, getDoc } from "firebase/firestore";
+import { FIREBASE_DB } from "../../../../../firebaseConfig";
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -40,6 +43,8 @@ export default function PostSingleOverlay({
   const [currentCommentsCount, setCurrentCommentsCount] = useState(
     post.commentsCount,
   );
+  const [hasRecipe, setHasRecipe] = useState(false);
+  const [recipeModalVisible, setRecipeModalVisible] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -50,6 +55,18 @@ export default function PostSingleOverlay({
         });
       });
     }
+
+    // Check if post has a recipe
+    const checkForRecipe = async () => {
+      try {
+        const recipeDoc = await getDoc(doc(FIREBASE_DB, "recipes", post.id));
+        setHasRecipe(recipeDoc.exists());
+      } catch (error) {
+        console.error("Error checking for recipe:", error);
+      }
+    };
+    
+    checkForRecipe();
   }, []);
 
   /**
@@ -132,7 +149,37 @@ export default function PostSingleOverlay({
           <Ionicons color="white" size={40} name={"chatbubble"} />
           <Text style={styles.actionButtonText}>{currentCommentsCount}</Text>
         </TouchableOpacity>
+        
+        {hasRecipe && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => setRecipeModalVisible(true)}
+          >
+            <Ionicons color="white" size={40} name={"restaurant"} />
+            <Text style={styles.actionButtonText}>Recipe</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Recipe Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={recipeModalVisible}
+        onRequestClose={() => setRecipeModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setRecipeModalVisible(false)}
+            >
+              <Ionicons name="close" size={30} color="#FF4D67" />
+            </TouchableOpacity>
+            <RecipeView videoId={post.id} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
