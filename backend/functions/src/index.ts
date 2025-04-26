@@ -15,10 +15,10 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // Import recipe generator functionality after admin initialization
-import { generateRecipeFromVideo } from "./recipeGenerator";
+import {generateRecipeFromVideo} from "./recipeGenerator";
 
 // Export the recipe generator function
-export { generateRecipeFromVideo };
+export {generateRecipeFromVideo};
 
 /**
  * Function that triggers when a 'like' or 'comment' is added to a post.
@@ -27,38 +27,38 @@ export { generateRecipeFromVideo };
  * and the 'likesCount' of the post creator.
  */
 export const likeCreate = functions.firestore
-  .document("post/{id}/{type}/{uid}")
-  .onCreate(async (_, context) => {
-    const { type, id } = context.params;
+    .document("post/{id}/{type}/{uid}")
+    .onCreate(async (_, context) => {
+      const {type, id} = context.params;
 
-    return db.runTransaction(async (transaction) => {
-      const postRef = db.collection("post").doc(id);
-      const postSnapshot = await transaction.get(postRef);
+      return db.runTransaction(async (transaction) => {
+        const postRef = db.collection("post").doc(id);
+        const postSnapshot = await transaction.get(postRef);
 
-      if (!postSnapshot.exists) {
-        throw new Error(`Post with ID ${id} not found`);
-      }
-
-      let updateObj = {};
-
-      if (type === "comments") {
-        updateObj = { commentsCount: admin.firestore.FieldValue.increment(1) };
-      } else if (type === "likes") {
-        updateObj = { likesCount: admin.firestore.FieldValue.increment(1) };
-
-        const creator = postSnapshot.data()?.creator;
-
-        if (creator) {
-          const userRef = db.collection("user").doc(creator);
-          transaction.update(userRef, {
-            likesCount: admin.firestore.FieldValue.increment(1),
-          });
+        if (!postSnapshot.exists) {
+          throw new Error(`Post with ID ${id} not found`);
         }
-      }
 
-      transaction.update(postRef, updateObj);
+        let updateObj = {};
+
+        if (type === "comments") {
+          updateObj = {commentsCount: admin.firestore.FieldValue.increment(1)};
+        } else if (type === "likes") {
+          updateObj = {likesCount: admin.firestore.FieldValue.increment(1)};
+
+          const creator = postSnapshot.data()?.creator;
+
+          if (creator) {
+            const userRef = db.collection("user").doc(creator);
+            transaction.update(userRef, {
+              likesCount: admin.firestore.FieldValue.increment(1),
+            });
+          }
+        }
+
+        transaction.update(postRef, updateObj);
+      });
     });
-  });
 
 /**
  * Function that triggers when a 'like' or 'comment' is removed from a post.
@@ -67,38 +67,38 @@ export const likeCreate = functions.firestore
  * and the 'likesCount' of the post creator.
  */
 export const likeDelete = functions.firestore
-  .document("post/{id}/{type}/{uid}")
-  .onDelete(async (_, context) => {
-    const { type, id } = context.params;
+    .document("post/{id}/{type}/{uid}")
+    .onDelete(async (_, context) => {
+      const {type, id} = context.params;
 
-    return db.runTransaction(async (transaction) => {
-      const postRef = db.collection("post").doc(id);
-      const postSnapshot = await transaction.get(postRef);
+      return db.runTransaction(async (transaction) => {
+        const postRef = db.collection("post").doc(id);
+        const postSnapshot = await transaction.get(postRef);
 
-      if (!postSnapshot.exists) {
-        throw new Error(`Post with ID ${id} not found`);
-      }
-
-      let updateObj = {};
-
-      if (type === "comments") {
-        updateObj = { commentsCount: admin.firestore.FieldValue.increment(-1) };
-      } else if (type === "likes") {
-        updateObj = { likesCount: admin.firestore.FieldValue.increment(-1) };
-
-        const creator = postSnapshot.data()?.creator;
-
-        if (creator) {
-          const userRef = db.collection("user").doc(creator);
-          transaction.update(userRef, {
-            likesCount: admin.firestore.FieldValue.increment(-1),
-          });
+        if (!postSnapshot.exists) {
+          throw new Error(`Post with ID ${id} not found`);
         }
-      }
 
-      transaction.update(postRef, updateObj);
+        let updateObj = {};
+
+        if (type === "comments") {
+          updateObj = {commentsCount: admin.firestore.FieldValue.increment(-1)};
+        } else if (type === "likes") {
+          updateObj = {likesCount: admin.firestore.FieldValue.increment(-1)};
+
+          const creator = postSnapshot.data()?.creator;
+
+          if (creator) {
+            const userRef = db.collection("user").doc(creator);
+            transaction.update(userRef, {
+              likesCount: admin.firestore.FieldValue.increment(-1),
+            });
+          }
+        }
+
+        transaction.update(postRef, updateObj);
+      });
     });
-  });
 
 /**
  * Function that triggers when a 'following' relationship is created
@@ -109,30 +109,30 @@ export const likeDelete = functions.firestore
  * following ('followerId').
  */
 export const followCreate = functions.firestore
-  .document("user/{followerId}/following/{userId}")
-  .onCreate(async (_, context) => {
-    const { followerId, userId } = context.params;
+    .document("user/{followerId}/following/{userId}")
+    .onCreate(async (_, context) => {
+      const {followerId, userId} = context.params;
 
-    return db.runTransaction(async (transaction) => {
-      const user = db.collection("user").doc(userId);
-      const follower = db.collection("user").doc(followerId);
+      return db.runTransaction(async (transaction) => {
+        const user = db.collection("user").doc(userId);
+        const follower = db.collection("user").doc(followerId);
 
-      const userSnapshot = await transaction.get(user);
-      const followerSnapshot = await transaction.get(follower);
+        const userSnapshot = await transaction.get(user);
+        const followerSnapshot = await transaction.get(follower);
 
-      if (!userSnapshot.exists || !followerSnapshot.exists) {
-        throw new Error("User not found");
-      }
+        if (!userSnapshot.exists || !followerSnapshot.exists) {
+          throw new Error("User not found");
+        }
 
-      transaction.update(user, {
-        followersCount: admin.firestore.FieldValue.increment(1),
-      });
+        transaction.update(user, {
+          followersCount: admin.firestore.FieldValue.increment(1),
+        });
 
-      transaction.update(follower, {
-        followingCount: admin.firestore.FieldValue.increment(1),
+        transaction.update(follower, {
+          followingCount: admin.firestore.FieldValue.increment(1),
+        });
       });
     });
-  });
 
 /**
  * Function that triggers when a 'following' relationship is removed
@@ -143,30 +143,30 @@ export const followCreate = functions.firestore
  * following ('followerId').
  */
 export const followDelete = functions.firestore
-  .document("user/{followerId}/following/{userId}")
-  .onDelete(async (_, context) => {
-    const { followerId, userId } = context.params;
+    .document("user/{followerId}/following/{userId}")
+    .onDelete(async (_, context) => {
+      const {followerId, userId} = context.params;
 
-    return db.runTransaction(async (transaction) => {
-      const user = db.collection("user").doc(userId);
-      const follower = db.collection("user").doc(followerId);
+      return db.runTransaction(async (transaction) => {
+        const user = db.collection("user").doc(userId);
+        const follower = db.collection("user").doc(followerId);
 
-      const userSnapshot = await transaction.get(user);
-      const followerSnapshot = await transaction.get(follower);
+        const userSnapshot = await transaction.get(user);
+        const followerSnapshot = await transaction.get(follower);
 
-      if (!userSnapshot.exists || !followerSnapshot.exists) {
-        throw new Error("User not found");
-      }
+        if (!userSnapshot.exists || !followerSnapshot.exists) {
+          throw new Error("User not found");
+        }
 
-      transaction.update(user, {
-        followersCount: admin.firestore.FieldValue.increment(-1),
-      });
+        transaction.update(user, {
+          followersCount: admin.firestore.FieldValue.increment(-1),
+        });
 
-      transaction.update(follower, {
-        followingCount: admin.firestore.FieldValue.increment(-1),
+        transaction.update(follower, {
+          followingCount: admin.firestore.FieldValue.increment(-1),
+        });
       });
     });
-  });
 
 /**
  * Function that triggers when a new user is created in Firebase
