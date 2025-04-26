@@ -1,4 +1,5 @@
-import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_DB, FIREBASE_FUNCTIONS } from "../../../firebaseConfig";
+import { httpsCallable } from "firebase/functions";
 import {
   addDoc,
   collection,
@@ -24,6 +25,8 @@ const initialState: PostState = {
   error: null,
   currentUserPosts: null,
 };
+
+// const functions = firebase.functions();
 
 export const createPost = createAsyncThunk(
   "post/create",
@@ -53,6 +56,25 @@ export const createPost = createAsyncThunk(
           ),
         ]);
 
+        // Make call to generate recipe.
+
+        // const recipe = await functions.httpsCallable('generateRecipeAndUpdateDoc')({
+        //   filePath: `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/video`
+        // });
+
+        const getRecipe = await httpsCallable(
+          FIREBASE_FUNCTIONS, 
+          "generateRecipeFromVideo"
+        );
+
+        let recipe;
+        
+        await getRecipe({
+          filePath: `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/video`,
+        }).then((result) => {
+          recipe = result.data;
+        });
+
         await addDoc(collection(FIREBASE_DB, "post"), {
           creator: FIREBASE_AUTH.currentUser.uid,
           media: [videoDownloadUrl, thumbnailDownloadUrl],
@@ -60,7 +82,9 @@ export const createPost = createAsyncThunk(
           likesCount: 0,
           commentsCount: 0,
           creation: serverTimestamp(),
+          recipe: recipe,
         });
+
       } catch (error) {
         console.error("Error creating post: ", error);
         return rejectWithValue(error);

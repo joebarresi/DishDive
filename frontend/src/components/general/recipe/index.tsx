@@ -2,67 +2,24 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../../firebaseConfig";
+import { Post, Recipe } from "../../../../types";
 
-interface Ingredient {
-  name: string;
-  amount: string;
-  unit: string;
-}
-
-interface Recipe {
-  title: string;
-  ingredients: Ingredient[];
-  steps: string[];
-  videoRef: string;
-  createdAt: any;
-}
 
 interface RecipeViewProps {
-  videoId: string;
+  post: Post;
 }
 
-const RecipeView: React.FC<RecipeViewProps> = ({ videoId }) => {
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const RecipeView: React.FC<RecipeViewProps> = ({ post }) => {
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const recipeDoc = await getDoc(doc(FIREBASE_DB, "recipes", videoId));
-        
-        if (recipeDoc.exists()) {
-          setRecipe(recipeDoc.data() as Recipe);
-        } else {
-          setError("Recipe not found");
-        }
-      } catch (err) {
-        setError("Error loading recipe");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecipe();
-  }, [videoId]);
-
-  if (loading) {
+  if (!post.recipe) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FF4D67" />
-        <Text style={styles.loadingText}>Loading recipe...</Text>
+        <Text style={styles.errorText}>{"No recipe available"}</Text>
       </View>
     );
   }
 
-  if (error || !recipe) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>{error || "No recipe available"}</Text>
-      </View>
-    );
-  }
+  const recipe = post.recipe;
 
   return (
     <ScrollView style={styles.scrollContainer}>
@@ -72,7 +29,7 @@ const RecipeView: React.FC<RecipeViewProps> = ({ videoId }) => {
         <Text style={styles.sectionTitle}>Ingredients:</Text>
         {recipe.ingredients.map((ingredient, index) => (
           <Text key={index} style={styles.ingredient}>
-            • {ingredient.amount} {ingredient.unit} {ingredient.name}
+            • {ingredient}
           </Text>
         ))}
         

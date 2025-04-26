@@ -38,23 +38,15 @@ const generativeModel = vertexAI.getGenerativeModel({
  * It generates a recipe from the video by analyzing frames and
  * transcribing audio.
  */
-export const generateRecipeFromVideo = functions.runWith({
-  timeoutSeconds: 540, // 9 minutes
-  memory: "2GB",
-}).storage
-  .object()
-  .onFinalize(async (object) => {
-    const filePath = object.name;
-    if (!filePath) return;
+export const generateRecipeFromVideo = functions.https
+  .onCall(async (data) => {
+    const {filePath} = data;
 
-    if (!filePath.endsWith("video")) {
-      console.log("Not a video in posts directory, skipping:", filePath);
-      return;
-    }
+    if (!filePath) return;
 
     console.log(`Processing video: ${filePath}`);
 
-    const bucket = storage.bucket(object.bucket);
+    const bucket = storage.bucket("recipetok-40c2a.firebasestorage.app");
     const videoId = path.basename(filePath).split(".")[0];
     const tempFilePath = path.join(os.tmpdir(), path.basename(filePath));
     const tempOutputDir = path.join(os.tmpdir(), `frames-${videoId}`);
@@ -64,8 +56,6 @@ export const generateRecipeFromVideo = functions.runWith({
       fs.mkdirSync(tempOutputDir, {recursive: true});
 
       await bucket.file(filePath).download({destination: tempFilePath});
-      console.log(`Video downloaded to ${tempFilePath}`);
-
       // // Process in parallel
       // const [visualAnalysis, audioTranscriptText] = await Promise.all([
       //   extractAndAnalyzeFrames(
@@ -96,35 +86,10 @@ export const generateRecipeFromVideo = functions.runWith({
         visualAnalysis: undefined,
       });
 
-      console.log(recipe);
-
-      // // Get Firestore instance
-      // const db = getDb();
-
-      // // Store recipe in Firestore
-      // await db.collection("recipes").doc(videoId).set({
-      //   title: recipe.title,
-      //   ingredients: recipe.ingredients,
-      //   steps: recipe.steps,
-      //   videoRef: filePath,
-      //   createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      // });
-
-      // console.log(`Recipe generated and stored for video: ${filePath}`);
-
-      // // Update the post document to include the recipe reference
-      // // eslint-disable-next-line max-len
-      // const postQuery = await db.collection("post")
-      // .where("id", "==", videoId).get();
-      // if (!postQuery.empty) {
-      //   const postDoc = postQuery.docs[0];
-      //   await postDoc.ref.update({
-      //     hasRecipe: true,
-      //     recipeId: videoId,
-      //   });
-      // }
+      return recipe;
     } catch (error) {
       console.error("Error generating recipe:", error);
+      return undefined;
     } finally {
       // Cleanup temp files
       try {
@@ -167,35 +132,38 @@ async function generateRecipe({
     );
 
     const data = resp.response;
-    return JSON.stringify(data);
 
+    // Parse the response - assuming it returns JSON as requested
+    let parsedRecipe;
+    try {
+      const generatedText = data.candidates?.[0].content.parts[0].text;
+      const jsonMatch =
+        generatedText?.match(/```json\n([\s\S]*?)\n```/) ||
+        generatedText?.match(/```\n([\s\S]*?)\n```/) ||
+        [null, generatedText];
 
-  //   // Parse the response - assuming it returns JSON as requested
-  //   let parsedRecipe;
-  //   try {
-  //     const generatedText = data.candidates[0].content.parts[0].text;
-  //     const jsonMatch =
-  //       generatedText.match(/```json\n([\s\S]*?)\n```/) ||
-  //       generatedText.match(/```\n([\s\S]*?)\n```/) ||
-  //       [null, generatedText];
+      const jsonContent = jsonMatch[1];
+      if (!jsonContent) {
+        console.error("No JSON content found in the response");
+        console.log("Generated text:", generatedText);
+        throw new Error("No JSON content found in the response");
+      }
+      parsedRecipe = JSON.parse(jsonContent);
+    } catch (parseError) {
+      console.error("Error parsing LLM response:", parseError);
+      // Fallback to a basic structure if parsing fails
+      parsedRecipe = fallbackRecipe;
+    }
 
-  //     const jsonContent = jsonMatch[1];
-  //     parsedRecipe = JSON.parse(jsonContent);
-  //   } catch (parseError) {
-  //     console.error("Error parsing LLM response:", parseError);
-  //     // Fallback to a basic structure if parsing fails
-  //     parsedRecipe = fallbackRecipe;
-  //   }
-
-  //   return {
-  //     title: parsedRecipe.title || "Recipe from Video",
-  //     ingredients: Array.isArray(parsedRecipe.ingredients) ?
-  //       parsedRecipe.ingredients :
-  //       [],
-  //     steps: Array.isArray(parsedRecipe.steps) ?
-  //       parsedRecipe.steps :
-  //       [],
-  //   };
+    return {
+      title: parsedRecipe.title || "Recipe from Video",
+      ingredients: Array.isArray(parsedRecipe.ingredients) ?
+        parsedRecipe.ingredients :
+        [],
+      steps: Array.isArray(parsedRecipe.steps) ?
+        parsedRecipe.steps :
+        [],
+    };
   } catch (error) {
     console.error("Error generating recipe with Google AI:", error);
     return fallbackRecipe;

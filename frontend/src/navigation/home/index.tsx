@@ -1,6 +1,6 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Feather } from "@expo/vector-icons";
-import CameraScreen from "../../screens/camera";
+import UploadScreen from "../../screens/upload";
 import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
@@ -64,7 +64,7 @@ export default function HomeScreen() {
         />
         <Tab.Screen
           name="Add"
-          component={CameraScreen}
+          component={UploadScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <Feather name="plus-square" size={24} color={color} />

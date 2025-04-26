@@ -6,8 +6,7 @@ export interface Post {
   likesCount: number;
   commentsCount: number;
   creation: string;
-  hasRecipe?: boolean;
-  recipeId?: string;
+  recipe?: Recipe;
 }
 
 export interface Comment {
@@ -49,12 +48,6 @@ export interface Message {
 
 export interface Recipe {
   title: string;
-  ingredients: {
-    name: string;
-    amount: string;
-    unit: string;
-  }[];
+  ingredients: string[];
   steps: string[];
-  videoRef: string;
-  createdAt: any;
 }

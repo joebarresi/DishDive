@@ -24,7 +24,7 @@ import { RootStackParamList } from "../../navigation/main";
  * letting the user pick a video from the gallery
  * @returns Functional Component
  */
-export default function CameraScreen() {
+export default function UploadScreen() {
   const [hasCameraPermissions, setHasCameraPermissions] = useState(false);
   const [hasAudioPermissions, setHasAudioPermissions] = useState(false);
   const [hasGalleryPermissions, setHasGalleryPermissions] = useState(false);

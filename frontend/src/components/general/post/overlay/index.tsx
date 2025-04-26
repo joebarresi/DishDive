@@ -43,7 +43,7 @@ export default function PostSingleOverlay({
   const [currentCommentsCount, setCurrentCommentsCount] = useState(
     post.commentsCount,
   );
-  const [hasRecipe, setHasRecipe] = useState(false);
+  const hasRecipe: boolean = Boolean(post.recipe);
   const [recipeModalVisible, setRecipeModalVisible] = useState(false);
 
   useEffect(() => {
@@ -55,18 +55,6 @@ export default function PostSingleOverlay({
         });
       });
     }
-
-    // Check if post has a recipe
-    const checkForRecipe = async () => {
-      try {
-        const recipeDoc = await getDoc(doc(FIREBASE_DB, "recipes", post.id));
-        setHasRecipe(recipeDoc.exists());
-      } catch (error) {
-        console.error("Error checking for recipe:", error);
-      }
-    };
-    
-    checkForRecipe();
   }, []);
 
   /**
@@ -176,7 +164,7 @@ export default function PostSingleOverlay({
             >
               <Ionicons name="close" size={30} color="#FF4D67" />
             </TouchableOpacity>
-            <RecipeView videoId={post.id} />
+            <RecipeView post={post} />
           </View>
         </View>
       </Modal>
