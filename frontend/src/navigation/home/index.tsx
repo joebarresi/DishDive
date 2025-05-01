@@ -6,6 +6,7 @@ import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import ChatScreen from "../../screens/chat/list";
+import RecipesScreen from "../../screens/recipes";
 import { useChats } from "../../hooks/useChats";
 import { createContext, useState } from "react";
 
@@ -13,6 +14,7 @@ export type HomeStackParamList = {
   feed: undefined;
   Discover: undefined;
   Add: undefined;
+  Recipes: undefined;
   Inbox: undefined;
   Me: { initialUserId: string };
 };
@@ -72,11 +74,11 @@ export default function HomeScreen() {
           }}
         />
         <Tab.Screen
-          name="Inbox"
-          component={ChatScreen}
+          name="Recipes"
+          component={RecipesScreen}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="message-square" size={24} color={color} />
+              <Feather name="book-open" size={24} color={color} />
             ),
           }}
         />
