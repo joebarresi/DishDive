@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal, ToastAndroid, Platform, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 import { Post, User } from "../../../../../types";
@@ -87,12 +87,6 @@ export default function PostSingleOverlay({
 
   const handleSavePost = () => {
     setIsSaved(!isSaved);
-    // Show feedback to the user
-    if (Platform.OS === 'android') {
-      ToastAndroid.show(`Recipe ${!isSaved ? 'saved' : 'unsaved'}!`, ToastAndroid.SHORT);
-    } else {
-      Alert.alert(`Recipe ${!isSaved ? 'saved' : 'unsaved'}!`);
-    }
     // This is a no-op for now, but would connect to a save service in the future
   };
 
