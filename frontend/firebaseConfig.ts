@@ -4,9 +4,11 @@ import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 
-//! REPLACE VALUES BELOW WITH YOUR OWN FIREBASE CONFIG
+const apiKey = process.env.EXPO_PUBLIC_API_KEY;
+console.log("API KEY: ", apiKey);
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBZG8ZOSO18K300LWhCsSSiqk-FjxM2Pyo",
+  apiKey,
   authDomain: "recipetok-40c2a.firebaseapp.com",
   databaseURL: "https://recipetok-40c2a-default-rtdb.firebaseio.com",
   projectId: "recipetok-40c2a",
