@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
+import { View, Text, Image, TouchableOpacity, Modal, ToastAndroid, Platform, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 import { Post, User } from "../../../../../types";
@@ -45,6 +45,7 @@ export default function PostSingleOverlay({
   );
   const hasRecipe: boolean = Boolean(post.recipe);
   const [recipeModalVisible, setRecipeModalVisible] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -82,6 +83,17 @@ export default function PostSingleOverlay({
 
   const handleUpdateCommentCount = () => {
     setCurrentCommentsCount((prevCount) => prevCount + 1);
+  };
+
+  const handleSavePost = () => {
+    setIsSaved(!isSaved);
+    // Show feedback to the user
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(`Recipe ${!isSaved ? 'saved' : 'unsaved'}!`, ToastAndroid.SHORT);
+    } else {
+      Alert.alert(`Recipe ${!isSaved ? 'saved' : 'unsaved'}!`);
+    }
+    // This is a no-op for now, but would connect to a save service in the future
   };
 
   return (
@@ -136,6 +148,14 @@ export default function PostSingleOverlay({
         >
           <Ionicons color="white" size={40} name={"chatbubble"} />
           <Text style={styles.actionButtonText}>{currentCommentsCount}</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleSavePost}
+        >
+          <Ionicons color="white" size={40} name={isSaved ? "bookmark" : "bookmark-outline"} />
+          <Text style={styles.actionButtonText}>Save</Text>
         </TouchableOpacity>
         
         {hasRecipe && (
