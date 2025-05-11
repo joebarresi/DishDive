@@ -56,12 +56,6 @@ export const createPost = createAsyncThunk(
           ),
         ]);
 
-        // Make call to generate recipe.
-
-        // const recipe = await functions.httpsCallable('generateRecipeAndUpdateDoc')({
-        //   filePath: `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/video`
-        // });
-
         const getRecipe = await httpsCallable(
           FIREBASE_FUNCTIONS, 
           "generateRecipeFromVideo"

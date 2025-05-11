@@ -87,6 +87,33 @@ export const updateLike = async (
   }
 };
 
+/**
+ * Updates the boomark of a post according to the current user's id
+ * @param {String} postId - id of the post
+ * @param {String} uid - id of the user to get the like state of.
+ * @param {Boolean} currentSaveState - false if the user saves the post and vice versa.
+ */
+export const updateSavePost = async (
+  postId: string,
+  uid: string,
+  currentSaveState: boolean,
+) => {
+  const postSaveDoc = doc(FIREBASE_DB, "post", postId, "saves", uid);
+  const saveRelationship = doc(FIREBASE_DB, "saves", uid, "posts", postId);
+
+  try {
+    if (currentSaveState) {
+      await deleteDoc(postSaveDoc);
+      await deleteDoc(saveRelationship);
+    } else {
+      await setDoc(postSaveDoc, {});
+      await setDoc(saveRelationship, {});
+    }
+  } catch (error) {
+    throw new Error("Could not update save post");
+  }
+};
+
 export const addComment = async (
   postId: string,
   creator: string,

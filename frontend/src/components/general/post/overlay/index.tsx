@@ -5,7 +5,7 @@ import styles from "./styles";
 import { Post, User } from "../../../../../types";
 import { useDispatch, useSelector } from "react-redux";
 import { throttle } from "throttle-debounce";
-import { getLikeById, updateLike } from "../../../../services/posts";
+import { getLikeById, updateLike, updateSavePost } from "../../../../services/posts";
 import { AppDispatch, RootState } from "../../../../redux/store";
 import { openCommentModal } from "../../../../redux/slices/modalSlice";
 import { useNavigation } from "@react-navigation/native";
@@ -58,6 +58,9 @@ export default function PostSingleOverlay({
     }
   }, []);
 
+  // Handle check if post has been saved
+    // Set state appropriately on initialization()
+
   /**
    * Handles the like button action.
    *
@@ -81,13 +84,19 @@ export default function PostSingleOverlay({
     [],
   );
 
+  const handleSavePost = useMemo(
+    () =>
+      throttle(500, (currentSaveState: boolean) => {
+        setIsSaved(!currentSaveState);
+        if (currentUser) {
+          updateSavePost(post.id, currentUser.uid, currentSaveState);
+        }
+      }),
+    [],
+  );
+
   const handleUpdateCommentCount = () => {
     setCurrentCommentsCount((prevCount) => prevCount + 1);
-  };
-
-  const handleSavePost = () => {
-    setIsSaved(!isSaved);
-    // This is a no-op for now, but would connect to a save service in the future
   };
 
   return (
@@ -146,7 +155,7 @@ export default function PostSingleOverlay({
         
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={handleSavePost}
+          onPress={() => handleSavePost(isSaved)}
         >
           <Ionicons color="white" size={40} name={isSaved ? "bookmark" : "bookmark-outline"} />
           <Text style={styles.actionButtonText}>Save</Text>
