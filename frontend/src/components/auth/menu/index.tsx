@@ -20,7 +20,7 @@ export interface AuthMenuProps {
  * if 1 is in the signup state
  * @param props.setAuthPage setter for the authPage var (0 or 1)
  * @param props.setDetailsPage setter for the variable that chooses
- * the type of page, if true show AuthMenu else show AuthDetails
+ * the type of page, if true show AuthMenu else show SignIn/SignUp
  * @returns Component
  */
 export default function AuthMenu({

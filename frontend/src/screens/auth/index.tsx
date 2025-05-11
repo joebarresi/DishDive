@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
-import AuthDetails from "../../components/auth/details";
+import SignIn from "../../components/auth/signIn";
+import SignUp from "../../components/auth/signUp";
 import AuthMenu from "../../components/auth/menu";
 import styles from "./styles";
 
@@ -18,12 +19,17 @@ export default function AuthScreen() {
   return (
     <View style={styles.container}>
       {detailsPage ? (
-        <AuthDetails
-          authPage={authPage}
-          setAuthPage={setAuthPage}
-          setMenuMessage={setMenuMessage}
-          setDetailsPage={setDetailsPage}
-        />
+        authPage === 0 ? (
+          <SignIn
+            setDetailsPage={setDetailsPage}
+          />
+        ) : (
+          <SignUp
+            setAuthPage={setAuthPage}
+            setMenuMessage={setMenuMessage}
+            setDetailsPage={setDetailsPage}
+          />
+        )
       ) : (
         <AuthMenu
           authPage={authPage}

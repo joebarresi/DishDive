@@ -3,33 +3,30 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
-import { login, register } from "../../../redux/slices/authSlice";
+import { register } from "../../../redux/slices/authSlice";
 import { AppDispatch } from "../../../redux/store";
 
-export interface AuthDetailsProps {
-  authPage: 0 | 1;
+export interface SignUpProps {
   setAuthPage: Dispatch<SetStateAction<0 | 1>>;
   setMenuMessage: Dispatch<SetStateAction<string>>;
   setDetailsPage: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
- * Function that renders a component that renders a signin/signup
- * form.
+ * Function that renders a component for the sign up form.
  *
  * @param props passed to component
- * @param props.authPage if 0 it is in the signin state
- * if 1 is in the signup state
+ * @param props.setAuthPage setter for the authPage var (0 or 1)
+ * @param props.setMenuMessage setter for the menu message
  * @param props.setDetailsPage setter for the variable that chooses
- * the type of page, if true show AuthMenu else show AuthDetails
+ * the type of page, if true show AuthMenu else show SignUp
  * @returns Component
  */
-export default function AuthDetails({
-  authPage,
+export default function SignUp({
   setAuthPage,
   setMenuMessage,
   setDetailsPage,
-}: AuthDetailsProps) {
+}: SignUpProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,30 +34,6 @@ export default function AuthDetails({
   const [errorMessage, setErrorMessage] = useState("");
 
   const dispatch: AppDispatch = useDispatch();
-
-  const handleLogin = () => {
-    setErrorMessage("");
-    if (!email || !password) {
-      setErrorMessage("Email and password are required");
-      return;
-    }
-
-    dispatch(login({ email, password }))
-      .unwrap()
-      .then(() => console.log("login successful"))
-      .catch((error) => {
-        console.log("login unsuccessful", error);
-        if (error.message.includes("user-not-found") || error.message.includes("wrong-password")) {
-          setErrorMessage("Invalid email or password. Please try again.");
-        } else if (error.message.includes("too-many-requests")) {
-          setErrorMessage("Too many failed attempts. Please try again later.");
-        } else if (error.message.includes("network-request-failed")) {
-          setErrorMessage("Network error. Please check your connection.");
-        } else {
-          setErrorMessage("Failed to sign in. Please try again.");
-        }
-      });
-  };
 
   const handleRegister = () => {
     setErrorMessage("");
@@ -79,13 +52,12 @@ export default function AuthDetails({
       return;
     }
 
-    dispatch(register({ email, password }))
+    // We're now passing an empty string for username since it will be set in the onboarding screen
+    dispatch(register({ email, password, username: "" }))
       .unwrap()
       .then(() => {
         console.log("register successful");
-        setDetailsPage(false);
-        setAuthPage(1);
-        setMenuMessage("Account created successfully! Please sign in.");
+        // We don't need to do anything here as the navigation will handle redirecting to onboarding
       })
       .catch((error) => {
         console.log("register unsuccessful", error);
@@ -111,9 +83,7 @@ export default function AuthDetails({
         <Feather name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
       
-      <Text style={styles.headerText}>
-        {authPage === 0 ? "Sign In" : "Create Account"}
-      </Text>
+      <Text style={styles.headerText}>Create Account</Text>
       
       {errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
@@ -148,26 +118,22 @@ export default function AuthDetails({
         </TouchableOpacity>
       </View>
       
-      {authPage === 1 && (
-        <View style={styles.passwordContainer}>
-          <TextInput
-            onChangeText={(text) => setConfirmPassword(text)}
-            style={styles.passwordInput}
-            secureTextEntry={!showPasswords}
-            placeholder="Confirm Password"
-            value={confirmPassword}
-          />
-          {/* No eye icon needed here since we're using a single toggle for both fields */}
-        </View>
-      )}
+      <View style={styles.passwordContainer}>
+        <TextInput
+          onChangeText={(text) => setConfirmPassword(text)}
+          style={styles.passwordInput}
+          secureTextEntry={!showPasswords}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+        />
+        {/* No eye icon needed here since we're using a single toggle for both fields */}
+      </View>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => (authPage === 0 ? handleLogin() : handleRegister())}
+        onPress={handleRegister}
       >
-        <Text style={styles.buttonText}>
-          {authPage === 0 ? "Sign In" : "Sign Up"}
-        </Text>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
     </View>
   );

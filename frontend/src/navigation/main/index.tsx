@@ -6,7 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthScreen from "../../screens/auth";
 import { AppDispatch, RootState } from "../../redux/store";
 import HomeScreen from "../home";
-import { View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import SavePostScreen from "../../screens/savePost";
 import EditProfileScreen from "../../screens/profile/edit";
 import EditProfileFieldScreen from "../../screens/profile/edit/field";
@@ -15,10 +15,12 @@ import FeedScreen from "../../screens/feed";
 import ProfileScreen from "../../screens/profile";
 import ChatSingleScreen from "../../screens/chat/single";
 import SettingsScreen from "../../screens/settings";
+import OnboardingScreen from "../../screens/onboarding";
 
 export type RootStackParamList = {
   home: undefined;
   auth: undefined;
+  onboarding: undefined;
   userPosts: { creator: string; profile: boolean };
   profileOther: { initialUserId: string };
   savePost: { source: string; sourceThumb: string };
@@ -32,7 +34,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Route() {
   const currentUserObj = useSelector((state: RootState) => state.auth);
-
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -40,7 +41,11 @@ export default function Route() {
   }, [dispatch]);
 
   if (!currentUserObj.loaded) {
-    return <View></View>;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="red" />
+      </View>
+    );
   }
 
   return (
@@ -54,11 +59,20 @@ export default function Route() {
           />
         ) : (
           <>
-            <Stack.Screen
-              name="home"
-              component={HomeScreen}
-              options={{ headerShown: false }}
-            />
+            {/* Check if the user has a displayName (username) */}
+            {!currentUserObj.currentUser.displayName ? (
+              <Stack.Screen
+                name="onboarding"
+                component={OnboardingScreen}
+                options={{ headerShown: false }}
+              />
+            ) : (
+              <Stack.Screen
+                name="home"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
+            )}
             <Stack.Screen
               name="savePost"
               component={SavePostScreen}
