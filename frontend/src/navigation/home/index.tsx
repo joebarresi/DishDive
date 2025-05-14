@@ -8,6 +8,10 @@ import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import RecipesScreen from "../../screens/recipes";
 import { useChats } from "../../hooks/useChats";
 import { createContext, useState } from "react";
+import {
+  MD3LightTheme as DefaultTheme,
+  Provider as PaperProvider,
+} from "react-native-paper";
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -17,6 +21,8 @@ export type HomeStackParamList = {
   Inbox: undefined;
   Me: { initialUserId: string };
 };
+
+const ICON_SIZE = 20;
 
 // Create a context to track the active tab
 export const ActiveTabContext = createContext<{
@@ -29,15 +35,40 @@ export const ActiveTabContext = createContext<{
 
 const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
 
+// Define theme colors for the app
+const THEME = {
+  primary: "#FF6B6B", // Cooking-themed red color for active elements
+  inactive: "#777777", // Dark gray for inactive tabs
+};
+
+const paperTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    secondaryContainer: "white",
+  },
+}
+
 export default function HomeScreen() {
   useChats();
   const [activeTab, setActiveTab] = useState<string>("Feed");
 
   return (
+    <PaperProvider theme={paperTheme}>
     <ActiveTabContext.Provider value={{ activeTab, setActiveTab }}>
       <Tab.Navigator
-        barStyle={{ backgroundColor: "white" }}
+        barStyle={{ 
+          backgroundColor: "white",
+          borderTopWidth: 1,
+          borderTopColor: "#EEEEEE",
+          height: 90
+        }}
         initialRouteName="Feed"
+        activeColor={THEME.primary}
+        inactiveColor={THEME.inactive}
+        shifting={true}
+        labeled={true}
+        backBehavior="initialRoute"
         screenListeners={{
           state: (e) => {
             const route = e.data.state.routes[e.data.state.index];
@@ -50,8 +81,9 @@ export default function HomeScreen() {
           component={FeedNavigation}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="home" size={24} color={color} />
+              <Feather name="home" size={ICON_SIZE} color={color} />
             ),
+            tabBarLabel: "Feed",
           }}
         />
         <Tab.Screen
@@ -59,8 +91,9 @@ export default function HomeScreen() {
           component={SearchScreen}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="search" size={24} color={color} />
+              <Feather name="search" size={ICON_SIZE} color={color} />
             ),
+            tabBarLabel: "Discover",
           }}
         />
         <Tab.Screen
@@ -68,8 +101,9 @@ export default function HomeScreen() {
           component={UploadScreen}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="plus-square" size={24} color={color} />
+              <Feather name="plus-square" size={ICON_SIZE} color={color} />
             ),
+            tabBarLabel: "Create",
           }}
         />
         <Tab.Screen
@@ -77,8 +111,9 @@ export default function HomeScreen() {
           component={RecipesScreen}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="book-open" size={24} color={color} />
+              <Feather name="book-open" size={ICON_SIZE} color={color} />
             ),
+            tabBarLabel: "Recipes",
           }}
         />
         <Tab.Screen
@@ -86,12 +121,14 @@ export default function HomeScreen() {
           component={ProfileScreen}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="user" size={24} color={color} />
+              <Feather name="user" size={ICON_SIZE} color={color} />
             ),
+            tabBarLabel: "Profile",
           }}
           initialParams={{ initialUserId: FIREBASE_AUTH.currentUser?.uid ?? "" }}
         />
       </Tab.Navigator>
     </ActiveTabContext.Provider>
+    </PaperProvider>
   );
 }
