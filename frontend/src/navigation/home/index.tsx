@@ -5,13 +5,12 @@ import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
-import ChatScreen from "../../screens/chat/list";
 import RecipesScreen from "../../screens/recipes";
 import { useChats } from "../../hooks/useChats";
 import { createContext, useState } from "react";
 
 export type HomeStackParamList = {
-  feed: undefined;
+  Feed: undefined;
   Discover: undefined;
   Add: undefined;
   Recipes: undefined;
@@ -24,7 +23,7 @@ export const ActiveTabContext = createContext<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }>({
-  activeTab: "feed",
+  activeTab: "Feed",
   setActiveTab: () => {},
 });
 
@@ -32,13 +31,13 @@ const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
 
 export default function HomeScreen() {
   useChats();
-  const [activeTab, setActiveTab] = useState<string>("feed");
+  const [activeTab, setActiveTab] = useState<string>("Feed");
 
   return (
     <ActiveTabContext.Provider value={{ activeTab, setActiveTab }}>
       <Tab.Navigator
-        barStyle={{ backgroundColor: "black" }}
-        initialRouteName="feed"
+        barStyle={{ backgroundColor: "white" }}
+        initialRouteName="Feed"
         screenListeners={{
           state: (e) => {
             const route = e.data.state.routes[e.data.state.index];
@@ -47,7 +46,7 @@ export default function HomeScreen() {
         }}
       >
         <Tab.Screen
-          name="feed"
+          name="Feed"
           component={FeedNavigation}
           options={{
             tabBarIcon: ({ color }) => (
