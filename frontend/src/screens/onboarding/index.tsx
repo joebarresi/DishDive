@@ -53,29 +53,6 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
     }
   };
 
-  const handleSkip = async () => {
-    setIsLoading(true);
-    
-    // Generate a random username
-    const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
-    
-    try {
-      // Use our new updateUserProfile action to update both Auth and Firestore
-      await dispatch(updateUserProfile({ displayName: randomUsername })).unwrap();
-      
-      // Force navigation to home screen
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'home' }],
-      });
-    } catch (error: any) {
-      console.error("Error updating profile:", error);
-      setErrorMessage("Failed to skip. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>Welcome to DishDive!</Text>
@@ -106,16 +83,6 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
         ) : (
           <Text style={styles.buttonText}>Continue</Text>
         )}
-      </TouchableOpacity>
-      
-      <TouchableOpacity
-        style={styles.skipContainer}
-        onPress={handleSkip}
-        disabled={isLoading}
-      >
-        <Text style={[styles.skipText, isLoading && styles.textDisabled]}>
-          Skip for now
-        </Text>
       </TouchableOpacity>
     </View>
   );
