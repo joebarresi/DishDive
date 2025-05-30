@@ -45,7 +45,7 @@ First, let's install the tools you'll need:
 
 2. **Clone the RecipeTok repository**
    ```bash
-   git clone https://github.com/jbarresi/RecipeTok.git
+   git clone https://github.com/joebarresi/DishDive
    ```
    (Note: Replace with the actual repository URL if different)
 
