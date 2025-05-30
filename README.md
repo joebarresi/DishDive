@@ -15,13 +15,13 @@ Next, authenticate your account with Firebase and gain the necessary permissions
 ```
 firebase login
 ```
-
+### CHRIS CAN SKIP
 Go to the `backend\functions` directory and install the needed dependencies.
 
 ```
 npm install
 ```
-
+### CHRIS CAN SKIP
 Run the following command to deploy the Firebase functions contained in the project, allowing them to be executed on the Firebase servers.
 
 ```
