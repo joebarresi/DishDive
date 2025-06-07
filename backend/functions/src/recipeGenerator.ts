@@ -1,19 +1,17 @@
 /* eslint-disable indent */
 import * as functions from "firebase-functions";
-// import * as admin from "firebase-admin";
 import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
 import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import {Storage} from "@google-cloud/storage";
-// import {ImageAnnotatorClient} from "@google-cloud/vision";
 import {SpeechClient} from "@google-cloud/speech";
-import {VertexAI} from "@google-cloud/vertexai";
 import {GenerateRecipeProps} from "./types";
 import {generateTranscript} from "./transcript";
-
-// import {extractAndAnalyzeFrames} from "./videoFrames";
+import {extractAndAnalyzeFrames} from "./videoFrames";
+import {generativeModel} from "./vertexClient";
+import { generateRecipePrompt } from "./prompts";
 
 // Set ffmpeg path
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
@@ -22,16 +20,6 @@ const storage = new Storage();
 // const visionClient = new ImageAnnotatorClient();
 const speechClient = new SpeechClient();
 
-const vertexAI = new VertexAI({
-  project: "recipetok-40c2a",
-  location: "us-central1",
-});
-
-const generativeModel = vertexAI.getGenerativeModel({
-  model: "gemini-2.0-flash-001",
-});
-
-// const getDb = () => admin.firestore();
 
 /**
  * Function that triggers when a new video is uploaded to Firebase Storage.
@@ -44,8 +32,6 @@ export const generateRecipeFromVideo = functions.https
 
     if (!filePath) return;
 
-    console.log(`Processing video: ${filePath}`);
-
     const bucket = storage.bucket("recipetok-40c2a.firebasestorage.app");
     const videoId = path.basename(filePath).split(".")[0];
     const tempFilePath = path.join(os.tmpdir(), path.basename(filePath));
@@ -56,34 +42,25 @@ export const generateRecipeFromVideo = functions.https
       fs.mkdirSync(tempOutputDir, {recursive: true});
 
       await bucket.file(filePath).download({destination: tempFilePath});
-      // // Process in parallel
-      // const [visualAnalysis, audioTranscriptText] = await Promise.all([
-      //   extractAndAnalyzeFrames(
-      //     tempFilePath,
-      //     tempOutputDir,
-      //     visionClient,
-      //   ),
-      //   extractAndTranscribeAudio(
-      //     tempFilePath,
-      //     tempAudioPath,
-      //     speechClient,
-      //     bucket,
-      //     videoId,
-      //   ),
-      // ]);
-
-      const audioTranscript = await generateTranscript(
-        tempFilePath,
-        tempAudioPath,
-        speechClient,
-        bucket,
-        videoId,
-      );
+      // Process in parallel
+      const [visualAnalysisTexts, audioTranscript] = await Promise.all([
+        extractAndAnalyzeFrames(
+          tempFilePath,
+          tempOutputDir,
+        ),
+        generateTranscript(
+          tempFilePath,
+          tempAudioPath,
+          speechClient,
+          bucket,
+          videoId,
+        ),
+      ]);
 
       // Combine analyses to generate recipe
       const recipe = await generateRecipe({
         audioTranscript,
-        visualAnalysis: undefined,
+        visualAnalysis: visualAnalysisTexts,
       });
 
       return recipe;
@@ -119,7 +96,6 @@ async function generateRecipe({
   ingredients: string[];
   steps: string[];
 } | string> {
-  console.log("Generating recipe from transcript and visual analysis");
   const fallbackRecipe = {
     title: "Recipe from Video",
     ingredients: [],
@@ -145,7 +121,6 @@ async function generateRecipe({
       const jsonContent = jsonMatch[1];
       if (!jsonContent) {
         console.error("No JSON content found in the response");
-        console.log("Generated text:", generatedText);
         throw new Error("No JSON content found in the response");
       }
       parsedRecipe = JSON.parse(jsonContent);
@@ -168,25 +143,4 @@ async function generateRecipe({
     console.error("Error generating recipe with Google AI:", error);
     return fallbackRecipe;
   }
-}
-
-// eslint-disable-next-line require-jsdoc
-function generateRecipePrompt({
-  audioTranscript,
-  visualAnalysis,
-}: GenerateRecipeProps) {
-  const prompt =
-  `Generate a detailed recipe from this transcription of a cooking video.
-  Format the response as a JSON object with 'title',
-  'ingredients' (as an array of strings),
-  and 'steps' (as an array of strings).
-
-  Transcription: ${audioTranscript || ""}`;
-
-  if (visualAnalysis) {
-      // TODO: Leverage the visualAnalysis
-    console.log();
-  }
-
-  return prompt;
 }

@@ -66,8 +66,6 @@ export async function generateTranscript(
     }
   });
 
-  console.log(`FullTranscript: ${fullTranscript}`);
-
   // Delete temporary audio file from storage
   try {
     await bucket.file(`temp-audio/${videoId}.wav`).delete();
