@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_DB } from "../../../../firebaseConfig";
-import { Post, Recipe } from "../../../../types";
-
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Post } from "../../../../types";
 
 interface RecipeViewProps {
   post: Post;
 }
 
 const RecipeView: React.FC<RecipeViewProps> = ({ post }) => {
-
   if (!post.recipe) {
     return (
       <View style={styles.container}>
@@ -26,19 +22,31 @@ const RecipeView: React.FC<RecipeViewProps> = ({ post }) => {
       <View style={styles.container}>
         <Text style={styles.title}>{recipe.title}</Text>
         
-        <Text style={styles.sectionTitle}>Ingredients:</Text>
-        {recipe.ingredients.map((ingredient, index) => (
-          <Text key={index} style={styles.ingredient}>
-            • {ingredient}
-          </Text>
-        ))}
+        <View style={styles.divider} />
         
-        <Text style={styles.sectionTitle}>Instructions:</Text>
-        {recipe.steps.map((step, index) => (
-          <Text key={index} style={styles.step}>
-            {index + 1}. {step}
-          </Text>
-        ))}
+        <Text style={styles.sectionTitle}>Ingredients</Text>
+        <View style={styles.sectionContent}>
+          {recipe.ingredients.map((ingredient, index) => (
+            <View key={index} style={styles.ingredientRow}>
+              <Text style={styles.bulletPoint}>•</Text>
+              <Text style={styles.ingredient}>{ingredient}</Text>
+            </View>
+          ))}
+        </View>
+        
+        <View style={styles.divider} />
+        
+        <Text style={styles.sectionTitle}>Instructions</Text>
+        <View style={styles.sectionContent}>
+          {recipe.steps.map((step, index) => (
+            <View key={index} style={styles.stepContainer}>
+              <View style={styles.stepNumberContainer}>
+                <Text style={styles.stepNumber}>{index + 1}</Text>
+              </View>
+              <Text style={styles.step}>{step}</Text>
+            </View>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );
@@ -47,43 +55,77 @@ const RecipeView: React.FC<RecipeViewProps> = ({ post }) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "#fff",
   },
   container: {
-    padding: 16,
-    backgroundColor: "#000",
-    borderRadius: 8,
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
     marginVertical: 10,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-    color: "#fff",
+    color: "#333",
     textAlign: "center",
   },
+  divider: {
+    height: 1,
+    backgroundColor: "#eee",
+    marginVertical: 16,
+  },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 12,
     color: "#FF4D67",
+  },
+  sectionContent: {
+    marginLeft: 5,
+  },
+  ingredientRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+    alignItems: "flex-start",
+  },
+  bulletPoint: {
+    fontSize: 18,
+    color: "#FF4D67",
+    marginRight: 8,
+    lineHeight: 24,
   },
   ingredient: {
     fontSize: 16,
-    marginBottom: 4,
+    color: "#333",
+    flex: 1,
+    lineHeight: 24,
+  },
+  stepContainer: {
+    flexDirection: "row",
+    marginBottom: 16,
+    alignItems: "flex-start",
+  },
+  stepNumberContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#FF4D67",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+    marginTop: 2,
+  },
+  stepNumber: {
     color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   step: {
     fontSize: 16,
-    marginBottom: 8,
-    lineHeight: 22,
-    color: "#fff",
-  },
-  loadingText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#fff",
+    color: "#333",
+    flex: 1,
+    lineHeight: 24,
   },
   errorText: {
     fontSize: 16,

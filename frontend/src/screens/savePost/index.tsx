@@ -39,7 +39,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
         thumbnail: route.params.sourceThumb,
       }),
     )
-      .then(() => navigation.navigate("feed"))
+      .then(() => navigation.navigate("Feed"))
       .catch(() => setRequestRunning(false));
   };
 

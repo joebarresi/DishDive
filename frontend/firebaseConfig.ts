@@ -5,7 +5,6 @@ import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 
 const apiKey = process.env.EXPO_PUBLIC_API_KEY;
-console.log("API KEY: ", apiKey);
 
 const firebaseConfig = {
   apiKey,

@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type FeedScreenRouteProp =
   | RouteProp<RootStackParamList, "userPosts">
-  | RouteProp<HomeStackParamList, "feed">
+  | RouteProp<HomeStackParamList, "Feed">
   | RouteProp<FeedStackParamList, "feedList">;
 
 interface PostViewToken extends ViewToken {

@@ -16,6 +16,10 @@ import ProfileScreen from "../../screens/profile";
 import ChatSingleScreen from "../../screens/chat/single";
 import SettingsScreen from "../../screens/settings";
 import OnboardingScreen from "../../screens/onboarding";
+import AskAIScreen from "../../screens/search/AskAI";
+import FindChefScreen from "../../screens/search/FindChef";
+import SearchDietScreen from "../../screens/search/SearchDiet";
+import WhatIHaveScreen from "../../screens/search/WhatIHave";
 
 export type RootStackParamList = {
   home: undefined;
@@ -28,6 +32,10 @@ export type RootStackParamList = {
   editProfileField: { title: string; field: string; value: string };
   chatSingle: { chatId?: string; contactId?: string };
   settings: undefined;
+  askAI: undefined;
+  findChef: undefined;
+  searchDiet: undefined;
+  whatIHave: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -106,6 +114,26 @@ export default function Route() {
             <Stack.Screen
               name="settings"
               component={SettingsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="askAI"
+              component={AskAIScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="findChef"
+              component={FindChefScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="searchDiet"
+              component={SearchDietScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="whatIHave"
+              component={WhatIHaveScreen}
               options={{ headerShown: false }}
             />
           </>
