@@ -2,12 +2,14 @@ import { FIREBASE_AUTH, FIREBASE_DB, FIREBASE_FUNCTIONS } from "../../../firebas
 import { httpsCallable } from "firebase/functions";
 import {
   addDoc,
+  updateDoc,
   collection,
   getDocs,
   orderBy,
   query,
   serverTimestamp,
   where,
+  DocumentReference,
 } from "firebase/firestore";
 import { saveMediaToStorage } from "../../services/utils";
 import uuid from "uuid-random";
@@ -26,22 +28,14 @@ const initialState: PostState = {
   currentUserPosts: null,
 };
 
-// const functions = firebase.functions();
-
-export const createPost = createAsyncThunk(
-  "post/create",
-  async (
-    {
-      description,
-      video,
-      thumbnail,
-    }: {
-      description: string;
-      video: string;
-      thumbnail: string;
-    },
-    { rejectWithValue },
-  ) => {
+export const createRawPost = createAsyncThunk(
+  "post/rawCreate", async ({
+    video,
+    thumbnail,
+  }: {
+    video: string;
+    thumbnail: string;
+  }, { rejectWithValue }) => {
     if (FIREBASE_AUTH.currentUser) {
       try {
         const storagePostId = uuid();
@@ -69,18 +63,62 @@ export const createPost = createAsyncThunk(
           recipe = result.data;
         });
 
-        await addDoc(collection(FIREBASE_DB, "post"), {
+        const docReference = await addDoc(collection(FIREBASE_DB, "post"), {
           creator: FIREBASE_AUTH.currentUser.uid,
           media: [videoDownloadUrl, thumbnailDownloadUrl],
-          description,
+          description: null,
           likesCount: 0,
           commentsCount: 0,
           creation: serverTimestamp(),
           recipe: recipe,
+          uploadStatus: "draft"
         });
 
+        return docReference;
       } catch (error) {
         console.error("Error creating post: ", error);
+        return rejectWithValue(error);
+      }
+    } else {
+      return rejectWithValue(new Error("User not authenticated"));
+    }
+  }
+)
+
+export const finishSavePost = createAsyncThunk(
+  "post/create",
+  async (
+    {
+      description,
+      docReference,
+      recipe,
+    }: {
+      description: string;
+      docReference: DocumentReference;
+      recipe?: {
+        title: string;
+        ingredients: string[];
+        steps: string[];
+      };
+    },
+    { rejectWithValue },
+  ) => {
+    if (FIREBASE_AUTH.currentUser) {
+      try {
+        const updateData: any = {
+          description,
+          uploadStatus: "published"
+        };
+        
+        // Only include recipe in update if it was provided
+        if (recipe) {
+          updateData.recipe = recipe;
+        }
+        
+        await updateDoc(docReference, updateData);
+
+      } catch (error) {
+        console.error("Error updating post: ", error);
         return rejectWithValue(error);
       }
     } else {
@@ -127,15 +165,27 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createPost.pending, (state) => {
+      .addCase(createRawPost.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createPost.fulfilled, (state) => {
+      .addCase(createRawPost.fulfilled, (state) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(createPost.rejected, (state, action) => {
+      .addCase(createRawPost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || null;
+      })
+      .addCase(finishSavePost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(finishSavePost.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(finishSavePost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || null;
       })

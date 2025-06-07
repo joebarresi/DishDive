@@ -20,6 +20,7 @@ import AskAIScreen from "../../screens/search/AskAI";
 import FindChefScreen from "../../screens/search/FindChef";
 import SearchDietScreen from "../../screens/search/SearchDiet";
 import WhatIHaveScreen from "../../screens/search/WhatIHave";
+import { DocumentReference } from "firebase/firestore";
 
 export type RootStackParamList = {
   home: undefined;
@@ -27,7 +28,7 @@ export type RootStackParamList = {
   onboarding: undefined;
   userPosts: { creator: string; profile: boolean };
   profileOther: { initialUserId: string };
-  savePost: { source: string; sourceThumb: string };
+  savePost: { docRef: DocumentReference, source: string };
   editProfile: undefined;
   editProfileField: { title: string; field: string; value: string };
   chatSingle: { chatId?: string; contactId?: string };

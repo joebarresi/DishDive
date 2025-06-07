@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 import {
   Camera,
   requestCameraPermissionsAsync,
@@ -17,6 +17,11 @@ import styles from "./styles";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
+import { useDispatch } from "react-redux";
+import { createRawPost } from "../../redux/slices/postSlice";
+import { AppDispatch } from "../../redux/store";
+import { DocumentReference, DocumentData } from "firebase/firestore";
+import { PayloadAction } from "@reduxjs/toolkit/dist/createAction";
 
 /**
  * Function that renders a component responsible showing
@@ -28,6 +33,7 @@ export default function UploadScreen() {
   const [hasCameraPermissions, setHasCameraPermissions] = useState(false);
   const [hasAudioPermissions, setHasAudioPermissions] = useState(false);
   const [hasGalleryPermissions, setHasGalleryPermissions] = useState(false);
+  const [requestRunning, setRequestRunning] = useState(false);
 
   const [galleryItems, setGalleryItems] = useState<MediaLibrary.Asset[]>([]);
 
@@ -40,6 +46,25 @@ export default function UploadScreen() {
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const dispatch: AppDispatch = useDispatch();
+  const handleRawPost = (video: string, thumbnail: string) => {
+      setRequestRunning(true);
+      dispatch(
+        createRawPost({
+          video,
+          thumbnail,
+        }),
+      )
+      .then((data) => {
+        setRequestRunning(false)
+        if (data.meta?.requestStatus === "fulfilled") {
+          navigation.navigate("savePost", {docRef: data.payload as DocumentReference<DocumentData>, source: video});
+        }
+      })
+        .catch(() => setRequestRunning(false));
+    };
+
   useEffect(() => {
     (async () => {
       const cameraStatus = await requestCameraPermissionsAsync();
@@ -75,7 +100,7 @@ export default function UploadScreen() {
           const source = data.uri;
           let sourceThumb = await generateThumbnail(source);
           if (sourceThumb) {
-            navigation.navigate("savePost", { source, sourceThumb });
+            handleRawPost(source, sourceThumb);
           }
         }
       } catch (error) {
@@ -100,10 +125,7 @@ export default function UploadScreen() {
     if (!result.canceled) {
       const sourceThumb = await generateThumbnail(result.assets[0].uri);
       if (sourceThumb) {
-        navigation.navigate("savePost", {
-          source: result.assets[0].uri,
-          sourceThumb,
-        });
+        handleRawPost(result.assets[0].uri, sourceThumb);
       }
     }
   };
@@ -123,6 +145,13 @@ export default function UploadScreen() {
     return <View></View>;
   }
 
+  if (requestRunning) {
+    return (
+      <View style={styles.uploadingContainer}>
+        <ActivityIndicator color="red" size="large" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       {isFocused ? (

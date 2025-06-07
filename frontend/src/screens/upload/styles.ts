@@ -10,6 +10,11 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     aspectRatio: 9 / 16,
   },
+  uploadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   bottomBarContainer: {
     alignItems: "center",
     position: "absolute",

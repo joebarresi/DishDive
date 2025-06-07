@@ -51,7 +51,7 @@ const paperTheme = {
 
 export default function HomeScreen() {
   useChats();
-  const [activeTab, setActiveTab] = useState<string>("Feed");
+  const [activeTab, setActiveTab] = useState<string>("Recipes");
 
   return (
     <PaperProvider theme={paperTheme}>
@@ -76,6 +76,16 @@ export default function HomeScreen() {
           },
         }}
       >
+        <Tab.Screen
+          name="Recipes"
+          component={RecipesScreen}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <Feather name="book-open" size={ICON_SIZE} color={color} />
+            ),
+            tabBarLabel: "Recipes",
+          }}
+        />
         <Tab.Screen
           name="Feed"
           component={FeedNavigation}
@@ -106,17 +116,7 @@ export default function HomeScreen() {
             tabBarLabel: "Create",
           }}
         />
-        <Tab.Screen
-          name="Recipes"
-          component={RecipesScreen}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <Feather name="book-open" size={ICON_SIZE} color={color} />
-            ),
-            tabBarLabel: "Recipes",
-          }}
-        />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Me"
           component={ProfileScreen}
           options={{
@@ -126,7 +126,7 @@ export default function HomeScreen() {
             tabBarLabel: "Profile",
           }}
           initialParams={{ initialUserId: FIREBASE_AUTH.currentUser?.uid ?? "" }}
-        />
+        /> */}
       </Tab.Navigator>
     </ActiveTabContext.Provider>
     </PaperProvider>
