@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { throttle } from "throttle-debounce";
 import { getLikeById, updateLike, updateSavePost } from "../../../../services/posts";
 import { AppDispatch, RootState } from "../../../../redux/store";
-import { openCommentModal } from "../../../../redux/slices/modalSlice";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";

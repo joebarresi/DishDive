@@ -15,6 +15,7 @@ import {
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../firebaseConfig";
 import { Post, Comment } from "../../types";
 import { Dispatch, SetStateAction } from "react";
+import { User } from "firebase/auth";
 
 let commentListenerInstance: (() => void) | null = null;
 
@@ -25,11 +26,18 @@ let commentListenerInstance: (() => void) | null = null;
  * @returns {Promise<[<Post>]>} post list if successful.
  */
 
-export const getFeed = (feedType?: string): Promise<Post[]> => {
+export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
   return new Promise(async (resolve, reject) => {
+    if (!currentUser) {
+      reject(new Error("User not logged in"));
+      return;
+    }
+
     try {
       const q = query(
         collection(FIREBASE_DB, "post"),
+        where("creator", "!=", currentUser?.uid),
+        orderBy("creator"),
         orderBy("creation", "desc"),
       );
       const querySnapshot = await getDocs(q);
@@ -38,12 +46,76 @@ export const getFeed = (feedType?: string): Promise<Post[]> => {
         const data = doc.data();
         return { id, ...data } as Post;
       });
-      
-      // In a real app, you would have different queries for different feed types
-      // For now, we'll just return all posts and let the component handle filtering
       resolve(posts);
     } catch (error) {
       console.error("Failed to get feed: ", error);
+      reject(error);
+    }
+  });
+};
+
+export const getTrendingFeed = (currentUser: User | null): Promise<Post[]> => {
+  return new Promise(async (resolve, reject) => {
+    if (!currentUser) {
+      reject(new Error("User not logged in"));
+      return;
+    }
+
+    try {
+      const q = query(
+        collection(FIREBASE_DB, "post"),
+        where("creator", "!=", currentUser?.uid),
+        orderBy("creator"),
+        orderBy("likesCount", "desc"),
+      );
+      const querySnapshot = await getDocs(q);
+      const posts = querySnapshot.docs.map((doc) => {
+        const id = doc.id;
+        const data = doc.data();
+        return { id, ...data } as Post;
+      });
+      resolve(posts);
+    } catch (error) {
+      console.error("Failed to get feed: ", error);
+      reject(error);
+    }
+  });
+};
+
+export const getFollowingFeed = (currentUser: User | null): Promise<Post[]> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!currentUser) {
+        resolve([]);
+        return;
+      }
+
+      const followingSnapshot = await getDocs(
+        collection(FIREBASE_DB, "users", currentUser.uid, "following")
+      );
+      const followingIds: string[] = followingSnapshot.docs.map(doc => doc.id);
+
+      if (followingIds.length === 0) {
+        resolve([]);
+        return;
+      }
+
+      const q = query(
+        collection(FIREBASE_DB, "post"),
+        where("userId", "in", followingIds),
+        orderBy("creation", "desc"),
+      );
+
+      const querySnapshot = await getDocs(q);
+      const posts = querySnapshot.docs.map((doc) => {
+        const id = doc.id;
+        const data = doc.data();
+        return { id, ...data } as Post;
+      });
+
+      resolve(posts);
+    } catch (error) {
+      console.error("Failed to get following feed: ", error);
       reject(error);
     }
   });

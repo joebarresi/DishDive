@@ -4,7 +4,7 @@ import styles from "./styles";
 import { Post } from "../../../../types";
 import { useUser } from "../../../hooks/useUser";
 import PostSingleOverlay from "./overlay";
-import { TouchableWithoutFeedback } from "react-native";
+import { TouchableWithoutFeedback, View, Animated } from "react-native";
 
 export interface PostSingleHandles {
   play: () => Promise<void>;
@@ -26,6 +26,7 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
     const ref = useRef<Video>(null);
     const user = useUser(item.creator).data;
     const [isPlaying, setIsPlaying] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(1)).current;
 
     useImperativeHandle(parentRef, () => ({
       play,
@@ -44,6 +45,21 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
           });
       };
     }, []);
+
+    // Fade out the pause bars after a delay when video is playing
+    useEffect(() => {
+      if (isPlaying) {
+        // Fade out the pause bars when video starts playing
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      } else {
+        // Show the pause bars immediately when video is paused
+        fadeAnim.setValue(1);
+      }
+    }, [isPlaying, fadeAnim]);
 
     /**
      * Plays the video in the component if the ref
@@ -161,20 +177,39 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
     return (
       <>
         {user && <PostSingleOverlay user={user} post={item} />}
+        
         <TouchableWithoutFeedback onPress={handlePress}>
-          <Video
-            ref={ref}
-            style={styles.container}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay={false}
-            isLooping
-            usePoster
-            posterSource={{ uri: item.media[1] }}
-            posterStyle={{ resizeMode: "cover", height: "100%" }}
-            source={{
-              uri: item.media[0],
-            }}
-          />
+          <View style={{ flex: 1 }}>
+            <Video
+              ref={ref}
+              style={styles.container}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay={false}
+              isLooping
+              usePoster
+              posterSource={{ uri: item.media[1] }}
+              posterStyle={{ resizeMode: "cover", height: "100%" }}
+              source={{
+                uri: item.media[0],
+              }}
+            />
+            
+            {/* Pause Bars Overlay - only visible when paused */}
+            <Animated.View 
+              style={[
+                styles.playPauseContainer,
+                { opacity: fadeAnim }
+              ]}
+              pointerEvents="none"
+            >
+              {!isPlaying && (
+                <View style={styles.pauseBars}>
+                  <View style={styles.pauseBar} />
+                  <View style={styles.pauseBar} />
+                </View>
+              )}
+            </Animated.View>
+          </View>
         </TouchableWithoutFeedback>
       </>
     );

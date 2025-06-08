@@ -20,7 +20,10 @@ import AskAIScreen from "../../screens/search/AskAI";
 import FindChefScreen from "../../screens/search/FindChef";
 import SearchDietScreen from "../../screens/search/SearchDiet";
 import WhatIHaveScreen from "../../screens/search/WhatIHave";
+import CreatorScreen from "../../screens/creator";
+import NotificationsScreen from "../../screens/notifications";
 import { DocumentReference } from "firebase/firestore";
+import UploadScreen from "../../screens/upload";
 
 export type RootStackParamList = {
   home: undefined;
@@ -37,6 +40,9 @@ export type RootStackParamList = {
   findChef: undefined;
   searchDiet: undefined;
   whatIHave: undefined;
+  uploadScreen: undefined;
+  creator: undefined;
+  notifications: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,7 +74,6 @@ export default function Route() {
           />
         ) : (
           <>
-            {/* Check if the user has a displayName (username) */}
             {!currentUserObj.currentUser.displayName ? (
               <Stack.Screen
                 name="onboarding"
@@ -87,6 +92,11 @@ export default function Route() {
               component={SavePostScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen 
+              name="uploadScreen"
+              component={UploadScreen}
+              options={{ headerShown: false }}
+              />
             <Stack.Screen
               name="userPosts"
               component={FeedScreen}
@@ -135,6 +145,16 @@ export default function Route() {
             <Stack.Screen
               name="whatIHave"
               component={WhatIHaveScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="creator"
+              component={CreatorScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="notifications"
+              component={NotificationsScreen}
               options={{ headerShown: false }}
             />
           </>

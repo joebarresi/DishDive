@@ -11,11 +11,13 @@ import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
 } from "react-native-paper";
+import CreatorScreen from "../../screens/creator";
 
 export type HomeStackParamList = {
   Feed: undefined;
   Discover: undefined;
   Add: undefined;
+  Creator: undefined;
   Recipes: undefined;
   Inbox: undefined;
   Me: { initialUserId: string };
@@ -62,7 +64,7 @@ export default function HomeScreen() {
           borderTopColor: "#EEEEEE",
           height: 90
         }}
-        initialRouteName="Feed"
+        initialRouteName="Recipes"
         activeColor={THEME.primary}
         inactiveColor={THEME.inactive}
         shifting={true}
@@ -106,8 +108,8 @@ export default function HomeScreen() {
           }}
         />
         <Tab.Screen
-          name="Add"
-          component={UploadScreen}
+          name="Creator"
+          component={CreatorScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <Feather name="plus-square" size={ICON_SIZE} color={color} />

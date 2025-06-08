@@ -1,8 +1,8 @@
-import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform, Text, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
 import { useContext, useEffect, useRef, useState } from "react";
-import { getFeed, getPostsByUserId } from "../../services/posts";
+import { getFollowingFeed, getMyFeed, getPostsByUserId, getTrendingFeed } from "../../services/posts";
 import { Post } from "../../../types";
 import { RouteProp, useIsFocused, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
@@ -14,6 +14,8 @@ import {
   FeedType,
 } from "../../navigation/feed";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FIREBASE_AUTH } from "../../../firebaseConfig";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type FeedScreenRouteProp =
   | RouteProp<RootStackParamList, "userPosts">
@@ -36,6 +38,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     CurrentUserProfileItemInViewContext,
   );
   const { activeFeedType } = useContext(ActiveFeedContext);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { creator, profile, feedType = "My Feed" } = route.params as {
     creator: string;
@@ -44,6 +47,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
   };
 
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -51,40 +55,67 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   // Fetch posts based on feed type
   useEffect(() => {
+    const currentUser = FIREBASE_AUTH.currentUser;
+    setLoading(true);
+
     if (profile && creator) {
       // Profile feed - show user's posts
-      getPostsByUserId(creator).then((posts) => setPosts(posts));
+      getPostsByUserId(creator)
+        .then((posts) => {
+          setPosts(posts);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error("Error fetching profile posts:", error);
+          setPosts([]);
+          setLoading(false);
+        });
     } else {
       // Main feed - fetch based on feed type
-      getFeed().then((posts) => {
-        // In a real app, you would have different API calls for different feed types
-        // For now, we'll simulate different feeds by sorting/filtering the same data
-        let filteredPosts = [...posts];
-        
-        switch (feedType) {
-          case "Following":
-            // Simulate "Following" feed - could filter by followed creators
-            filteredPosts = posts.filter((_, index) => index % 3 !== 0);
-            break;
-          case "Trending":
-            // Simulate "Trending" feed - could sort by popularity
-            filteredPosts = [...posts].sort((a, b) => 
-              (b.likes?.length || 0) - (a.likes?.length || 0)
-            );
-            break;
-          case "My Feed":
-          default:
-            // Default feed - no changes
-            break;
-        }
-        
-        setPosts(filteredPosts);
-        
-        // Scroll back to top when feed type changes
-        if (flatListRef.current) {
-          flatListRef.current.scrollToOffset({ offset: 0, animated: false });
-        }
-      });
+      switch (feedType) {
+        case "Following":
+          getFollowingFeed(currentUser)
+            .then((posts) => {
+              setPosts(posts);
+              setLoading(false);
+            })
+            .catch(error => {
+              console.error("Error fetching following feed:", error);
+              setPosts([]);
+              setLoading(false);
+            });
+          break;
+        case "Trending":
+          getTrendingFeed(currentUser)
+            .then((posts) => {
+              setPosts(posts);
+              setLoading(false);
+            })
+            .catch(error => {
+              console.error("Error fetching trending feed:", error);
+              setPosts([]);
+              setLoading(false);
+            });
+          break;
+        case "My Feed":
+        default:
+          getMyFeed(currentUser)
+            .then((posts) => {
+              setPosts(posts);
+              setLoading(false);
+            })
+            .catch(error => {
+              console.error("Error fetching my feed:", error);
+              setPosts([]);
+              setLoading(false);
+            });
+          break;
+      }
+      
+      // Scroll back to top when feed type changes
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: false });
+      }
     }
   }, [feedType, profile, creator]);
 
@@ -188,6 +219,38 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     );
   };
 
+  // Navigate to the discover screen to find people to follow
+  const navigateToDiscover = () => {
+    navigation.navigate('search');
+  };
+
+  // Render empty following feed message
+  const renderEmptyFollowingFeed = () => {
+    if (loading) return null;
+    
+    return (
+      <View style={styles.emptyFeedContainer}>
+        <Text style={styles.emptyFeedText}>
+          No videos from people you follow yet
+        </Text>
+        <Text style={styles.emptyFeedSubText}>
+          Videos from accounts you follow will appear here. Follow some accounts to get started.
+        </Text>
+        <TouchableOpacity 
+          style={styles.followButton}
+          onPress={navigateToDiscover}
+        >
+          <Text style={styles.followButtonText}>Find People to Follow</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  // If it's the Following feed and there are no posts, show the empty state
+  if (feedType === "Following" && posts.length === 0 && !loading) {
+    return renderEmptyFollowingFeed();
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
@@ -210,6 +273,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         onViewableItemsChanged={onViewableItemsChanged.current}
+        ListEmptyComponent={feedType === "Following" ? renderEmptyFollowingFeed : null}
       />
     </View>
   );
