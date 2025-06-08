@@ -13,9 +13,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-end",
   },
-  infoContainer: {
+  contentContainer: {
     flex: 1,
     paddingRight: 10,
+  },
+  userInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 10,
   },
   displayName: {
     color: "white",
@@ -35,9 +43,10 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     alignItems: "center",
+    marginLeft: 10,
   },
   avatarContainer: {
-    marginBottom: 20,
+    alignItems: "center",
   },
   avatar: {
     height: 54,
@@ -50,10 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 27,
     borderWidth: 1,
     borderColor: "white",
-  },
-  interactionButtons: {
-    flexDirection: "column",
-    alignItems: "center",
   },
   actionButton: {
     alignItems: "center",

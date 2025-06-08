@@ -11,6 +11,7 @@ export interface PostSingleHandles {
   stop: () => Promise<void>;
   unload: () => Promise<void>;
   togglePlayPause: () => Promise<void>;
+  restart: () => Promise<void>;
 }
 
 /**
@@ -31,6 +32,7 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       stop,
       unload,
       togglePlayPause,
+      restart,
     }));
 
     useEffect(() => {
@@ -130,6 +132,25 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
         }
       } catch (e) {
         console.log("An error occurred while toggling play/pause:", e);
+      }
+    };
+
+    /**
+     * Restarts the video from the beginning
+     * 
+     * @returns {void}
+     */
+    const restart = async () => {
+      if (ref.current == null) {
+        return;
+      }
+      try {
+        await ref.current.stopAsync();
+        await ref.current.setPositionAsync(0);
+        await ref.current.playAsync();
+        setIsPlaying(true);
+      } catch (e) {
+        console.log("An error occurred while restarting video:", e);
       }
     };
 

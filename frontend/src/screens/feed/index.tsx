@@ -8,8 +8,10 @@ import { RouteProp, useIsFocused, useNavigation } from "@react-navigation/native
 import { RootStackParamList } from "../../navigation/main";
 import { HomeStackParamList } from "../../navigation/home";
 import {
+  ActiveFeedContext,
   CurrentUserProfileItemInViewContext,
   FeedStackParamList,
+  FeedType,
 } from "../../navigation/feed";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -33,42 +35,95 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
   const { setCurrentUserProfileItemInView } = useContext(
     CurrentUserProfileItemInViewContext,
   );
+  const { activeFeedType } = useContext(ActiveFeedContext);
 
-  const { creator, profile } = route.params as {
+  const { creator, profile, feedType = "My Feed" } = route.params as {
     creator: string;
     profile: boolean;
+    feedType?: FeedType;
   };
 
   const [posts, setPosts] = useState<Post[]>([]);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
+  const flatListRef = useRef<FlatList>(null);
 
+  // Fetch posts based on feed type
   useEffect(() => {
     if (profile && creator) {
+      // Profile feed - show user's posts
       getPostsByUserId(creator).then((posts) => setPosts(posts));
     } else {
-      getFeed().then((posts) => setPosts(posts));
-    }
-  }, []);
-
-  // Pause all videos when screen loses focus
-  useEffect(() => {
-    if (!isFocused) {
-      // When the screen is not focused, pause all videos
-      Object.keys(mediaRefs.current).forEach((key) => {
-        const media = mediaRefs.current[key];
-        if (media) {
-          media.stop();
+      // Main feed - fetch based on feed type
+      getFeed().then((posts) => {
+        // In a real app, you would have different API calls for different feed types
+        // For now, we'll simulate different feeds by sorting/filtering the same data
+        let filteredPosts = [...posts];
+        
+        switch (feedType) {
+          case "Following":
+            // Simulate "Following" feed - could filter by followed creators
+            filteredPosts = posts.filter((_, index) => index % 3 !== 0);
+            break;
+          case "Trending":
+            // Simulate "Trending" feed - could sort by popularity
+            filteredPosts = [...posts].sort((a, b) => 
+              (b.likes?.length || 0) - (a.likes?.length || 0)
+            );
+            break;
+          case "My Feed":
+          default:
+            // Default feed - no changes
+            break;
+        }
+        
+        setPosts(filteredPosts);
+        
+        // Scroll back to top when feed type changes
+        if (flatListRef.current) {
+          flatListRef.current.scrollToOffset({ offset: 0, animated: false });
         }
       });
-    } else {
-      // When the screen regains focus, play the currently visible video
-      if (posts.length > 0 && mediaRefs.current[posts[0].id]) {
-        mediaRefs.current[posts[0].id]?.play();
+    }
+  }, [feedType, profile, creator]);
+
+  // Track previous feed type to detect changes
+  const prevFeedTypeRef = useRef<FeedType | undefined>();
+  
+  // Pause all videos when screen loses focus or feed type changes
+  useEffect(() => {
+    // When the screen is not focused, pause all videos
+    Object.keys(mediaRefs.current).forEach((key) => {
+      const media = mediaRefs.current[key];
+      if (media) {
+        media.stop();
+      }
+    });
+    
+    // When the screen is focused, play the currently visible video
+    if (isFocused && posts.length > 0) {
+      const firstVideoRef = mediaRefs.current[posts[0].id];
+      
+      if (firstVideoRef) {
+        // If feed type changed and it's the same video that was playing before,
+        // restart it instead of just playing from where it was
+        if (prevFeedTypeRef.current !== undefined && 
+            prevFeedTypeRef.current !== feedType) {
+          setTimeout(() => {
+            firstVideoRef.restart();
+          }, 100);
+        } else {
+          setTimeout(() => {
+            firstVideoRef.play();
+          }, 100);
+        }
       }
     }
-  }, [isFocused, posts]);
+    
+    // Update the previous feed type reference
+    prevFeedTypeRef.current = feedType;
+  }, [isFocused, activeFeedType, feedType, posts]);
 
   /**
    * Called any time a new post is shown when a user scrolls
@@ -104,7 +159,6 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   // Calculate the exact screen height for each item
   const screenHeight = Dimensions.get("window").height;
-  const statusBarHeight = StatusBar.currentHeight || (Platform.OS === 'ios' ? insets.top : 0);
   const bottomTabHeight = profile ? 0 : 49; // Standard height for bottom tab bar
   const bottomInset = insets.bottom;
   
@@ -138,6 +192,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <FlatList
+        ref={flatListRef}
         data={posts}
         windowSize={3}
         initialNumToRender={1}

@@ -21,10 +21,11 @@ let commentListenerInstance: (() => void) | null = null;
 /**
  * Returns all the posts in the database.
  *
+ * @param {string} feedType - Optional feed type to filter posts
  * @returns {Promise<[<Post>]>} post list if successful.
  */
 
-export const getFeed = (): Promise<Post[]> => {
+export const getFeed = (feedType?: string): Promise<Post[]> => {
   return new Promise(async (resolve, reject) => {
     try {
       const q = query(
@@ -37,6 +38,9 @@ export const getFeed = (): Promise<Post[]> => {
         const data = doc.data();
         return { id, ...data } as Post;
       });
+      
+      // In a real app, you would have different queries for different feed types
+      // For now, we'll just return all posts and let the component handle filtering
       resolve(posts);
     } catch (error) {
       console.error("Failed to get feed: ", error);
