@@ -7,11 +7,15 @@ const styles = StyleSheet.create({
     zIndex: 999,
     bottom: 0,
     paddingLeft: 20,
-    paddingBottom: 50, // Increased from 20 to ensure content is visible
+    paddingBottom: 20,
     paddingRight: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
+  },
+  infoContainer: {
+    flex: 1,
+    paddingRight: 10,
   },
   displayName: {
     color: "white",
@@ -24,38 +28,45 @@ const styles = StyleSheet.create({
   description: {
     marginTop: 10,
     color: "white",
-    maxWidth: Dimensions.get("window").width * 0.7, // Limit width to prevent overflow
+    fontSize: 14,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
+  actionsContainer: {
+    alignItems: "center",
+  },
+  avatarContainer: {
+    marginBottom: 20,
+  },
   avatar: {
-    height: 50,
-    width: 50,
-    borderRadius: 25,
-    borderWidth: 2,
+    height: 54,
+    width: 54,
+    borderRadius: 27,
+    borderWidth: 1,
     borderColor: "white",
-    marginBottom: 30,
   },
   defaultAvatar: {
-    marginBottom: 30,
-    borderRadius: 25,
-    borderWidth: 2,
+    borderRadius: 27,
+    borderWidth: 1,
     borderColor: "white",
   },
-  leftContainer: {
+  interactionButtons: {
+    flexDirection: "column",
     alignItems: "center",
   },
   actionButton: {
-    paddingBottom: 16,
+    alignItems: "center",
+    marginBottom: 16,
   },
   actionButtonText: {
     color: "white",
+    fontSize: 14,
     textAlign: "center",
-    marginTop: 4,
+    marginTop: 3,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 1,
   },
   modalContainer: {
     flex: 1,
@@ -66,7 +77,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: "90%",
     height: "80%",
-    backgroundColor: "#000",
+    backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
     borderWidth: 1,
@@ -77,6 +88,9 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 1000,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 5,
   },
 });
 

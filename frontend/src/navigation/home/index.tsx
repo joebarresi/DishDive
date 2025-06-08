@@ -1,10 +1,9 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import UploadScreen from "../../screens/upload";
 import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
-import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import RecipesScreen from "../../screens/recipes";
 import { useChats } from "../../hooks/useChats";
 import { createContext, useState } from "react";
@@ -29,7 +28,7 @@ export const ActiveTabContext = createContext<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }>({
-  activeTab: "Feed",
+  activeTab: "Recipes",
   setActiveTab: () => {},
 });
 

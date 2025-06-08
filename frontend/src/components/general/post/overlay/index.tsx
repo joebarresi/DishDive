@@ -13,8 +13,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { Avatar } from "react-native-paper";
 import RecipeView from "../../recipe";
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_DB } from "../../../../../firebaseConfig";
+
+// Define a constant for icon size
+const ICON_SIZE = 36; // Increased by 50% from 24
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -58,9 +59,6 @@ export default function PostSingleOverlay({
     }
   }, []);
 
-  // Handle check if post has been saved
-    // Set state appropriately on initialization()
-
   /**
    * Handles the like button action.
    *
@@ -101,12 +99,14 @@ export default function PostSingleOverlay({
 
   return (
     <View style={styles.container}>
-      <View>
+      <View style={styles.infoContainer}>
         <Text style={styles.displayName}>{user.displayName || user.email}</Text>
         <Text style={styles.description}>{post.description}</Text>
       </View>
-      <View style={styles.leftContainer}>
+      
+      <View style={styles.actionsContainer}>
         <TouchableOpacity
+          style={styles.avatarContainer}
           onPress={() =>
             navigation.navigate("profileOther", {
               initialUserId: user?.uid ?? "",
@@ -118,58 +118,62 @@ export default function PostSingleOverlay({
           ) : (
             <Avatar.Icon
               style={styles.defaultAvatar}
-              size={50}
+              size={54}
               icon={"account"}
             />
           )}
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => handleUpdateLike(currentLikeState)}
-        >
-          <Ionicons
-            color="white"
-            size={40}
-            name={currentLikeState.state ? "heart" : "heart-outline"}
-          />
-          <Text style={styles.actionButtonText}>
-            {currentLikeState.counter}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() =>
-            dispatch(
-              openCommentModal({
-                open: true,
-                data: post,
-                modalType: 0,
-                onCommentSend: handleUpdateCommentCount,
-              }),
-            )
-          }
-        >
-          <Ionicons color="white" size={40} name={"chatbubble"} />
-          <Text style={styles.actionButtonText}>{currentCommentsCount}</Text>
-        </TouchableOpacity>
         
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => handleSavePost(isSaved)}
-        >
-          <Ionicons color="white" size={40} name={isSaved ? "bookmark" : "bookmark-outline"} />
-          <Text style={styles.actionButtonText}>Save</Text>
-        </TouchableOpacity>
-        
-        {hasRecipe && (
+        <View style={styles.interactionButtons}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => setRecipeModalVisible(true)}
+            onPress={() => handleUpdateLike(currentLikeState)}
           >
-            <Ionicons color="white" size={40} name={"restaurant"} />
-            <Text style={styles.actionButtonText}>Recipe</Text>
+            <Ionicons
+              color="white"
+              size={ICON_SIZE}
+              name={currentLikeState.state ? "heart" : "heart-outline"}
+            />
+            <Text style={styles.actionButtonText}>
+              {currentLikeState.counter}
+            </Text>
           </TouchableOpacity>
-        )}
+          
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() =>
+              dispatch(
+                openCommentModal({
+                  open: true,
+                  data: post,
+                  modalType: 0,
+                  onCommentSend: handleUpdateCommentCount,
+                }),
+              )
+            }
+          >
+            <Ionicons color="white" size={ICON_SIZE} name={"chatbubble"} />
+            <Text style={styles.actionButtonText}>{currentCommentsCount}</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => handleSavePost(isSaved)}
+          >
+            <Ionicons color="white" size={ICON_SIZE} name={isSaved ? "bookmark" : "bookmark-outline"} />
+            <Text style={styles.actionButtonText}>Save</Text>
+          </TouchableOpacity>
+          
+          {hasRecipe && (
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => setRecipeModalVisible(true)}
+            >
+              <Ionicons color="white" size={ICON_SIZE} name={"restaurant"} />
+              <Text style={styles.actionButtonText}>Recipe</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Recipe Modal */}
@@ -185,7 +189,7 @@ export default function PostSingleOverlay({
               style={styles.closeButton}
               onPress={() => setRecipeModalVisible(false)}
             >
-              <Ionicons name="close" size={30} color="#FF4D67" />
+              <Ionicons name="close" size={ICON_SIZE} color="#FF4D67" />
             </TouchableOpacity>
             <RecipeView post={post} />
           </View>
