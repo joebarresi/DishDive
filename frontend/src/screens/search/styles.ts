@@ -93,8 +93,100 @@ const styles = StyleSheet.create({
     color: "#888",
     textAlign: "center",
   },
+  // New styles for Find a Chef screen
+  searchContainer: {
+    marginVertical: 16,
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 48,
+    fontSize: 16,
+  },
+  popularButton: {
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+  },
+  activeButton: {
+    backgroundColor: "#4ECDC4",
+  },
+  popularButtonText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#555",
+  },
+  activeButtonText: {
+    color: "white",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  chefList: {
+    paddingVertical: 8,
+  },
+  chefItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+  chefAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#E0E0E0",
+  },
+  chefInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  chefName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  chefBio: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 2,
+  },
+  chefFollowers: {
+    fontSize: 14,
+    color: "#888",
+    marginTop: 4,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyDescription: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "#888",
+  },
 });
-
-export default styles;
 
 export default styles;
