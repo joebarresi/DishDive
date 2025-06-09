@@ -1,4 +1,4 @@
-import {GenerateRecipeProps} from "./types";
+import {GenerateRecipeProps} from "../types";
 
 /* eslint-disable max-len */
 export const frameAnalysesPrompt = `Write a summary of the image. Describe any cooking options, ingredients, or cooking processes visible in the image. 

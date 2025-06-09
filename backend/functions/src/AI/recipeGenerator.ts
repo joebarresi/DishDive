@@ -7,7 +7,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import {Storage} from "@google-cloud/storage";
 import {SpeechClient} from "@google-cloud/speech";
-import {GenerateRecipeProps} from "./types";
+import {GenerateRecipeProps} from "../types";
 import {generateTranscript} from "./transcript";
 import {extractAndAnalyzeFrames} from "./videoFrames";
 import {generativeModel} from "./vertexClient";
