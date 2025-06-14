@@ -13,6 +13,7 @@ admin.initializeApp();
 
 import {generateRecipeFromVideo} from "./AI/recipeGenerator";
 import {createTags} from "./AI/tagging";
+import {generateRecipeFromIngredients} from "./AI/sousChef";
 import {
   likeCreate,
   likeDelete,
@@ -24,6 +25,7 @@ import {
 
 export {
   generateRecipeFromVideo,
+  generateRecipeFromIngredients,
   createTags,
   likeCreate,
   likeDelete,

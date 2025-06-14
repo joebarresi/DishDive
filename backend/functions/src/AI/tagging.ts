@@ -1,6 +1,6 @@
 /* eslint-disable valid-jsdoc */
 import * as functions from "firebase-functions";
-import {generativeModel} from "../constants";
+import {generativeModel, jsonThatBitch} from "../constants";
 import {getCuisinePrompt, getDietPrompt} from "./prompts";
 
 export enum DietTags {
@@ -148,20 +148,4 @@ async function generateDietTags(ingredients: string[]): Promise<DietTags[]> {
     console.error("Error generating diet tags", error);
     throw error;
   }
-}
-
-// eslint-disable-next-line require-jsdoc
-function jsonThatBitch(generatedText: string) {
-  const jsonMatch =
-        generatedText?.match(/```json\n([\s\S]*?)\n```/) ||
-        generatedText?.match(/```\n([\s\S]*?)\n```/) ||
-        [null, generatedText];
-
-  const jsonContent = jsonMatch[1];
-  if (!jsonContent) {
-    console.error("No JSON content found in the response");
-    throw new Error("No JSON content found in the response");
-  }
-
-  return JSON.parse(jsonContent);
 }

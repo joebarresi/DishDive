@@ -12,3 +12,19 @@ export const generativeModel =
 vertexAI.getGenerativeModel({model: geminiModel});
 
 export const db = admin.firestore();
+
+// eslint-disable-next-line require-jsdoc
+export function jsonThatBitch(generatedText: string) {
+  const jsonMatch =
+        generatedText?.match(/```json\n([\s\S]*?)\n```/) ||
+        generatedText?.match(/```\n([\s\S]*?)\n```/) ||
+        [null, generatedText];
+
+  const jsonContent = jsonMatch[1];
+  if (!jsonContent) {
+    console.error("No JSON content found in the response");
+    throw new Error("No JSON content found in the response");
+  }
+
+  return JSON.parse(jsonContent);
+}

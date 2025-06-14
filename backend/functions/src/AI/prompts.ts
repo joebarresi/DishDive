@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import {GenerateRecipeProps} from "../types";
 import {CuisineTags, DietTags} from "./tagging";
 
@@ -5,7 +6,6 @@ import {CuisineTags, DietTags} from "./tagging";
 export const frameAnalysesPrompt = `Write a summary of the image. Describe any cooking options, ingredients, or cooking processes visible in the image. 
 Be as specific as possible, but make sure it comes out as plain text`;
 
-// eslint-disable-next-line require-jsdoc
 export function generateRecipePrompt({
   audioTranscript,
   visualAnalysis,
@@ -30,7 +30,6 @@ export function generateRecipePrompt({
   return prompt;
 }
 
-// eslint-disable-next-line require-jsdoc
 export function getCuisinePrompt(props: {name: string, ingredients: string[]}) {
   return `You are a culinary expert tasked with identifying the primary 1-3 cuisine categories for a given recipe.
 
@@ -56,7 +55,6 @@ export function getCuisinePrompt(props: {name: string, ingredients: string[]}) {
           Ingredients: ${props.ingredients.map((ingredient: string) => `- ${ingredient}`).join("\n")}`;
 }
 
-// eslint-disable-next-line require-jsdoc
 export function getDietPrompt(props: {ingredients: string[]}) {
   return `You are a culinary expert tasked with identifying the primary (1-2) diet categories for a given recipe.
 
@@ -90,4 +88,14 @@ export function getDietPrompt(props: {ingredients: string[]}) {
           Now, identify the cuisine tags for the following recipe:
 
           Ingredients: ${props.ingredients.map((ingredient: string) => `- ${ingredient}`).join("\n")}`;
+}
+
+export function getSousChefPrompt(arg0: { ingredients: any; prevRecipeTitle: any; }): string {
+  return `Generate a recipe from the following ingredients. 
+  The output should be in JSON format with 'title' (string), 
+  'ingredients' (array of strings), and 'steps' (array of strings).
+
+  Ingredients: ${arg0.ingredients.map(({name, amount}: {name:string, amount: string}) => `- ${amount} of ${name}`).join("\n")};
+
+  ${arg0.prevRecipeTitle ? `Previous Recipe Title: ${arg0.prevRecipeTitle}` : ""}`;
 }
