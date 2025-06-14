@@ -14,14 +14,11 @@ export default function SearchScreen() {
 
   const navigateToScreen = (screenName: string) => {
     switch(screenName) {
-      case 'Ask AI':
-        navigation.navigate('askAI');
+      case 'Search by Recipe':
+        navigation.navigate('searchRecipe'); // You'll need to add this route to your navigation
         break;
       case 'Find a Chef':
         navigation.navigate('findChef');
-        break;
-      case 'Search by Diet':
-        navigation.navigate('searchDiet');
         break;
       case 'What I Have at Home':
         navigation.navigate('whatIHave');
@@ -37,17 +34,19 @@ export default function SearchScreen() {
       <Text style={styles.title}>Discover</Text>
       
       <View style={styles.gridContainer}>
-        {/* Top Row */}
-        <View style={styles.row}>
-          {/* Ask AI */}
+        {/* Top Half - Search by Recipe */}
+        <View style={[styles.row, { flex: 2 }]}>
           <TouchableOpacity 
-            style={[styles.gridItem, styles.askAI]} 
-            onPress={() => navigateToScreen('Ask AI')}
+            style={[styles.gridItem, styles.searchRecipe]} 
+            onPress={() => navigateToScreen('Search by Recipe')}
           >
-            <Feather name="message-circle" size={32} color="white" />
-            <Text style={styles.gridItemText}>Ask AI</Text>
+            <Feather name="search" size={40} color="white" />
+            <Text style={styles.gridItemText}>Search by Recipe</Text>
           </TouchableOpacity>
-          
+        </View>
+        
+        {/* Bottom Row */}
+        <View style={styles.row}>
           {/* Find a Chef */}
           <TouchableOpacity 
             style={[styles.gridItem, styles.findChef]} 
@@ -55,18 +54,6 @@ export default function SearchScreen() {
           >
             <Feather name="user" size={32} color="white" />
             <Text style={styles.gridItemText}>Find a Chef</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Bottom Row */}
-        <View style={styles.row}>
-          {/* Search by Diet */}
-          <TouchableOpacity 
-            style={[styles.gridItem, styles.searchDiet]} 
-            onPress={() => navigateToScreen('Search by Diet')}
-          >
-            <Feather name="heart" size={32} color="white" />
-            <Text style={styles.gridItemText}>Search by Diet</Text>
           </TouchableOpacity>
           
           {/* What I Have at Home */}
