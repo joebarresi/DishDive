@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { generativeModel } from "./vertexClient";
-import { frameAnalysesPrompt } from "./prompts";
+import {generativeModel} from "../constants";
+import {frameAnalysesPrompt} from "./prompts";
 /**
  * Analyze a single image frame using a large language model.
  * @param {string} imagePath Path to the image file.
@@ -37,7 +37,6 @@ export async function analyzeFrame(imagePath: string): Promise<string> {
     }
     const responseVerified = resp.response;
     const text = responseVerified.candidates![0].content.parts[0].text;
-    console.log(`Analysis for ${imagePath}: ${text}`);
     return text!;
   } catch (error) {
     console.error(`Error analyzing frame ${imagePath}:`, error);

@@ -1,4 +1,5 @@
 import {VertexAI} from "@google-cloud/vertexai";
+import * as admin from "firebase-admin";
 
 const vertexAI = new VertexAI({
   project: "recipetok-40c2a",
@@ -9,3 +10,5 @@ const geminiModel = "gemini-2.0-flash-lite-001";
 
 export const generativeModel =
 vertexAI.getGenerativeModel({model: geminiModel});
+
+export const db = admin.firestore();

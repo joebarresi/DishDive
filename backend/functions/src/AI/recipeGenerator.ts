@@ -10,8 +10,8 @@ import {SpeechClient} from "@google-cloud/speech";
 import {GenerateRecipeProps} from "../types";
 import {generateTranscript} from "./transcript";
 import {extractAndAnalyzeFrames} from "./videoFrames";
-import {generativeModel} from "./vertexClient";
-import { generateRecipePrompt } from "./prompts";
+import {generativeModel} from "../constants";
+import {generateRecipePrompt} from "./prompts";
 
 // Set ffmpeg path
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
