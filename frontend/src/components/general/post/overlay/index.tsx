@@ -32,7 +32,6 @@ export default function PostSingleOverlay({
   post: Post;
 }) {
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
-  const dispatch: AppDispatch = useDispatch();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -40,9 +39,6 @@ export default function PostSingleOverlay({
     state: false,
     counter: post.likesCount,
   });
-  const [currentCommentsCount, setCurrentCommentsCount] = useState(
-    post.commentsCount,
-  );
   const hasRecipe: boolean = Boolean(post.recipe);
   const [recipeModalVisible, setRecipeModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -55,6 +51,7 @@ export default function PostSingleOverlay({
           state: res,
         });
       });
+      //TODO: Implement the getSaveByID
     }
   }, []);
 
@@ -91,10 +88,6 @@ export default function PostSingleOverlay({
       }),
     [],
   );
-
-  const handleUpdateCommentCount = () => {
-    setCurrentCommentsCount((prevCount) => prevCount + 1);
-  };
 
   return (
     <View style={styles.container}>

@@ -48,19 +48,11 @@ const FeedNavigation = () => {
   const [activeFeedType, setActiveFeedType] = useState<FeedType>("My Feed");
 
   // Custom tab bar component that's transparent
-  const CustomTabBar = ({ state, descriptors, navigation }: any) => {
+  const TopNav = ({ state, descriptors, navigation }: any) => {
     return (
       <View style={styles.tabBarContainer}>
         {state.routes.map((route: any, index: number) => {
           if (route.name !== "feedList") return null;
-          
-          const { options } = descriptors[route.key];
-          const label = options.tabBarLabel || options.title || route.name;
-          
-          // Get feed type from route params
-          const feedType = route.params?.feedType || "My Feed";
-          
-          // Define the three tab options
           const tabOptions: FeedType[] = ["Following", "My Feed", "Trending"];
           
           return (
@@ -109,7 +101,7 @@ const FeedNavigation = () => {
       >
         <Navigator 
           initialRouteName="feedList" 
-          tabBar={(props) => <CustomTabBar {...props} />}
+          tabBar={(props) => <TopNav {...props} />}
           screenOptions={{
             tabBarStyle: { position: 'absolute', top: 0 },
             tabBarIndicatorStyle: { backgroundColor: 'transparent' },

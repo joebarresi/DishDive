@@ -193,8 +193,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
                 uri: item.media[0],
               }}
             />
-            
-            {/* Pause Bars Overlay - only visible when paused */}
             <Animated.View 
               style={[
                 styles.playPauseContainer,

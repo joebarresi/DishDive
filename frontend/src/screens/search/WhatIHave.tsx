@@ -236,7 +236,6 @@ export default function WhatIHaveScreen() {
                   <ActivityIndicator color="white" size="small" />
                 ) : (
                   <>
-                    <Feather name="chef-hat" size={20} color="white" />
                     <Text style={styles.generateRecipeText}>Generate Recipe</Text>
                   </>
                 )}

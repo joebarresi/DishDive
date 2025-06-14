@@ -103,9 +103,11 @@ export default function ProfileHeader({
         {user.photoURL ? (
           <Image style={styles.avatar} source={{ uri: user.photoURL }} />
         ) : (
-          <Avatar.Icon size={80} icon={"account"} />
+          <Avatar.Icon size={90} icon={"account"} style={{borderWidth: 2, borderColor: "#FF4D67", borderRadius: 45}} />
         )}
-        <Text style={styles.emailText}>{user.displayName || user.email}</Text>
+        <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
+          {user.displayName || user.email}
+        </Text>
         <View style={styles.counterContainer}>
           <View style={styles.counterItemContainer}>
             <Text style={styles.counterNumberText}>{user.followingCount}</Text>
@@ -122,11 +124,12 @@ export default function ProfileHeader({
         </View>
         {FIREBASE_AUTH.currentUser?.uid === user.uid ? (
           <TouchableOpacity
-            style={buttonStyles.grayOutlinedButton}
-            onPress={() => navigation.navigate("editProfile")}
+            style={buttonStyles.uploadButton}
+            onPress={() => navigation.navigate("uploadScreen")}
           >
-            <Text style={buttonStyles.grayOutlinedButtonText}>
-              Edit Profile
+            <Feather name="upload" size={18} color="white" />
+            <Text style={buttonStyles.uploadButtonText}>
+              Upload Post
             </Text>
           </TouchableOpacity>
         ) : (

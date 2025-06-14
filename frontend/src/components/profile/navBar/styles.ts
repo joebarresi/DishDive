@@ -6,6 +6,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderColor: "lightgray",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   text: {
     fontSize: 16,
@@ -13,6 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     fontWeight: "bold",
+    marginHorizontal: 10,
   },
 });
 

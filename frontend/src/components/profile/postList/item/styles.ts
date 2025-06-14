@@ -1,12 +1,18 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
+const windowWidth = Dimensions.get('window').width;
+const itemWidth = windowWidth / 3;
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1 / 3,
-    height: 200,
+    width: itemWidth,
+    height: itemWidth,
     backgroundColor: "gray",
   },
   image: {
     flex: 1,
+    width: "100%",
+    height: "100%",
   },
 });
 

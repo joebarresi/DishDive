@@ -97,6 +97,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 5,
   },
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    zIndex: 1000,
+    padding: 8,
+  },
 });
 
 export default styles;

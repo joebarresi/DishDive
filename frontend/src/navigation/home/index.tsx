@@ -1,6 +1,5 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import UploadScreen from "../../screens/upload";
 import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
@@ -11,7 +10,7 @@ import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
 } from "react-native-paper";
-import CreatorScreen from "../../screens/creator";
+import { FIREBASE_AUTH } from "../../../firebaseConfig";
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -108,16 +107,6 @@ export default function HomeScreen() {
           }}
         />
         <Tab.Screen
-          name="Creator"
-          component={CreatorScreen}
-          options={{
-            tabBarIcon: ({ color }) => (
-              <Feather name="plus-square" size={ICON_SIZE} color={color} />
-            ),
-            tabBarLabel: "Create",
-          }}
-        />
-        {/* <Tab.Screen
           name="Me"
           component={ProfileScreen}
           options={{
@@ -127,7 +116,7 @@ export default function HomeScreen() {
             tabBarLabel: "Profile",
           }}
           initialParams={{ initialUserId: FIREBASE_AUTH.currentUser?.uid ?? "" }}
-        /> */}
+        />
       </Tab.Navigator>
     </ActiveTabContext.Provider>
     </PaperProvider>

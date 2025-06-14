@@ -1,7 +1,7 @@
 import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform, Text, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/general/post";
-import { useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getFollowingFeed, getMyFeed, getPostsByUserId, getTrendingFeed } from "../../services/posts";
 import { Post } from "../../../types";
 import { RouteProp, useIsFocused, useNavigation } from "@react-navigation/native";
@@ -16,6 +16,19 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { Ionicons } from "@expo/vector-icons";
+
+// Create the FeedContext
+export const FeedContext = createContext<{
+  isProfileFeed: boolean;
+  creator: string | null;
+}>({
+  isProfileFeed: false,
+  creator: null,
+});
+
+// Create a hook to use the context
+export const useFeedContext = () => useContext(FeedContext);
 
 type FeedScreenRouteProp =
   | RouteProp<RootStackParamList, "userPosts">
@@ -44,6 +57,12 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     creator: string;
     profile: boolean;
     feedType?: FeedType;
+  };
+
+  // Create the context value
+  const feedContextValue = {
+    isProfileFeed: Boolean(profile),
+    creator: creator || null,
   };
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -221,7 +240,7 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   // Navigate to the discover screen to find people to follow
   const navigateToDiscover = () => {
-    navigation.navigate('search');
+    navigation.navigate('findChef');
   };
 
   // Render empty following feed message
@@ -248,33 +267,50 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   // If it's the Following feed and there are no posts, show the empty state
   if (feedType === "Following" && posts.length === 0 && !loading) {
-    return renderEmptyFollowingFeed();
+    return (
+      <FeedContext.Provider value={feedContextValue}>
+        {renderEmptyFollowingFeed()}
+      </FeedContext.Provider>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      <FlatList
-        ref={flatListRef}
-        data={posts}
-        windowSize={3}
-        initialNumToRender={1}
-        maxToRenderPerBatch={2}
-        removeClippedSubviews
-        viewabilityConfig={{
-          itemVisiblePercentThreshold: 50, // Item is considered viewable when 50% or more is visible
-          minimumViewTime: 300, // Item must be visible for at least 300ms to be considered viewable
-        }}
-        renderItem={renderItem}
-        pagingEnabled={true}
-        snapToInterval={feedItemHeight}
-        snapToAlignment="start"
-        decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        onViewableItemsChanged={onViewableItemsChanged.current}
-        ListEmptyComponent={feedType === "Following" ? renderEmptyFollowingFeed : null}
-      />
-    </View>
+    <FeedContext.Provider value={feedContextValue}>
+      <View style={styles.container}>
+        {/* Back button for profile feed */}
+        {profile && (
+          <TouchableOpacity 
+            style={[styles.backButton, { top: insets.top + 10 }]}
+            onPress={() => navigation.goBack()}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <Ionicons name="chevron-back" size={28} color="white" />
+          </TouchableOpacity>
+        )}
+        
+        <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+        <FlatList
+          ref={flatListRef}
+          data={posts}
+          windowSize={3}
+          initialNumToRender={1}
+          maxToRenderPerBatch={2}
+          removeClippedSubviews
+          viewabilityConfig={{
+            itemVisiblePercentThreshold: 50, // Item is considered viewable when 50% or more is visible
+            minimumViewTime: 300, // Item must be visible for at least 300ms to be considered viewable
+          }}
+          renderItem={renderItem}
+          pagingEnabled={true}
+          snapToInterval={feedItemHeight}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          onViewableItemsChanged={onViewableItemsChanged.current}
+          ListEmptyComponent={feedType === "Following" ? renderEmptyFollowingFeed : null}
+        />
+      </View>
+    </FeedContext.Provider>
   );
 }

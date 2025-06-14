@@ -1,4 +1,4 @@
-import { View, FlatList } from "react-native";
+import { View, FlatList, Dimensions } from "react-native";
 import ProfilePostListItem from "./item";
 import styles from "./styles";
 import { RootState } from "../../../redux/store";
@@ -8,6 +8,8 @@ export default function ProfilePostList({
 }: {
   posts: RootState["post"]["currentUserPosts"];
 }) {
+  const windowWidth = Dimensions.get('window').width;
+  
   return (
     <View style={styles.container}>
       <FlatList
@@ -18,6 +20,7 @@ export default function ProfilePostList({
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <ProfilePostListItem item={item} />}
+        contentContainerStyle={{ alignSelf: 'center', width: windowWidth }}
       />
     </View>
   );
