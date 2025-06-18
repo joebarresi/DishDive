@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "DishDive",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.josephvbarresi.frontend"
+      "bundleIdentifier": "com.josephvbarresi.frontend",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -32,6 +35,16 @@
       "eas": {
         "projectId": "9b417687-35ff-4127-95b9-79152dcf863a"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow DishDive to access your camera",
+          "microphonePermission": "Allow DishDive to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ]
   }
 }
