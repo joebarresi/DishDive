@@ -39,15 +39,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   emptyContainer: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    minHeight: 500, // Ensure there's enough space to pull down
   },
   emptyText: {
     fontSize: 16,
     color: "#666",
     textAlign: "center",
+    marginTop: 16,
   },
   modalContainer: {
     flex: 1,

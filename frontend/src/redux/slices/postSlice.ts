@@ -39,6 +39,7 @@ export const createRawPost = createAsyncThunk(
     if (FIREBASE_AUTH.currentUser) {
       try {
         const storagePostId = uuid();
+        console.log("Storing media to storage")
         const [videoDownloadUrl, thumbnailDownloadUrl] = await Promise.all([
           saveMediaToStorage(
             video,
@@ -50,6 +51,7 @@ export const createRawPost = createAsyncThunk(
           ),
         ]);
 
+        console.log("Getting recipe")
         const getRecipe = await httpsCallable(
           FIREBASE_FUNCTIONS, 
           "generateRecipeFromVideo"
@@ -63,6 +65,7 @@ export const createRawPost = createAsyncThunk(
           recipe = result.data;
         });
 
+        console.log("creating document");
         const docReference = await addDoc(collection(FIREBASE_DB, "post"), {
           creator: FIREBASE_AUTH.currentUser.uid,
           media: [videoDownloadUrl, thumbnailDownloadUrl],

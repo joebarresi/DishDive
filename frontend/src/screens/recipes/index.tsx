@@ -6,7 +6,9 @@ import {
   TouchableOpacity, 
   Image, 
   Modal, 
-  ActivityIndicator 
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,10 +18,12 @@ import NavBarGeneral from "../../components/common/navbar";
 import styles from "./styles";
 import { Post, PostSingleHandles } from "../../../types";
 import PostSingle from "../../components/common/post";
+import { APP_COLOR } from "../../styles";
 
 const RecipesScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const postRef = useRef<PostSingleHandles | null>(null);
@@ -35,20 +39,28 @@ const RecipesScreen = () => {
     }
   }, [modalVisible]);
 
-  const fetchSavedPosts = async () => {
+  const fetchSavedPosts = async (showRefreshing = false) => {
     try {
+      if (showRefreshing) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
+
       const currentUser = FIREBASE_AUTH.currentUser;
       if (!currentUser) {
         setLoading(false);
+        setRefreshing(false);
         return;
       }
 
-      // Get all saved post IDs for the current user
       const savedPostsRef = collection(FIREBASE_DB, "saves", currentUser.uid, "posts");
       const savedPostsSnapshot = await getDocs(savedPostsRef);
       
       if (savedPostsSnapshot.empty) {
+        setSavedPosts([]);
         setLoading(false);
+        setRefreshing(false);
         return;
       }
 
@@ -65,11 +77,17 @@ const RecipesScreen = () => {
 
       const posts = (await Promise.all(postPromises)).filter(post => post !== null) as Post[];
       setSavedPosts(posts);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching saved posts:", error);
+      setSavedPosts([]);
+    } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const onRefresh = () => {
+    fetchSavedPosts(true);
   };
 
   const handlePostPress = (post: Post) => {
@@ -102,30 +120,61 @@ const RecipesScreen = () => {
     );
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <NavBarGeneral leftButton={{ display: false }} title="Saved Recipes" />
-      
-      {loading ? (
+  // Render content based on loading state and posts availability
+  const renderContent = () => {
+    if (loading) {
+      return (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#8B54FB" />
+          <ActivityIndicator size="large" color={APP_COLOR} />
         </View>
-      ) : savedPosts.length > 0 ? (
+      );
+    } else if (savedPosts.length > 0) {
+      return (
         <FlatList
           data={savedPosts}
           renderItem={renderGridItem}
           keyExtractor={(item) => item.id}
           numColumns={2}
           contentContainerStyle={styles.gridContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={APP_COLOR}
+              colors={[APP_COLOR]}
+              progressBackgroundColor="#ffffff"
+            />
+          }
         />
-      ) : (
-        <View style={styles.emptyContainer}>
+      );
+    } else {
+      return (
+        <ScrollView
+          contentContainerStyle={styles.emptyContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={APP_COLOR}
+              colors={[APP_COLOR]}
+              progressBackgroundColor="#ffffff"
+            />
+          }
+        >
           <Ionicons name="bookmark-outline" size={60} color="#ccc" />
           <Text style={styles.emptyText}>
             You haven't saved any recipes yet. Save recipes by tapping the bookmark icon on posts you like!
           </Text>
-        </View>
-      )}
+        </ScrollView>
+      );
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <NavBarGeneral leftButton={{ display: false }} title="Saved Recipes" />
+      
+      {renderContent()}
 
       {/* Full Post Modal */}
       <Modal

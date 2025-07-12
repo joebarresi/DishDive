@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native";
+import { ScrollView, RefreshControl, ActivityIndicator, View } from "react-native";
 import styles from "./styles";
 import ProfileNavBar from "../../components/profile/navBar";
 import ProfileHeader from "../../components/profile/header";
@@ -15,6 +15,7 @@ import { Post } from "../../../types";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
 import { HomeStackParamList } from "../../navigation/home";
+import { APP_COLOR } from "../../styles";
 
 type ProfileScreenRouteProp =
   | RouteProp<RootStackParamList, "profileOther">
@@ -28,6 +29,8 @@ export default function ProfileScreen({
 }) {
   const { initialUserId } = route.params;
   const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [postsLoading, setPostsLoading] = useState(false);
 
   const providerUserId = useContext(CurrentUserProfileItemInViewContext);
 
@@ -37,24 +40,67 @@ export default function ProfileScreen({
 
   const user = userQuery.data;
 
-  useEffect(() => {
+  const fetchUserPosts = async (showRefreshing = false) => {
     if (!user) {
       return;
     }
 
-    getPostsByUserId(user?.uid).then((posts) => setUserPosts(posts));
+    if (showRefreshing) {
+      setRefreshing(true);
+    } else {
+      setPostsLoading(true);
+    }
+
+    try {
+      // Fetch user posts
+      const posts = await getPostsByUserId(user.uid);
+      setUserPosts(posts);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+    } finally {
+      setRefreshing(false);
+      setPostsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchUserPosts();
+    }
   }, [user]);
 
+  const onRefresh = () => {
+    // Refresh user data
+    userQuery.refetch();
+    
+    // Refresh posts
+    fetchUserPosts(true);
+  };
+
   if (!user) {
-    return <></>;
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={APP_COLOR} />
+      </View>
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <ProfileNavBar user={user} />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={APP_COLOR}
+            colors={[APP_COLOR]}
+            progressBackgroundColor="#ffffff"
+          />
+        }
+      >
         <ProfileHeader user={user} />
-        <ProfilePostList posts={userPosts} />
+        <ProfilePostList posts={userPosts} isLoading={postsLoading} />
       </ScrollView>
     </SafeAreaView>
   );

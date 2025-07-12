@@ -1,4 +1,4 @@
-import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform, Text, TouchableOpacity } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform, Text, TouchableOpacity, RefreshControl } from "react-native";
 import styles from "./styles";
 import PostSingle, { PostSingleHandles } from "../../components/common/post";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import { APP_COLOR } from "../../styles";
 
 // Create the FeedContext
 export const FeedContext = createContext<{
@@ -67,74 +68,74 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const mediaRefs = useRef<Record<string, PostSingleHandles | null>>({});
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
 
-  // Fetch posts based on feed type
-  useEffect(() => {
+  // Function to fetch posts based on feed type
+  const fetchPosts = async (showRefreshing = false) => {
     const currentUser = FIREBASE_AUTH.currentUser;
-    setLoading(true);
-
-    if (profile && creator) {
-      // Profile feed - show user's posts
-      getPostsByUserId(creator)
-        .then((posts) => {
-          setPosts(posts);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error("Error fetching profile posts:", error);
-          setPosts([]);
-          setLoading(false);
-        });
+    
+    if (showRefreshing) {
+      setRefreshing(true);
     } else {
-      // Main feed - fetch based on feed type
-      switch (feedType) {
-        case "Following":
-          getFollowingFeed(currentUser)
-            .then((posts) => {
-              setPosts(posts);
-              setLoading(false);
-            })
-            .catch(error => {
-              console.error("Error fetching following feed:", error);
-              setPosts([]);
-              setLoading(false);
-            });
-          break;
-        case "Trending":
-          getTrendingFeed(currentUser)
-            .then((posts) => {
-              setPosts(posts);
-              setLoading(false);
-            })
-            .catch(error => {
-              console.error("Error fetching trending feed:", error);
-              setPosts([]);
-              setLoading(false);
-            });
-          break;
-        case "My Feed":
-        default:
-          getMyFeed(currentUser)
-            .then((posts) => {
-              setPosts(posts);
-              setLoading(false);
-            })
-            .catch(error => {
-              console.error("Error fetching my feed:", error);
-              setPosts([]);
-              setLoading(false);
-            });
-          break;
+      setLoading(true);
+    }
+
+    try {
+      let fetchedPosts: Post[] = [];
+      
+      if (profile && creator) {
+        // Profile feed - show user's posts
+        fetchedPosts = await getPostsByUserId(creator);
+      } else {
+        // Main feed - fetch based on feed type
+        switch (feedType) {
+          case "Following":
+            fetchedPosts = await getFollowingFeed(currentUser);
+            break;
+          case "Trending":
+            fetchedPosts = await getTrendingFeed(currentUser);
+            break;
+          case "My Feed":
+          default:
+            fetchedPosts = await getMyFeed(currentUser);
+            break;
+        }
       }
       
-      // Scroll back to top when feed type changes
-      if (flatListRef.current) {
-        flatListRef.current.scrollToOffset({ offset: 0, animated: false });
+      setPosts(fetchedPosts);
+    } catch (error) {
+      console.error(`Error fetching ${feedType} feed:`, error);
+      setPosts([]);
+    } finally {
+      if (showRefreshing) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
       }
+      
+      // Scroll back to top when refreshing
+      if (showRefreshing && flatListRef.current) {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      }
+    }
+  };
+
+  // Handle pull-to-refresh
+  const onRefresh = () => {
+    fetchPosts(true);
+  };
+
+  // Fetch posts on initial load and when feed type changes
+  useEffect(() => {
+    fetchPosts();
+    
+    // Scroll back to top when feed type changes
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: false });
     }
   }, [feedType, profile, creator]);
 
@@ -308,6 +309,15 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
           keyExtractor={(item) => item.id}
           onViewableItemsChanged={onViewableItemsChanged.current}
           ListEmptyComponent={feedType === "Following" ? renderEmptyFollowingFeed : null}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={APP_COLOR}
+              colors={[APP_COLOR]}
+              progressBackgroundColor="#ffffff"
+            />
+          }
         />
       </View>
     </FeedContext.Provider>
