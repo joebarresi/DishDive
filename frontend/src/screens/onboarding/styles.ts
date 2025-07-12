@@ -40,11 +40,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     alignItems: "center",
-    backgroundColor: "red",
+    backgroundColor: "#8B54FB",
     borderRadius: 5,
   },
   buttonDisabled: {
-    backgroundColor: "#ffcccc",
+    backgroundColor: "#D4C4FF",
   },
   buttonText: {
     color: "white",

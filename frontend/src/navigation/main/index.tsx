@@ -55,7 +55,7 @@ export default function Route() {
   if (!currentUserObj.loaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="red" />
+        <ActivityIndicator size="large" color="#8B54FB" />
       </View>
     );
   }

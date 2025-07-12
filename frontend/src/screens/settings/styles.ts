@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 16,
     flex: 1,
-    color: "#FF3B30",
+    color: "#8B54FB",
   },
 });
 

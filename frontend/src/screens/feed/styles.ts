@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     marginBottom: 30
   },
   followButton: {
-    backgroundColor: '#FF4D67',
+    backgroundColor: '#8B54FB',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25

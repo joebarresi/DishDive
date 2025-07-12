@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   searchRecipe: {
-    backgroundColor: APP_COLOR, // Red
+    backgroundColor: APP_COLOR, // Purple
   },
   findChef: {
     backgroundColor: "#4ECDC4", // Teal
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   disabledButton: {
-    backgroundColor: "#ffb3b3",
+    backgroundColor: "#D4C4FF", // Lighter purple
   },
   searchButtonText: {
     color: "white",
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   dietTagText: {
     fontSize: 12,
     color: APP_COLOR,
-    backgroundColor: "#FFF0F0",
+    backgroundColor: "#F0EEFF", // Light purple background
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 18,
-    backgroundColor: "#FFF0F0",
+    backgroundColor: "#F0EEFF", // Light purple background
   },
   addIngredientButton: {
     flexDirection: "row",

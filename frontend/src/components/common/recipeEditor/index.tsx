@@ -92,7 +92,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ initialRecipe, onRecipeChan
           style={styles.addButton} 
           onPress={addIngredient}
         >
-          <Ionicons name="add-circle" size={24} color="#FF4D67" />
+          <Ionicons name="add-circle" size={24} color="#8B54FB" />
         </TouchableOpacity>
       </View>
       
@@ -109,7 +109,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ initialRecipe, onRecipeChan
                 placeholderTextColor="#999"
               />
               <TouchableOpacity onPress={() => removeIngredient(index)}>
-                <Ionicons name="remove-circle" size={24} color="#FF4D67" />
+                <Ionicons name="remove-circle" size={24} color="#8B54FB" />
               </TouchableOpacity>
             </View>
           ))}
@@ -123,7 +123,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ initialRecipe, onRecipeChan
           style={styles.addButton} 
           onPress={addStep}
         >
-          <Ionicons name="add-circle" size={24} color="#FF4D67" />
+          <Ionicons name="add-circle" size={24} color="#8B54FB" />
         </TouchableOpacity>
       </View>
       
@@ -143,7 +143,7 @@ const RecipeEditor: React.FC<RecipeEditorProps> = ({ initialRecipe, onRecipeChan
                 multiline
               />
               <TouchableOpacity onPress={() => removeStep(index)}>
-                <Ionicons name="remove-circle" size={24} color="#FF4D67" />
+                <Ionicons name="remove-circle" size={24} color="#8B54FB" />
               </TouchableOpacity>
             </View>
           ))}
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#FF4D67",
+    color: "#8B54FB",
   },
   addButton: {
     padding: 4,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     fontSize: 18,
-    color: "#FF4D67",
+    color: "#8B54FB",
     marginRight: 8,
     lineHeight: 24,
   },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#FF4D67",
+    backgroundColor: "#8B54FB",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,

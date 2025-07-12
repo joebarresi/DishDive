@@ -19,7 +19,7 @@ const buttonStyles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 50,
-    backgroundColor: "#ff4040",
+    backgroundColor: "#8B54FB",
   },
   filledButtonText: {
     color: "white",

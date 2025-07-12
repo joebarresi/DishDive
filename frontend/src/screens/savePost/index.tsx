@@ -103,7 +103,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
   if (requestRunning) {
     return (
       <View style={styles.uploadingContainer}>
-        <ActivityIndicator color="#FF4D67" size="large" />
+        <ActivityIndicator color="#8B54FB" size="large" />
         <Text style={styles.uploadingText}>Saving your post...</Text>
       </View>
     );
@@ -150,7 +150,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
           <View style={styles.recipeSection}>
             {loadingRecipe ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator color="#FF4D67" size="large" />
+                <ActivityIndicator color="#8B54FB" size="large" />
                 <Text style={styles.loadingText}>Loading recipe...</Text>
               </View>
             ) : (

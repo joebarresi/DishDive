@@ -140,6 +140,24 @@ export const getLikeById = async (postId: string, uid: string) => {
 };
 
 /**
+ * Gets the save state of a user in a specific post
+ * @param {String} postId - id of the post
+ * @param {String} uid - id of the user to get the save state of.
+ *
+ * @returns {Promise<Boolean>} true if user saved it and vice versa.
+ */
+export const getSaveById = async (postId: string, uid: string) => {
+  try {
+    const savedoc = await getDoc(
+      doc(FIREBASE_DB, "post", postId, "saves", uid),
+    );
+    return savedoc.exists();
+  } catch (error) {
+    throw new Error("Could not get like");
+  }
+};
+
+/**
  * Updates the like of a post according to the current user's id
  * @param {String} postId - id of the post
  * @param {String} uid - id of the user to get the like state of.

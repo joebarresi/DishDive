@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#FF4D67",
+    borderColor: "#8B54FB",
   },
   closeButton: {
     position: "absolute",

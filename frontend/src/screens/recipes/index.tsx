@@ -108,7 +108,7 @@ const RecipesScreen = () => {
       
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF4D67" />
+          <ActivityIndicator size="large" color="#8B54FB" />
         </View>
       ) : savedPosts.length > 0 ? (
         <FlatList

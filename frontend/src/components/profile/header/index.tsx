@@ -52,16 +52,6 @@ export default function ProfileHeader({
       return (
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
-            style={buttonStyles.grayOutlinedButton}
-            onPress={() => {
-              if (user?.uid) {
-                navigation.navigate("chatSingle", { contactId: user.uid });
-              }
-            }}
-          >
-            <Text style={buttonStyles.grayOutlinedButtonText}>Message</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
             style={buttonStyles.grayOutlinedIconButton}
             onPress={() => {
               if (user?.uid) {
@@ -103,7 +93,7 @@ export default function ProfileHeader({
         {user.photoURL ? (
           <Image style={styles.avatar} source={{ uri: user.photoURL }} />
         ) : (
-          <Avatar.Icon size={90} icon={"account"} style={{borderWidth: 2, borderColor: "#FF4D67", borderRadius: 45}} />
+          <Avatar.Icon size={90} icon={"account"} style={{borderWidth: 2, borderColor: "#8B54FB", borderRadius: 45}} />
         )}
         <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
           {user.displayName || user.email}

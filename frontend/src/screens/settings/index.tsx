@@ -63,7 +63,7 @@ export default function SettingsScreen() {
             );
           }}
         >
-          <Feather name="log-out" size={20} style={styles.itemIcon} color="#FF3B30" />
+          <Feather name="log-out" size={20} style={styles.itemIcon} color="#8B54FB" />
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>

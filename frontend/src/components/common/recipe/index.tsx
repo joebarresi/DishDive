@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 12,
-    color: "#FF4D67",
+    color: "#8B54FB",
   },
   sectionContent: {
     marginLeft: 5,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   bulletPoint: {
     fontSize: 18,
-    color: "#FF4D67",
+    color: "#8B54FB",
     marginRight: 8,
     lineHeight: 24,
   },
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#FF4D67",
+    backgroundColor: "#8B54FB",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: "#FF4D67",
+    color: "#red",
     textAlign: "center",
   },
 });

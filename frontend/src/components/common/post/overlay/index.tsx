@@ -1,20 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import styles from "./styles";
 import { Post, User } from "../../../../../types";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { throttle } from "throttle-debounce";
-import { getLikeById, updateLike, updateSavePost } from "../../../../services/posts";
-import { AppDispatch, RootState } from "../../../../redux/store";
+import { getLikeById, getSaveById, updateLike, updateSavePost } from "../../../../services/posts";
+import { RootState } from "../../../../redux/store";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { Avatar } from "react-native-paper";
-import RecipeView from "../../recipe";
-
-// Define a constant for icon size
-const ICON_SIZE = 36; // Increased by 50% from 24
+import RecipeModal from "./RecipeModal";
+import { LikeButton, SaveButton, RecipeButton } from "./buttons";
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -52,6 +49,9 @@ export default function PostSingleOverlay({
         });
       });
       //TODO: Implement the getSaveByID
+      getSaveById(post.id, currentUser.uid).then((res) => {
+        setIsSaved(res);
+      });
     }
   }, []);
 
@@ -120,58 +120,24 @@ export default function PostSingleOverlay({
       </View>
       
       <View style={styles.actionsContainer}>
-        <TouchableOpacity
-          style={styles.actionButton}
+        <LikeButton
+          isLiked={currentLikeState.state}
+          likeCount={currentLikeState.counter}
           onPress={() => handleUpdateLike(currentLikeState)}
-        >
-          <Ionicons
-            color="white"
-            size={ICON_SIZE}
-            name={currentLikeState.state ? "heart" : "heart-outline"}
-          />
-          <Text style={styles.actionButtonText}>
-            {currentLikeState.counter}
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          style={styles.actionButton}
+        />
+        <SaveButton
+          isSaved={isSaved}
           onPress={() => handleSavePost(isSaved)}
-        >
-          <Ionicons color="white" size={ICON_SIZE} name={isSaved ? "bookmark" : "bookmark-outline"} />
-          <Text style={styles.actionButtonText}>Save</Text>
-        </TouchableOpacity>
-        
+        />
         {hasRecipe && (
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => setRecipeModalVisible(true)}
-          >
-            <Ionicons color="white" size={ICON_SIZE} name={"restaurant"} />
-            <Text style={styles.actionButtonText}>Recipe</Text>
-          </TouchableOpacity>
+          <RecipeButton onPress={() => setRecipeModalVisible(true)} />
         )}
       </View>
-
-      {/* Recipe Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <RecipeModal
         visible={recipeModalVisible}
-        onRequestClose={() => setRecipeModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setRecipeModalVisible(false)}
-            >
-              <Ionicons name="close" size={ICON_SIZE} color="#FF4D67" />
-            </TouchableOpacity>
-            <RecipeView post={post} />
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setRecipeModalVisible(false)}
+        post={post}
+      />
     </View>
   );
 }

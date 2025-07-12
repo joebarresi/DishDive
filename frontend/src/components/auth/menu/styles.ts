@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonText: {
     fontWeight: "bold",
-    color: "red",
+    color: "#8B54FB",
   },
   menuMessage: {
     color: "green",
