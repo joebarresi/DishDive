@@ -36,10 +36,16 @@ export const createRawPost = createAsyncThunk(
     video: string;
     thumbnail: string;
   }, { rejectWithValue }) => {
+    // Start timing the function execution
+    const startTime = Date.now();
+    console.log(`[TIMING] createRawPost started at ${new Date().toISOString()}`);
+    
     if (FIREBASE_AUTH.currentUser) {
       try {
         const storagePostId = uuid();
         console.log("Storing media to storage")
+        const mediaStartTime = Date.now();
+        
         const [videoDownloadUrl, thumbnailDownloadUrl] = await Promise.all([
           saveMediaToStorage(
             video,
@@ -50,8 +56,13 @@ export const createRawPost = createAsyncThunk(
             `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/thumbnail`,
           ),
         ]);
+        
+        const mediaEndTime = Date.now();
+        console.log(`[TIMING] Media storage took ${(mediaEndTime - mediaStartTime)}ms`);
 
         console.log("Getting recipe")
+        const recipeStartTime = Date.now();
+        
         const getRecipe = await httpsCallable(
           FIREBASE_FUNCTIONS, 
           "generateRecipeFromVideo"
@@ -64,8 +75,13 @@ export const createRawPost = createAsyncThunk(
         }).then((result) => {
           recipe = result.data;
         });
+        
+        const recipeEndTime = Date.now();
+        console.log(`[TIMING] Recipe generation took ${(recipeEndTime - recipeStartTime)}ms`);
 
         console.log("creating document");
+        const docStartTime = Date.now();
+        
         const docReference = await addDoc(collection(FIREBASE_DB, "post"), {
           creator: FIREBASE_AUTH.currentUser.uid,
           media: [videoDownloadUrl, thumbnailDownloadUrl],
@@ -76,13 +92,33 @@ export const createRawPost = createAsyncThunk(
           recipe: recipe,
           uploadStatus: "draft"
         });
+        
+        const docEndTime = Date.now();
+        console.log(`[TIMING] Document creation took ${(docEndTime - docStartTime)}ms`);
+
+        // Calculate total execution time
+        const endTime = Date.now();
+        const totalTime = endTime - startTime;
+        console.log(`[TIMING] createRawPost completed in ${totalTime}ms (${(totalTime / 1000).toFixed(2)} seconds)`);
+        console.log(`[TIMING] createRawPost ended at ${new Date().toISOString()}`);
+        
+        // Instead of using logEvent, just log to console
+        console.log(`[ANALYTICS] create_raw_post time: ${totalTime}ms`);
 
         return docReference;
       } catch (error) {
-        console.error("Error creating post: ", error);
+        // Also time errors
+        const errorTime = Date.now();
+        const totalTime = errorTime - startTime;
+        console.error(`[TIMING] createRawPost failed after ${totalTime}ms (${(totalTime / 1000).toFixed(2)} seconds)`, error);
+        
         return rejectWithValue(error);
       }
     } else {
+      const errorTime = Date.now();
+      const totalTime = errorTime - startTime;
+      console.error(`[TIMING] createRawPost failed (user not authenticated) after ${totalTime}ms`);
+      
       return rejectWithValue(new Error("User not authenticated"));
     }
   }

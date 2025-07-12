@@ -3,6 +3,7 @@ import * as functions from "firebase-functions";
 import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
+import * as fsPromises from "fs/promises";
 import * as ffmpeg from "fluent-ffmpeg";
 import * as ffmpegInstaller from "@ffmpeg-installer/ffmpeg";
 import {Storage} from "@google-cloud/storage";
@@ -20,6 +21,40 @@ const storage = new Storage();
 // const visionClient = new ImageAnnotatorClient();
 const speechClient = new SpeechClient();
 
+/**
+ * Asynchronously clean up temporary files without blocking
+ * @param {string} filePath Path to the video file
+ * @param {string} outputDir Directory containing extracted frames
+ * @param {string} audioPath Path to the audio file
+ */
+async function cleanupFilesAsync(
+  filePath: string,
+  outputDir: string,
+  audioPath: string
+): Promise<void> {
+  try {
+    const cleanupTasks = [];
+
+    if (fs.existsSync(filePath)) {
+      cleanupTasks.push(fsPromises.unlink(filePath));
+    }
+
+    if (fs.existsSync(outputDir)) {
+      cleanupTasks.push(fsPromises.rm(outputDir,
+        {recursive: true, force: true}));
+    }
+
+    if (fs.existsSync(audioPath)) {
+      cleanupTasks.push(fsPromises.unlink(audioPath));
+    }
+
+    await Promise.all(cleanupTasks);
+    console.log("Temporary files cleaned up successfully");
+  } catch (cleanupError) {
+    console.error("Error cleaning up temp files:", cleanupError);
+    // Non-blocking error - just log it
+  }
+}
 
 /**
  * Function that triggers when a new video is uploaded to Firebase Storage.
@@ -63,21 +98,16 @@ export const generateRecipeFromVideo = functions.https
         visualAnalysis: visualAnalysisTexts,
       });
 
+      cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
+        .catch((err) => console.error("Background cleanup failed:", err));
+
       return recipe;
     } catch (error) {
       console.error("Error generating recipe:", error);
+
+      cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
+        .catch((err) => console.error("Background cleanup failed:", err));
       return undefined;
-    } finally {
-      // Cleanup temp files
-      try {
-        if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
-        if (fs.existsSync(tempOutputDir)) {
-          fs.rmdirSync(tempOutputDir, {recursive: true});
-        }
-        if (fs.existsSync(tempAudioPath)) fs.unlinkSync(tempAudioPath);
-      } catch (cleanupError) {
-        console.error("Error cleaning up temp files:", cleanupError);
-      }
     }
   });
 

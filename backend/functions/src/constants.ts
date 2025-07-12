@@ -6,7 +6,7 @@ const vertexAI = new VertexAI({
   location: "us-central1",
 });
 
-const geminiModel = "gemini-2.0-flash-lite-001";
+const geminiModel = "gemini-2.5-flash-lite-preview-06-17";
 
 export const generativeModel =
 vertexAI.getGenerativeModel({model: geminiModel});

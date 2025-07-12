@@ -5,6 +5,7 @@ import * as VideoThumbnails from "expo-video-thumbnails";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import styles from "./styles";
 import { RootStackParamList } from "../../navigation/main";
@@ -12,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { createRawPost } from "../../redux/slices/postSlice";
 import { AppDispatch } from "../../redux/store";
 import { DocumentReference, DocumentData } from "firebase/firestore";
+import { APP_COLOR } from "../../styles";
+import NavBarGeneral from "../../components/common/navbar";
 
 /**
  * Function that renders a component responsible for
@@ -112,108 +115,72 @@ export default function UploadScreen() {
   if (requestRunning) {
     return (
       <View style={styles.uploadingContainer}>
-        <ActivityIndicator color="#ff4040" size="large" />
+        <ActivityIndicator color={APP_COLOR} size="large" />
+        <Text style={localStyles.uploadingText}>Processing your video...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={localStyles.pickerContainer}>
-        <Text style={localStyles.title}>Create a New Post</Text>
+    <SafeAreaView style={styles.container}>
+      {/* Use NavBarGeneral for consistent navigation header */}
+      <NavBarGeneral 
+        title="Create" 
+        leftButton={{ 
+          display: true,
+          color: "white"
+        }}
+      />
+      
+      <View style={localStyles.contentContainer}>
+        <Text style={localStyles.comingSoonText}>Soon to come: video filming</Text>
         
-        <View style={localStyles.previewContainer}>
-          {videoPreview ? (
-            <Image 
-              source={{ uri: videoPreview }} 
-              style={localStyles.previewImage} 
-            />
-          ) : (
-            <View style={localStyles.placeholderContainer}>
-              <Feather name="video" size={50} color="#666" />
-              <Text style={localStyles.placeholderText}>No video selected</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={localStyles.buttonContainer}>
-          <TouchableOpacity 
-            style={localStyles.button} 
-            onPress={pickVideo}
-          >
-            <Feather name="image" size={24} color="white" style={localStyles.buttonIcon} />
-            <Text style={localStyles.buttonText}>Pick from Gallery</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={localStyles.button} 
-            onPress={pickFromCamera}
-          >
-            <Feather name="video" size={24} color="white" style={localStyles.buttonIcon} />
-            <Text style={localStyles.buttonText}>Record Video</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          style={localStyles.galleryButton} 
+          onPress={pickVideo}
+        >
+          <Feather name="image" size={28} color="white" />
+        </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const localStyles = StyleSheet.create({
-  pickerContainer: {
+  contentContainer: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+    position: 'relative',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  comingSoonText: {
     color: 'white',
-    marginBottom: 30,
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
   },
-  previewContainer: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 30,
-    backgroundColor: '#222',
+  galleryButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: APP_COLOR,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  previewImage: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderText: {
-    color: '#666',
-    marginTop: 10,
-    fontSize: 16,
-  },
-  buttonContainer: {
-    width: '100%',
-    flexDirection: 'column',
-    gap: 15,
-  },
-  button: {
-    backgroundColor: '#ff4040',
-    borderRadius: 10,
-    padding: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  buttonText: {
+  uploadingText: {
     color: 'white',
+    marginTop: 20,
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonIcon: {
-    marginRight: 10,
-  },
+  }
 });
