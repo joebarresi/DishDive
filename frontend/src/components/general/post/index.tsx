@@ -37,6 +37,8 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
     }));
 
     useEffect(() => {
+  
+
       return () => {
         unload()
           .then(() => {})

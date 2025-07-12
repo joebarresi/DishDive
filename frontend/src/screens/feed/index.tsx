@@ -265,7 +265,6 @@ export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
     );
   };
 
-  // If it's the Following feed and there are no posts, show the empty state
   if (feedType === "Following" && posts.length === 0 && !loading) {
     return (
       <FeedContext.Provider value={feedContextValue}>
