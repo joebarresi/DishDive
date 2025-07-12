@@ -11,7 +11,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
 import { Avatar } from "react-native-paper";
 import RecipeModal from "./RecipeModal";
-import { LikeButton, SaveButton, RecipeButton } from "./buttons";
+import OtherModal from "./OtherModal";
+import { LikeButton, SaveButton, RecipeButton, OtherButton } from "./buttons";
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -38,6 +39,7 @@ export default function PostSingleOverlay({
   });
   const hasRecipe: boolean = Boolean(post.recipe);
   const [recipeModalVisible, setRecipeModalVisible] = useState(false);
+  const [otherModalVisible, setOtherModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -132,10 +134,17 @@ export default function PostSingleOverlay({
         {hasRecipe && (
           <RecipeButton onPress={() => setRecipeModalVisible(true)} />
         )}
+        <OtherButton onPress={() => setOtherModalVisible(true)} />
       </View>
       <RecipeModal
         visible={recipeModalVisible}
         onClose={() => setRecipeModalVisible(false)}
+        post={post}
+      />
+      <OtherModal
+        visible={otherModalVisible}
+        onClose={() => setOtherModalVisible(false)}
+        user={user}
         post={post}
       />
     </View>

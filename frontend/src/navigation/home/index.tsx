@@ -17,9 +17,7 @@ export type HomeStackParamList = {
   Feed: undefined;
   Discover: undefined;
   Add: undefined;
-  Creator: undefined;
   Recipes: undefined;
-  Inbox: undefined;
   Me: { initialUserId: string };
 };
 

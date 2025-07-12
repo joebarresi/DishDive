@@ -19,6 +19,10 @@ interface RecipeButtonProps {
   onPress: () => void;
 }
 
+interface OtherButtonProps {
+  onPress: () => void;
+}
+
 export function LikeButton({ isLiked, likeCount, onPress }: LikeButtonProps) {
   return (
     <TouchableOpacity style={styles.actionButton} onPress={onPress}>
@@ -50,6 +54,14 @@ export function RecipeButton({ onPress }: RecipeButtonProps) {
     <TouchableOpacity style={styles.actionButton} onPress={onPress}>
       <Ionicons color="white" size={ICON_SIZE} name="restaurant" />
       <Text style={styles.actionButtonText}>Recipe</Text>
+    </TouchableOpacity>
+  );
+}
+
+export function OtherButton({ onPress }: OtherButtonProps) {
+  return (
+    <TouchableOpacity style={styles.actionButton} onPress={onPress}>
+      <Ionicons color="white" size={ICON_SIZE} name="ellipsis-horizontal" />
     </TouchableOpacity>
   );
 }

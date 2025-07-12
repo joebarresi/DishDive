@@ -282,3 +282,46 @@ export const getPostsByUserId = (
     return () => unsubscribe();
   });
 };
+
+export const deletePost = async (post: Post) => {
+  console.log("Deleting post:", post.id)
+  try {
+    // get number of likes
+    const likesSnapshot = await getDocs(
+      collection(FIREBASE_DB, "post", post.id, "likes"),
+    );
+    // get saves from post
+    const savesSnapshot = await getDocs(
+      collection(FIREBASE_DB, "post", post.id, "saves"),
+    );
+
+    // get users current likes from the user doc object
+    const currentLikes = (await getDoc(doc(FIREBASE_DB, "user", post.creator)))
+      .data()?.likesCount;
+    console.log("Current likes:", currentLikes);
+    console.log("Likes snapshot:", likesSnapshot.size);
+    // decrease like count on user object
+    await setDoc(
+      doc(FIREBASE_DB, "user", post.creator),
+      {
+        likesCount: FIREBASE_AUTH.currentUser
+          ? currentLikes - likesSnapshot.size
+          : 0,
+      },
+      { merge: true },
+    );
+
+    // loop over users who saved
+    savesSnapshot.forEach(async (save) => {
+      // get user
+      const user = await getDoc(doc(FIREBASE_DB, "user", save.id));
+      
+      // from the save directory, delete the posts from it
+      await deleteDoc(doc(FIREBASE_DB, "saves", user.id, "posts", post.id));
+    });
+
+    await deleteDoc(doc(FIREBASE_DB, "post", post.id));
+  } catch (error) {
+    throw new Error("Could not delete post");
+  }
+};
