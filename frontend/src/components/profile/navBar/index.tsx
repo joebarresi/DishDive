@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../navigation/main";
 import { FIREBASE_AUTH } from "../../../../firebaseConfig";
+import NavBarGeneral from "../../common/navbar";
 
 export default function ProfileNavBar({
   user,
@@ -18,25 +19,19 @@ export default function ProfileNavBar({
 
   return (
     user && (
-      <View style={styles.container}>
-        {!myProfile ? (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather name="arrow-left" size={24} />
-          </TouchableOpacity>
-        ) : (
-          <View style={{width: 24}} />
-        )}
-        <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-          {user.displayName || user.email}
-        </Text>
-        {myProfile ? (
-          <TouchableOpacity onPress={() => navigation.navigate("settings")}>
-            <Feather name="menu" size={24} />
-          </TouchableOpacity>
-        ) : (
-          <View style={{width: 24}} />
-        )}
-      </View>
+      <NavBarGeneral
+        title={user.displayName || user.email}
+        leftButton={{
+          display: !myProfile
+        }}
+        rightButton={{
+          display: myProfile,
+          name: "menu",
+          action: () => navigation.navigate("settings"),
+          color: "black"
+        }}
+      >
+      </NavBarGeneral>
     )
   );
 }

@@ -12,10 +12,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
-import NavBarGeneral from "../../components/general/navbar";
+import NavBarGeneral from "../../components/common/navbar";
 import styles from "./styles";
 import { Post, PostSingleHandles } from "../../../types";
-import PostSingle from "../../components/general/post";
+import PostSingle from "../../components/common/post";
 
 const RecipesScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);

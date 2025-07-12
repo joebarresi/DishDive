@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/main";
 import styles from "./styles";
+import ScreenContainer from "../../components/common/ScreenContainer";
 
 type DiscoverNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -30,9 +31,9 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Discover</Text>
-      
+    <ScreenContainer
+      title="Discover"
+    >
       <View style={styles.gridContainer}>
         {/* Top Half - Search by Recipe */}
         <View style={[styles.row, { flex: 2 }]}>
@@ -66,6 +67,6 @@ export default function SearchScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }

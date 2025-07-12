@@ -11,6 +11,7 @@ import {
   Provider as PaperProvider,
 } from "react-native-paper";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
+import { APP_COLOR } from "../../styles";
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -37,7 +38,7 @@ const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
 
 // Define theme colors for the app
 const THEME = {
-  primary: "#FF6B6B", // Cooking-themed red color for active elements
+  primary: APP_COLOR, // Cooking-themed red color for active elements
   inactive: "#777777", // Dark gray for inactive tabs
 };
 

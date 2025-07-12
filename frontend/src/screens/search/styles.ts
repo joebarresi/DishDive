@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { APP_COLOR } from "../../styles";
 
 const styles = StyleSheet.create({
   container: {
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   searchRecipe: {
-    backgroundColor: "#FF6B6B", // Red
+    backgroundColor: APP_COLOR, // Red
   },
   findChef: {
     backgroundColor: "#4ECDC4", // Teal
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6B5B95", // Purple
   },
   searchButton: {
-    backgroundColor: "#FF6B6B",
+    backgroundColor: APP_COLOR,
     borderRadius: 8,
     padding: 12,
     alignItems: "center",
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   },
   dietTagText: {
     fontSize: 12,
-    color: "#FF6B6B",
+    color: APP_COLOR,
     backgroundColor: "#FFF0F0",
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   activeFilterButton: {
-    backgroundColor: "#FF6B6B",
+    backgroundColor: APP_COLOR,
   },
   filterButtonText: {
     fontSize: 14,
@@ -162,11 +163,11 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     fontSize: 14,
-    color: "#FF6B6B",
+    color: APP_COLOR,
     marginLeft: 4,
   },
   clearFiltersButton: {
-    backgroundColor: "#FF6B6B",
+    backgroundColor: APP_COLOR,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,

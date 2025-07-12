@@ -24,7 +24,7 @@ import { RootStackParamList } from "../../navigation/main";
 import { AppDispatch } from "../../redux/store";
 import { HomeStackParamList } from "../../navigation/home";
 import { Recipe } from "../../../types";
-import RecipeEditor from "../../components/general/recipeEditor";
+import RecipeEditor from "../../components/common/recipeEditor";
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../firebaseConfig";
 

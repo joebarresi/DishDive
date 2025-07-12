@@ -1,6 +1,6 @@
 import { Text, FlatList } from "react-native";
 import React from "react";
-import NavBarGeneral from "../../../components/general/navbar";
+import NavBarGeneral from "../../../components/common/navbar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChatListItem from "../../../components/chat/list/item";
 import { useSelector } from "react-redux";

@@ -1,6 +1,6 @@
 import { FlatList, View, Dimensions, ViewToken, StatusBar, Platform, Text, TouchableOpacity } from "react-native";
 import styles from "./styles";
-import PostSingle, { PostSingleHandles } from "../../components/general/post";
+import PostSingle, { PostSingleHandles } from "../../components/common/post";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getFollowingFeed, getMyFeed, getPostsByUserId, getTrendingFeed } from "../../services/posts";
 import { Post } from "../../../types";

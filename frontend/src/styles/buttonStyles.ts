@@ -33,7 +33,7 @@ const buttonStyles = StyleSheet.create({
     borderRadius: 25,
     paddingVertical: 12,
     paddingHorizontal: 30,
-    backgroundColor: "#FF4D67",
+    backgroundColor: "#8B54FB",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

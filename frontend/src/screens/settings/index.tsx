@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
 import { signOut } from "../../redux/slices/authSlice";
 import styles from "./styles";
+import ScreenContainer from "../../components/common/ScreenContainer";
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -24,15 +25,10 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Feather name="arrow-left" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Settings</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
+    <ScreenContainer
+      title="Settings"
+      showBackButton={true}
+    >
       <View style={styles.settingsContainer}>
         <TouchableOpacity 
           style={styles.settingsItem}
@@ -71,6 +67,6 @@ export default function SettingsScreen() {
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }

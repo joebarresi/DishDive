@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   Image
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
@@ -23,6 +22,7 @@ import {
 import styles from "./styles";
 import { RootStackParamList } from "../../navigation/main";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import ScreenContainer from "../../components/common/ScreenContainer";
 
 interface ChefUser {
   id: string;
@@ -136,7 +136,6 @@ export default function FindChefScreen() {
     }
   };
 
-  // Navigate to chef's profile
   const navigateToProfile = (userId: string) => {
     navigation.navigate('profileOther', { initialUserId: userId });
   };
@@ -162,15 +161,34 @@ export default function FindChefScreen() {
     </TouchableOpacity>
   );
 
+  const loadingComponent = (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#4ECDC4" />
+    </View>
+  );
+
+  const emptyComponent = (
+    <View style={styles.emptyContainer}>
+      <Feather name="users" size={64} color="#4ECDC4" />
+      <Text style={styles.emptyTitle}>
+        {searchQuery ? "No chefs found" : "Search for chefs"}
+      </Text>
+      <Text style={styles.emptyDescription}>
+        {searchQuery 
+          ? "Try a different search term or check out popular chefs" 
+          : "Enter a name to find chefs or see the most followed chefs"
+        }
+      </Text>
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Feather name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Find a Chef</Text>
-      </View>
-      
+    <ScreenContainer
+      title="Find a Chef"
+      loading={loading && chefs.length === 0}
+      loadingComponent={loadingComponent}
+      showBackButton
+    >
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Feather name="search" size={20} color="#888" style={styles.searchIcon} />
@@ -204,31 +222,14 @@ export default function FindChefScreen() {
         </TouchableOpacity>
       </View>
       
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#4ECDC4" />
-        </View>
-      ) : chefs.length > 0 ? (
+      {chefs.length > 0 ? (
         <FlatList
           data={chefs}
           renderItem={renderChefItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.chefList}
         />
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Feather name="users" size={64} color="#4ECDC4" />
-          <Text style={styles.emptyTitle}>
-            {searchQuery ? "No chefs found" : "Search for chefs"}
-          </Text>
-          <Text style={styles.emptyDescription}>
-            {searchQuery 
-              ? "Try a different search term or check out popular chefs" 
-              : "Enter a name to find chefs or see the most followed chefs"
-            }
-          </Text>
-        </View>
-      )}
-    </SafeAreaView>
+      ) : !loading && emptyComponent}
+    </ScreenContainer>
   );
 }

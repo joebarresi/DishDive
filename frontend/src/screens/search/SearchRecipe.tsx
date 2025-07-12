@@ -19,6 +19,8 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { Post, CuisineTags, DietTags } from "../../../types";
 import styles from "./styles";
+import ScreenContainer from "../../components/common/ScreenContainer";
+import { APP_COLOR } from "../../styles";
 
 type SearchRecipeNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -203,7 +205,7 @@ export default function SearchRecipeScreen() {
             >
               <Text style={styles.modalItemText}>All Cuisines</Text>
               {selectedCuisine === null && (
-                <Feather name="check" size={20} color="#FF6B6B" />
+                <Feather name="check" size={20} color={APP_COLOR} />
               )}
             </TouchableOpacity>
             
@@ -218,7 +220,7 @@ export default function SearchRecipeScreen() {
               >
                 <Text style={styles.modalItemText}>{cuisine}</Text>
                 {selectedCuisine === cuisine && (
-                  <Feather name="check" size={20} color="#FF6B6B" />
+                  <Feather name="check" size={20} color={APP_COLOR} />
                 )}
               </TouchableOpacity>
             ))}
@@ -255,7 +257,7 @@ export default function SearchRecipeScreen() {
             >
               <Text style={styles.modalItemText}>All Diets</Text>
               {selectedDiet === null && (
-                <Feather name="check" size={20} color="#FF6B6B" />
+                <Feather name="check" size={20} color={APP_COLOR} />
               )}
             </TouchableOpacity>
             
@@ -270,7 +272,7 @@ export default function SearchRecipeScreen() {
               >
                 <Text style={styles.modalItemText}>{diet}</Text>
                 {selectedDiet === diet && (
-                  <Feather name="check" size={20} color="#FF6B6B" />
+                  <Feather name="check" size={20} color={APP_COLOR} />
                 )}
               </TouchableOpacity>
             ))}
@@ -281,15 +283,17 @@ export default function SearchRecipeScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Feather name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Search Recipes</Text>
-      </View>
-      
-      <View style={styles.searchContainer}>
+    <ScreenContainer
+      title="Search Recipes"
+      showBackButton
+      loading={loading}
+      loadingComponent={
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={APP_COLOR} />
+        </View>
+      }
+    >
+            <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Feather name="search" size={20} color="#888" style={styles.searchIcon} />
           <TextInput
@@ -350,29 +354,21 @@ export default function SearchRecipeScreen() {
               style={styles.clearButton} 
               onPress={clearFilters}
             >
-              <Feather name="x" size={16} color="#FF6B6B" />
+              <Feather name="x" size={16} color={APP_COLOR} />
               <Text style={styles.clearButtonText}>Clear</Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
-      
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF6B6B" />
-        </View>
-      ) : (
-        <FlatList
+      <FlatList
           data={recipes}
           renderItem={renderRecipeItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.recipeList}
           ListEmptyComponent={renderEmptyResult}
         />
-      )}
-      
       {renderCuisineModal()}
       {renderDietModal()}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }

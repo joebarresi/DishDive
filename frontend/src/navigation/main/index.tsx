@@ -19,8 +19,6 @@ import OnboardingScreen from "../../screens/onboarding";
 import SearchRecipeScreen from "../../screens/search/SearchRecipe";
 import FindChefScreen from "../../screens/search/FindChef";
 import WhatIHaveScreen from "../../screens/search/WhatIHave";
-import CreatorScreen from "../../screens/creator";
-import NotificationsScreen from "../../screens/notifications";
 import { DocumentReference } from "firebase/firestore";
 import UploadScreen from "../../screens/upload";
 
@@ -139,16 +137,6 @@ export default function Route() {
             <Stack.Screen
               name="whatIHave"
               component={WhatIHaveScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="creator"
-              component={CreatorScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="notifications"
-              component={NotificationsScreen}
               options={{ headerShown: false }}
             />
           </>

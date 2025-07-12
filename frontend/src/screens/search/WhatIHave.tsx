@@ -11,17 +11,13 @@ import {
   Platform,
   Alert
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../navigation/main";
 import styles from "./styles";
 import { httpsCallable } from "firebase/functions";
 import { FIREBASE_FUNCTIONS } from "../../../firebaseConfig";
 import { Recipe } from "../../../types";
-
-type WhatIHaveNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import ScreenContainer from "../../components/common/ScreenContainer";
+import { APP_COLOR } from "../../styles";
 
 interface Ingredient {
   id: string;
@@ -30,7 +26,6 @@ interface Ingredient {
 }
 
 export default function WhatIHaveScreen() {
-  const navigation = useNavigation<WhatIHaveNavigationProp>();
   const [ingredients, setIngredients] = useState<Ingredient[]>([
     { id: '1', name: '', amount: '' }
   ]);
@@ -142,7 +137,7 @@ export default function WhatIHaveScreen() {
         style={styles.removeIngredientButton}
         onPress={() => removeIngredient(item.id)}
       >
-        <Feather name="x" size={20} color="#FF6B6B" />
+        <Feather name="x" size={20} color={APP_COLOR} />
       </TouchableOpacity>
     </View>
   );
@@ -189,15 +184,19 @@ export default function WhatIHaveScreen() {
     </ScrollView>
   );
 
+  const loadingComponent = (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#4ECDC4" />
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Feather name="arrow-left" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>What I Have at Home</Text>
-      </View>
-      
+    <ScreenContainer
+      title="What I Have at Home"
+      loading={loading && !recipe}
+      loadingComponent={loadingComponent}
+      showBackButton
+    >
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
@@ -244,6 +243,6 @@ export default function WhatIHaveScreen() {
           </>
         )}
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./styles";
-import NavBarGeneral from "../../../components/general/navbar";
+import NavBarGeneral from "../../../components/common/navbar";
 import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { saveUserProfileImage } from "../../../services/user";
