@@ -10,6 +10,7 @@ interface NavBarGeneralProps {
     display: boolean;
     name?: keyof typeof Feather.glyphMap;
     color?: string;
+    action?: () => void;
   };
   rightButton?: {
     display: boolean;
@@ -26,13 +27,29 @@ export default function NavBarGeneral({
 }: NavBarGeneralProps) {
   const navigation = useNavigation();
 
+  const handleLeftButtonPress = () => {
+    if (!leftButton.display) return;
+    
+    if (leftButton.action) {
+      leftButton.action();
+    } else {
+      navigation.goBack();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => (leftButton.display ? navigation.goBack() : null)}
+        onPress={handleLeftButtonPress}
       >
-        {leftButton.display && <Feather name="arrow-left" size={26} color={leftButton.color || "black"} />}
+        {leftButton.display && (
+          <Feather 
+            name={leftButton.name || "arrow-left"} 
+            size={26} 
+            color={leftButton.color || "black"} 
+          />
+        )}
       </TouchableOpacity>
 
       <Text style={styles.title}>{title}</Text>

@@ -36,7 +36,6 @@ export const createRawPost = createAsyncThunk(
     video: string;
     thumbnail: string;
   }, { rejectWithValue }) => {
-    // Start timing the function execution
     const startTime = Date.now();
     
     if (FIREBASE_AUTH.currentUser) {
@@ -167,6 +166,45 @@ export const getPostsByUser = createAsyncThunk(
   },
 );
 
+export const addExternalPost = createAsyncThunk(
+  "post/addExternal", 
+  async ({
+    link,
+    title,
+  }: {
+    link: string;
+    title: string;
+  }, { rejectWithValue }) => {
+    
+    if (FIREBASE_AUTH.currentUser) {
+      try {
+        const docReference = await addDoc(collection(FIREBASE_DB, "externalPost"), {
+          creator: FIREBASE_AUTH.currentUser.uid,
+          creation: serverTimestamp(),
+          recipe: {
+            title,
+            ingredients: [],
+            steps: [],
+          },
+          link,
+        });
+
+        // Add save relationship for current user with this post
+        await addDoc(collection(FIREBASE_DB, "saves", FIREBASE_AUTH.currentUser.uid, "externalPost"), {
+          post: docReference.id,
+        });
+
+        return docReference;
+      } catch (error) {
+        console.error("Error adding external post:", error);
+        return rejectWithValue(error);
+      }
+    } else {
+      return rejectWithValue(new Error("User not authenticated"));
+    }
+  }
+);
+
 const postSlice = createSlice({
   name: "post",
   initialState,
@@ -211,6 +249,18 @@ const postSlice = createSlice({
         },
       )
       .addCase(getPostsByUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || null;
+      })
+      .addCase(addExternalPost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addExternalPost.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(addExternalPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || null;
       });

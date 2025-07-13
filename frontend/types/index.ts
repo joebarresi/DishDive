@@ -11,6 +11,14 @@ export interface Post {
   dietTags?: DietTags[];
 }
 
+export interface ExternalPost {
+  id: string;
+  creator: string;
+  link: string;
+  creation: string;
+  recipe: {title: string};
+}
+
 export enum DietTags {
   DASH = "DASH (Dietary Approaches to Stop Hypertension)",
   Vegetarian = "Vegetarian",

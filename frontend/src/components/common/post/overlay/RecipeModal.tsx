@@ -1,7 +1,7 @@
 import { Modal, View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Post } from "../../../../../types";
-import RecipeView from "../../recipe";
+import RecipeView from "../../../recipe/recipe";
 import styles from "./styles";
 
 interface RecipeModalProps {

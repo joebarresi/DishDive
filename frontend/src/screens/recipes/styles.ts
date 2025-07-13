@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: "hidden",
     backgroundColor: "#f0f0f0",
+    position: "relative",
   },
   gridItemImage: {
     width: "100%",
@@ -144,6 +145,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
+  },
+  // External recipe badge
+  externalBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: APP_COLOR,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  externalBadgeText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
   },
 });
 

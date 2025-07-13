@@ -23,9 +23,8 @@ import { RootStackParamList } from "../../navigation/main";
 import { AppDispatch } from "../../redux/store";
 import { HomeStackParamList } from "../../navigation/home";
 import { Recipe } from "../../../types";
-import RecipeEditor from "../../components/common/recipeEditor";
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_DB } from "../../../firebaseConfig";
+import RecipeEditor from "../../components/recipe/recipeEditor";
+import { getDoc } from "firebase/firestore";
 import ScreenContainer from "../../components/common/ScreenContainer";
 
 interface SavePostScreenProps {

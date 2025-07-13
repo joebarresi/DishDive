@@ -19,10 +19,18 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import NavBarGeneral from "../../components/common/navbar";
 import styles from "./styles";
-import { Post, PostSingleHandles } from "../../../types";
+import { ExternalPost, Post, PostSingleHandles } from "../../../types";
 import PostSingle from "../../components/common/post";
 import { APP_COLOR } from "../../styles";
-import RecipeModal from "../../components/common/RecipeModal";
+import RecipeModal from "../../components/recipe/RecipeModal";
+import RecipeGridItem from "../../components/recipe/RecipeGridItem";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
+//Function that takes in a post or externalPost and returns if it is an externalPost
+const isExternalPost = (post: Post | ExternalPost): post is ExternalPost => {
+  return (post as ExternalPost).link !== undefined;
+};
 
 const RecipesScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
@@ -37,10 +45,24 @@ const RecipesScreen = () => {
   const postRef = useRef<PostSingleHandles | null>(null);
   const searchBarHeight = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
+  
+  // Get the loading state from Redux to know when to refresh after adding an external recipe
+  const reduxLoading = useSelector((state: RootState) => state.post.loading);
+  const reduxLoadingRef = useRef(reduxLoading);
 
   useEffect(() => {
     fetchSavedPosts();
   }, []);
+  
+  // Refresh posts when Redux loading state changes from true to false
+  // This indicates that an external recipe was just added
+  useEffect(() => {
+    if (reduxLoadingRef.current === true && reduxLoading === false) {
+      // Redux loading just finished, refresh posts
+      fetchSavedPosts();
+    }
+    reduxLoadingRef.current = reduxLoading;
+  }, [reduxLoading]);
 
   // When modal is closed, stop the video
   useEffect(() => {
@@ -87,7 +109,10 @@ const RecipesScreen = () => {
       const savedPostsRef = collection(FIREBASE_DB, "saves", currentUser.uid, "posts");
       const savedPostsSnapshot = await getDocs(savedPostsRef);
       
-      if (savedPostsSnapshot.empty) {
+      const savedExternalPostsRef = collection(FIREBASE_DB, "saves", currentUser.uid, "externalPost");
+      const savedExternalPostsSnapshot = await getDocs(savedExternalPostsRef);
+      
+      if (savedPostsSnapshot.empty && savedExternalPostsSnapshot.empty) {
         setSavedPosts([]);
         setFilteredPosts([]);
         setLoading(false);
@@ -95,7 +120,6 @@ const RecipesScreen = () => {
         return;
       }
 
-      // Get the full post data for each saved post ID
       const postPromises = savedPostsSnapshot.docs.map(async (document) => {
         const postId = document.id;
         const postDoc = await getDoc(doc(FIREBASE_DB, "post", postId));
@@ -105,8 +129,26 @@ const RecipesScreen = () => {
         }
         return null;
       });
+      
+      const externalPostPromises = savedExternalPostsSnapshot.docs.map(async (document) => {
+        const postId = document.data().post;
+        const postDoc = await getDoc(doc(FIREBASE_DB, "externalPost", postId));
+        
+        if (postDoc.exists()) {
+          // Create a Post object from the external post data
+          const data = postDoc.data();
+          return { 
+            id: postDoc.id,
+            ...data
+          } as ExternalPost;
+        }
+        return null;
+      });
 
-      const posts = (await Promise.all(postPromises)).filter(post => post !== null) as Post[];
+      // Combine both types of posts
+      const allPromises = [...postPromises, ...externalPostPromises];
+      const posts = (await Promise.all(allPromises)).filter(post => post !== null) as Post[];
+      
       setSavedPosts(posts);
       setFilteredPosts(posts);
     } catch (error) {
@@ -124,9 +166,14 @@ const RecipesScreen = () => {
     fetchSavedPosts(true);
   };
 
-  const handlePostPress = (post: Post) => {
-    setSelectedPost(post);
-    setModalVisible(true);
+  const handlePostPress = (post: Post | ExternalPost) => {
+    if (isExternalPost(post)) {
+      // TODO: Handle Opening link
+      console.log("Would open external link")
+    } else {
+      setSelectedPost(post as Post);
+      setModalVisible(true);
+    }  
   };
 
   const closeModal = () => {
@@ -172,25 +219,13 @@ const RecipesScreen = () => {
     setRecipeModalVisible(false);
   };
 
-  const renderGridItem = ({ item }: { item: Post }) => {
-    return (
-      <TouchableOpacity 
-        style={styles.gridItem} 
-        onPress={() => handlePostPress(item)}
-      >
-        <Image 
-          source={{ uri: item.media[1] }} // Use the thumbnail image
-          style={styles.gridItemImage}
-          resizeMode="cover"
-        />
-        <View style={styles.gridItemTitle}>
-          <Text style={styles.gridItemTitleText} numberOfLines={1}>
-            {item.recipe?.title || "Untitled Recipe"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const renderGridItem = ({ item }: { item: Post | ExternalPost }) => (
+    <RecipeGridItem 
+      item={item} 
+      onViewVideo={handlePostPress}
+      onViewRecipe={() => {}}
+    />
+  );
 
   // Render content based on loading state and posts availability
   const renderContent = () => {
