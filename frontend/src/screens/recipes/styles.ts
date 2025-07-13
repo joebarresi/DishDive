@@ -10,8 +10,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  contentContainer: {
+    flex: 1,
+  },
   gridContainer: {
     padding: 15,
+    paddingBottom: 80, // Add extra padding at the bottom for the button
   },
   gridItem: {
     width: itemWidth,
@@ -45,6 +49,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     minHeight: 500, // Ensure there's enough space to pull down
+    paddingBottom: 80, // Add extra padding for the button
   },
   emptyText: {
     fontSize: 16,
@@ -70,7 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  // New styles for search functionality
+  // Search functionality styles
   searchBarContainer: {
     width: "100%",
     backgroundColor: "#fff",
@@ -111,6 +116,34 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "500",
     fontSize: 14,
+  },
+  // Add External Recipe button styles
+  addButtonContainer: {
+    position: 'absolute',
+    bottom: 15, // Position above the tab bar
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    zIndex: 999, // Ensure it's above other elements
+  },
+  addButton: {
+    backgroundColor: APP_COLOR,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    elevation: 4, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

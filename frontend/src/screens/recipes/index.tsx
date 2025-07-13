@@ -22,6 +22,7 @@ import styles from "./styles";
 import { Post, PostSingleHandles } from "../../../types";
 import PostSingle from "../../components/common/post";
 import { APP_COLOR } from "../../styles";
+import RecipeModal from "../../components/common/RecipeModal";
 
 const RecipesScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
@@ -32,6 +33,7 @@ const RecipesScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [recipeModalVisible, setRecipeModalVisible] = useState(false);
   const postRef = useRef<PostSingleHandles | null>(null);
   const searchBarHeight = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
@@ -162,6 +164,14 @@ const RecipesScreen = () => {
     searchInputRef.current?.focus();
   };
 
+  const openRecipeModal = () => {
+    setRecipeModalVisible(true);
+  };
+
+  const closeRecipeModal = () => {
+    setRecipeModalVisible(false);
+  };
+
   const renderGridItem = ({ item }: { item: Post }) => {
     return (
       <TouchableOpacity 
@@ -282,7 +292,26 @@ const RecipesScreen = () => {
         </View>
       </Animated.View>
       
-      {renderContent()}
+      <View style={styles.contentContainer}>
+        {renderContent()}
+      </View>
+      
+      {/* Add External Recipe Button */}
+      <View style={styles.addButtonContainer}>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={openRecipeModal}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addButtonText}>Add External Recipe</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Recipe Modal */}
+      <RecipeModal 
+        visible={recipeModalVisible}
+        onClose={closeRecipeModal}
+      />
 
       {/* Full Post Modal */}
       <Modal
