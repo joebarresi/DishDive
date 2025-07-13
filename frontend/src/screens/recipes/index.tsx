@@ -8,10 +8,13 @@ import {
   Modal, 
   ActivityIndicator,
   RefreshControl,
-  ScrollView
+  ScrollView,
+  TextInput,
+  Animated,
+  Keyboard
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import NavBarGeneral from "../../components/common/navbar";
@@ -22,11 +25,16 @@ import { APP_COLOR } from "../../styles";
 
 const RecipesScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const postRef = useRef<PostSingleHandles | null>(null);
+  const searchBarHeight = useRef(new Animated.Value(0)).current;
+  const searchInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     fetchSavedPosts();
@@ -38,6 +46,26 @@ const RecipesScreen = () => {
       postRef.current.stop();
     }
   }, [modalVisible]);
+
+  // Filter posts when search query changes
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredPosts(savedPosts);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = savedPosts.filter(post => {
+        // Search in recipe title
+        const title = post.recipe?.title?.toLowerCase() || "";
+        // Search in recipe ingredients
+        const ingredients = post.recipe?.ingredients?.join(" ").toLowerCase() || "";
+        // Search in post description
+        const description = post.description?.toLowerCase() || "";
+        
+        return title.includes(query) || ingredients.includes(query) || description.includes(query);
+      });
+      setFilteredPosts(filtered);
+    }
+  }, [searchQuery, savedPosts]);
 
   const fetchSavedPosts = async (showRefreshing = false) => {
     try {
@@ -59,6 +87,7 @@ const RecipesScreen = () => {
       
       if (savedPostsSnapshot.empty) {
         setSavedPosts([]);
+        setFilteredPosts([]);
         setLoading(false);
         setRefreshing(false);
         return;
@@ -77,9 +106,11 @@ const RecipesScreen = () => {
 
       const posts = (await Promise.all(postPromises)).filter(post => post !== null) as Post[];
       setSavedPosts(posts);
+      setFilteredPosts(posts);
     } catch (error) {
       console.error("Error fetching saved posts:", error);
       setSavedPosts([]);
+      setFilteredPosts([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -87,6 +118,7 @@ const RecipesScreen = () => {
   };
 
   const onRefresh = () => {
+    setSearchQuery("");
     fetchSavedPosts(true);
   };
 
@@ -98,6 +130,36 @@ const RecipesScreen = () => {
   const closeModal = () => {
     setModalVisible(false);
     setSelectedPost(null);
+  };
+
+  const toggleSearch = () => {
+    if (searchVisible) {
+      // Hide search bar
+      Keyboard.dismiss();
+      setSearchQuery("");
+      Animated.timing(searchBarHeight, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        setSearchVisible(false);
+      });
+    } else {
+      // Show search bar
+      setSearchVisible(true);
+      Animated.timing(searchBarHeight, {
+        toValue: 60,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        searchInputRef.current?.focus();
+      });
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    searchInputRef.current?.focus();
   };
 
   const renderGridItem = ({ item }: { item: Post }) => {
@@ -113,7 +175,7 @@ const RecipesScreen = () => {
         />
         <View style={styles.gridItemTitle}>
           <Text style={styles.gridItemTitleText} numberOfLines={1}>
-            {item.description}
+            {item.recipe?.title || "Untitled Recipe"}
           </Text>
         </View>
       </TouchableOpacity>
@@ -128,10 +190,10 @@ const RecipesScreen = () => {
           <ActivityIndicator size="large" color={APP_COLOR} />
         </View>
       );
-    } else if (savedPosts.length > 0) {
+    } else if (filteredPosts.length > 0) {
       return (
         <FlatList
-          data={savedPosts}
+          data={filteredPosts}
           renderItem={renderGridItem}
           keyExtractor={(item) => item.id}
           numColumns={2}
@@ -147,7 +209,24 @@ const RecipesScreen = () => {
           }
         />
       );
+    } else if (searchQuery && savedPosts.length > 0) {
+      // No results for search query
+      return (
+        <View style={styles.emptyContainer}>
+          <Ionicons name="search-outline" size={60} color="#ccc" />
+          <Text style={styles.emptyText}>
+            No recipes found matching "{searchQuery}"
+          </Text>
+          <TouchableOpacity 
+            style={styles.clearSearchButton}
+            onPress={clearSearch}
+          >
+            <Text style={styles.clearSearchText}>Clear Search</Text>
+          </TouchableOpacity>
+        </View>
+      );
     } else {
+      // No saved recipes
       return (
         <ScrollView
           contentContainerStyle={styles.emptyContainer}
@@ -172,7 +251,36 @@ const RecipesScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <NavBarGeneral leftButton={{ display: false }} title="Saved Recipes" />
+      <NavBarGeneral 
+        leftButton={{ display: false }} 
+        title="Saved Recipes" 
+        rightButton={{
+          display: true,
+          name: searchVisible ? "x" : "search",
+          action: toggleSearch,
+          color: "black"
+        }}
+      />
+      
+      {/* Animated Search Bar */}
+      <Animated.View style={[styles.searchBarContainer, { height: searchBarHeight }]}>
+        <View style={styles.searchInputContainer}>
+          <Feather name="search" size={20} color="#666" style={styles.searchIcon} />
+          <TextInput
+            ref={searchInputRef}
+            style={styles.searchInput}
+            placeholder="Search recipes..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+              <Feather name="x" size={18} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </Animated.View>
       
       {renderContent()}
 

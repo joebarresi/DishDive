@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from "react-native";
+import { APP_COLOR } from "../../styles";
 
 const { width } = Dimensions.get("window");
 const numColumns = 2;
@@ -68,6 +69,48 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  // New styles for search functionality
+  searchBarContainer: {
+    width: "100%",
+    backgroundColor: "#fff",
+    overflow: "hidden",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    marginHorizontal: 15,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    color: "#333",
+  },
+  clearButton: {
+    padding: 6,
+  },
+  clearSearchButton: {
+    marginTop: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: APP_COLOR,
+    borderRadius: 8,
+  },
+  clearSearchText: {
+    color: "white",
+    fontWeight: "500",
+    fontSize: 14,
   },
 });
 
