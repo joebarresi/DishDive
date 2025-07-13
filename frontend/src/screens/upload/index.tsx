@@ -61,9 +61,9 @@ export default function UploadScreen() {
 
   const pickVideo = async () => {
     try {
-      // No permissions request is necessary for launching the image library in newer Expo versions
+      // Using the correct API for expo-image-picker v16
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        mediaTypes: "videos",
         allowsEditing: true,
         aspect: [16, 9],
         quality: 1,
@@ -89,8 +89,9 @@ export default function UploadScreen() {
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
       
       if (cameraPermission.granted) {
+        // Using the correct API for expo-image-picker v16
         const result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+          mediaTypes: "videos",
           allowsEditing: true,
           aspect: [16, 9],
           quality: 1,
@@ -116,7 +117,7 @@ export default function UploadScreen() {
     return (
       <View style={styles.uploadingContainer}>
         <ActivityIndicator color={APP_COLOR} size="large" />
-        <Text style={localStyles.uploadingText}>Processing your video...</Text>
+        <Text style={localStyles.uploadingText}>Generating your recipe. This can take more than 30 seconds</Text>
       </View>
     );
   }

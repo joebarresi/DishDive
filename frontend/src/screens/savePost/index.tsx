@@ -11,7 +11,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
 } from "react-native";
 import styles from "./styles";
 import { Feather } from "@expo/vector-icons";
@@ -27,6 +26,7 @@ import { Recipe } from "../../../types";
 import RecipeEditor from "../../components/common/recipeEditor";
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_DB } from "../../../firebaseConfig";
+import ScreenContainer from "../../components/common/ScreenContainer";
 
 interface SavePostScreenProps {
   route: RouteProp<RootStackParamList, "savePost">;
@@ -100,17 +100,22 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
       });
   };
 
-  if (requestRunning) {
-    return (
-      <View style={styles.uploadingContainer}>
-        <ActivityIndicator color="#8B54FB" size="large" />
-        <Text style={styles.uploadingText}>Saving your post...</Text>
-      </View>
-    );
-  }
+  // Loading component for the ScreenContainer
+  const loadingComponent = (
+    <View style={styles.uploadingContainer}>
+      <ActivityIndicator color="#8B54FB" size="large" />
+      <Text style={styles.uploadingText}>Saving your post...</Text>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <ScreenContainer 
+      title="Create Post" 
+      showBackButton={true}
+      loading={requestRunning}
+      loadingComponent={loadingComponent}
+      style={{ paddingHorizontal: 0 }} // Override default padding
+    >
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
@@ -120,10 +125,6 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
           contentContainerStyle={styles.scrollContentContainer}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Create Post</Text>
-          </View>
-          
           <View style={styles.mediaDescriptionSection}>
             <View style={styles.descriptionContainer}>
               <Text style={styles.sectionLabel}>Description</Text>
@@ -164,16 +165,8 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
         
         <View style={styles.buttonsContainer}>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.cancelButton}
-          >
-            <Feather name="x" size={24} color="#666" />
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
             onPress={handleSavePost}
-            style={styles.postButton}
+            style={styles.fullWidthPostButton}
             disabled={requestRunning}
           >
             <Feather name="check" size={24} color="white" />
@@ -181,6 +174,6 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
