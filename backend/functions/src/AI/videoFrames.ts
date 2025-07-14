@@ -15,7 +15,7 @@ export async function extractAndAnalyzeFrames(
 ): Promise<string[]> {
   await new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
-        .outputOptions(["-vf fps=1/1"])
+        .outputOptions(["-vf fps=3/2"])
         .output(`${outputDir}/frame-%03d.jpg`)
         .on("end", () => resolve())
         .on("error", (err) => reject(err))

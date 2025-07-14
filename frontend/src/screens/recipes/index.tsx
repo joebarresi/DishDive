@@ -24,6 +24,7 @@ import PostSingle from "../../components/common/post";
 import { APP_COLOR } from "../../styles";
 import RecipeModal from "../../components/recipe/RecipeModal";
 import RecipeGridItem from "../../components/recipe/RecipeGridItem";
+import RecipeView from "../../components/recipe/recipe";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
@@ -42,6 +43,8 @@ const RecipesScreen = () => {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [recipeModalVisible, setRecipeModalVisible] = useState(false);
+  const [viewRecipeModalVisible, setViewRecipeModalVisible] = useState(false);
+  const [selectedRecipePost, setSelectedRecipePost] = useState<Post | null>(null);
   const postRef = useRef<PostSingleHandles | null>(null);
   const searchBarHeight = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
@@ -219,15 +222,21 @@ const RecipesScreen = () => {
     setRecipeModalVisible(false);
   };
 
+  const handleViewRecipe = (post: Post | ExternalPost) => {
+    if (!isExternalPost(post)) {
+      setSelectedRecipePost(post as Post);
+      setViewRecipeModalVisible(true);
+    }
+  };
+
   const renderGridItem = ({ item }: { item: Post | ExternalPost }) => (
     <RecipeGridItem 
       item={item} 
       onViewVideo={handlePostPress}
-      onViewRecipe={() => {}}
+      onViewRecipe={handleViewRecipe}
     />
   );
 
-  // Render content based on loading state and posts availability
   const renderContent = () => {
     if (loading) {
       return (
@@ -347,6 +356,26 @@ const RecipesScreen = () => {
         visible={recipeModalVisible}
         onClose={closeRecipeModal}
       />
+
+      {/* View Recipe Modal */}
+      {selectedRecipePost && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={viewRecipeModalVisible}
+          onRequestClose={() => setViewRecipeModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <TouchableOpacity 
+              style={styles.closeButton} 
+              onPress={() => setViewRecipeModalVisible(false)}
+            >
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+            <RecipeView post={selectedRecipePost} />
+          </View>
+        </Modal>
+      )}
 
       {/* Full Post Modal */}
       <Modal

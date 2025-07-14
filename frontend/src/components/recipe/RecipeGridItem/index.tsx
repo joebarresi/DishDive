@@ -35,10 +35,17 @@ const RecipeGridItem: React.FC<RecipeGridItemProps> = ({ item, onViewVideo, onVi
     <View style={styles.gridItem}>
       <View style={styles.contentContainer}>
         {isExternalPost(item) ? (
-          <View style={styles.externalPostContainer}>
-            <Ionicons name="link" size={24} color="#ccc" />
-            <Text style={styles.externalPostText}>External Recipe</Text>
-          </View>
+          <>
+            <View style={styles.externalPostContainer}>
+              <Ionicons name="link" size={24} color="#ccc" />
+              <Text style={styles.externalPostText}>External Recipe</Text>
+            </View>
+            <View style={styles.gridItemTitle}>
+              <Text style={styles.gridItemTitleText} numberOfLines={1}>
+                {item.recipe?.title || "Untitled Recipe"}
+              </Text>
+            </View>
+          </>
         ) : (
           <>
             <Image

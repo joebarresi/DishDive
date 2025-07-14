@@ -25,8 +25,6 @@ export function generateRecipePrompt({
     return `${description}\n`;
   })}`;
 
-  console.log(prompt);
-
   return prompt;
 }
 
