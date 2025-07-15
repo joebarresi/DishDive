@@ -21,6 +21,13 @@ import FindChefScreen from "../../screens/search/FindChef";
 import WhatIHaveScreen from "../../screens/search/WhatIHave";
 import { DocumentReference } from "firebase/firestore";
 import UploadScreen from "../../screens/upload";
+import PostSingle from "../../components/common/post";
+import { RouteProp } from "@react-navigation/native";
+
+// Wrapper component to extract item from route params
+const PostScreen = ({ route }: { route: RouteProp<RootStackParamList, "post"> }) => {
+  return <PostSingle item={route.params.item} />;
+};
 
 export type RootStackParamList = {
   home: undefined;
@@ -137,6 +144,11 @@ export default function Route() {
             <Stack.Screen
               name="whatIHave"
               component={WhatIHaveScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="post"
+              component={PostScreen}
               options={{ headerShown: false }}
             />
           </>
