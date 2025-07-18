@@ -47,7 +47,7 @@ interface PostViewToken extends ViewToken {
  * On start make fetch for posts then use a flatList
  * to display/control the posts.
  */
-export default function FeedScreen({ route }: { route: FeedScreenRouteProp }) {
+export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
   const { setCurrentUserProfileItemInView } = useContext(
     CurrentUserProfileItemInViewContext,
   );

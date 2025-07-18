@@ -11,7 +11,7 @@ import SavePostScreen from "../../screens/savePost";
 import EditProfileScreen from "../../screens/profile/edit";
 import EditProfileFieldScreen from "../../screens/profile/edit/field";
 import Modal from "../../components/modal";
-import FeedScreen from "../../screens/feed";
+import HomeFeed from "../../screens/homeFeed";
 import ProfileScreen from "../../screens/profile";
 import ChatSingleScreen from "../../screens/chat/single";
 import SettingsScreen from "../../screens/settings";
@@ -103,7 +103,7 @@ export default function Route() {
               />
             <Stack.Screen
               name="userPosts"
-              component={FeedScreen}
+              component={HomeFeed}
               options={{ headerShown: false }}
             />
             <Stack.Screen

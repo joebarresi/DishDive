@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import FeedScreen from "../../screens/feed";
+import HomeFeed from "../../screens/homeFeed";
 import ProfileScreen from "../../screens/profile";
 
 // Define feed types
@@ -109,7 +109,7 @@ const FeedNavigation = () => {
         >
           <Screen
             name="feedList"
-            component={FeedScreen}
+            component={HomeFeed}
             initialParams={{ profile: false, feedType: activeFeedType }}
           />
           <Screen
