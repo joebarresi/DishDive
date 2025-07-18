@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, StyleSheet, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as VideoThumbnails from "expo-video-thumbnails";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +24,8 @@ import NavBarGeneral from "../../components/common/navbar";
 export default function UploadScreen() {
   const [requestRunning, setRequestRunning] = useState(false);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [failedUpload, setFailedUpload] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -32,6 +34,9 @@ export default function UploadScreen() {
   
   const handleRawPost = (video: string, thumbnail: string) => {
     setRequestRunning(true);
+    setFailedUpload(false);
+    setErrorMessage("");
+    
     dispatch(
       createRawPost({
         video,
@@ -42,9 +47,39 @@ export default function UploadScreen() {
       setRequestRunning(false);
       if (data.meta?.requestStatus === "fulfilled") {
         navigation.navigate("savePost", {docRef: data.payload as DocumentReference<DocumentData>, source: video});
+      } else if (data.meta?.requestStatus === "rejected") {
+        // Handle rejection with error message from the payload
+        const errorPayload = data.payload as any;
+        const errorMsg = errorPayload?.message || "Failed to process video. Please try again.";
+        
+        console.error("Create raw post failed:", errorMsg);
+        setFailedUpload(true);
+        setErrorMessage(errorMsg);
+        
+        // Show alert for better visibility
+        Alert.alert(
+          "Upload Failed",
+          errorMsg,
+          [{ text: "OK" }]
+        );
       }
     })
-    .catch(() => setRequestRunning(false));
+    .catch((error) => {
+      console.error("Create raw post error:", error);
+      setFailedUpload(true);
+      setRequestRunning(false);
+      
+      // Extract error message
+      const errorMsg = error?.message || "Something went wrong while processing your video. Please try again.";
+      setErrorMessage(errorMsg);
+      
+      // Show alert for better visibility
+      Alert.alert(
+        "Upload Failed",
+        errorMsg,
+        [{ text: "OK" }]
+      );
+    });
   };
 
   const generateThumbnail = async (source: string) => {
@@ -55,12 +90,18 @@ export default function UploadScreen() {
       return uri;
     } catch (e) {
       console.warn("Error generating thumbnail:", e);
+      setErrorMessage("Failed to generate video thumbnail. Please try again.");
+      setFailedUpload(true);
       return null;
     }
   };
 
   const pickVideo = async () => {
     try {
+      // Reset error states
+      setFailedUpload(false);
+      setErrorMessage("");
+      
       // Using the correct API for expo-image-picker v16
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "videos",
@@ -76,15 +117,27 @@ export default function UploadScreen() {
         const sourceThumb = await generateThumbnail(result.assets[0].uri);
         if (sourceThumb) {
           handleRawPost(result.assets[0].uri, sourceThumb);
+        } else {
+          // Thumbnail generation failed
+          setFailedUpload(true);
+          if (!errorMessage) {
+            setErrorMessage("Failed to generate video thumbnail. Please try again.");
+          }
         }
       }
     } catch (error) {
-      console.warn("Error picking video:", error);
+      console.error("Error picking video:", error);
+      setFailedUpload(true);
+      setErrorMessage("Failed to select video. Please try again.");
     }
   };
 
   const pickFromCamera = async () => {
     try {
+      // Reset error states
+      setFailedUpload(false);
+      setErrorMessage("");
+      
       // Request camera permissions
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
       
@@ -105,11 +158,34 @@ export default function UploadScreen() {
           const sourceThumb = await generateThumbnail(result.assets[0].uri);
           if (sourceThumb) {
             handleRawPost(result.assets[0].uri, sourceThumb);
+          } else {
+            // Thumbnail generation failed
+            setFailedUpload(true);
+            if (!errorMessage) {
+              setErrorMessage("Failed to generate video thumbnail. Please try again.");
+            }
           }
         }
+      } else {
+        setFailedUpload(true);
+        setErrorMessage("Camera permission denied. Please enable camera access in your device settings.");
       }
     } catch (error) {
-      console.warn("Error recording video:", error);
+      console.error("Error recording video:", error);
+      setFailedUpload(true);
+      setErrorMessage("Failed to record video. Please try again.");
+    }
+  };
+
+  const retryUpload = () => {
+    setFailedUpload(false);
+    setErrorMessage("");
+    if (videoPreview) {
+      generateThumbnail(videoPreview).then(sourceThumb => {
+        if (sourceThumb) {
+          handleRawPost(videoPreview, sourceThumb);
+        }
+      });
     }
   };
 
@@ -134,6 +210,22 @@ export default function UploadScreen() {
       />
       
       <View style={localStyles.contentContainer}>
+        {failedUpload && (
+          <View style={localStyles.errorContainer}>
+            <Text style={localStyles.errorText}>
+              {errorMessage || "Video upload failed. Please try again."}
+            </Text>
+            {videoPreview && (
+              <TouchableOpacity 
+                style={localStyles.retryButton} 
+                onPress={retryUpload}
+              >
+                <Text style={localStyles.retryButtonText}>Retry</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+        
         <Text style={localStyles.comingSoonText}>Soon to come: video filming</Text>
         
         <TouchableOpacity 
@@ -183,5 +275,31 @@ const localStyles = StyleSheet.create({
     color: 'white',
     marginTop: 20,
     fontSize: 16,
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(255, 0, 0, 0.1)',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '90%',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: APP_COLOR,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
   }
 });

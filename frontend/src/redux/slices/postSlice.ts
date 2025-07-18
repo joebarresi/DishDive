@@ -60,12 +60,13 @@ export const createRawPost = createAsyncThunk(
 
         let recipe;
         
-        await getRecipe({
+        const recipeResult = await getRecipe({
           filePath: `post/${FIREBASE_AUTH.currentUser.uid}/${storagePostId}/video`,
         }).then((result) => {
           recipe = result.data;
         });
-        
+
+        console.log(recipeResult);
         
         const docReference = await addDoc(collection(FIREBASE_DB, "post"), {
           creator: FIREBASE_AUTH.currentUser.uid,
