@@ -152,7 +152,13 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
           onRefresh={onRefresh}
           isProfileFeed={Boolean(profile)}
           feedType={feedType}
-          emptyComponent={feedType === "Following" ? renderEmptyFollowingFeed() : null}
+          emptyConfig={{
+            message: feedType === "Following" 
+              ? "Follow some chefs to see their delicious recipes!" 
+              : feedType === "Trending" 
+                ? "No trending recipes at the moment. Check back soon!" 
+                : "No more recipes to show. Pull to refresh for new content!"
+          }}
         />
       </View>
     </FeedContext.Provider>

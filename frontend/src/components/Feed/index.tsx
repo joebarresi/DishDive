@@ -2,15 +2,19 @@ import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-nat
 import { useContext, useEffect, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
-import PostSingle, { PostSingleHandles } from "../post";
+import PostSingle, { EmptyPostConfig, PostSingleHandles } from "../post";
 import { Post } from "../../../types";
 import { APP_COLOR } from "../../styles";
 import { CurrentUserProfileItemInViewContext } from "../../navigation/feed";
-import styles from "./styles";
 import { defaultFlatListProps } from "./constant";
 
-interface PostViewToken extends ViewToken {
-  item: Post;
+interface FeedItemViewToken extends ViewToken {
+  item: FeedItemWrapper;
+}
+
+export interface FeedItemWrapper {
+  post?: Post
+  emptyConfig?: EmptyPostConfig
 }
 
 interface FeedProps {
@@ -21,11 +25,9 @@ interface FeedProps {
   onRefresh: () => void;
   isProfileFeed: boolean;
   feedType?: string;
-  emptyComponent?: React.ReactNode;
-
+  emptyConfig: EmptyPostConfig;
 }
 
-//TODO: look at loading
 const Feed = ({
   startingIndex = 0,
   posts,
@@ -34,7 +36,7 @@ const Feed = ({
   onRefresh,
   isProfileFeed,
   feedType = "My Feed",
-  emptyComponent,
+  emptyConfig,
 }: FeedProps) => {
   const { setCurrentUserProfileItemInView } = useContext(
     CurrentUserProfileItemInViewContext,
@@ -47,6 +49,7 @@ const Feed = ({
   const prevFeedTypeRef = useRef<string | undefined>();
   
   useEffect(() => {
+    // Stop all videos when component loses focus or feed type changes
     Object.keys(mediaRefs.current).forEach((key) => {
       const media = mediaRefs.current[key];
       if (media) {
@@ -54,6 +57,7 @@ const Feed = ({
       }
     });
     
+    // Play the first video when component is focused and there are posts
     if (isFocused && posts.length > 0) {
       const firstVideoRef = mediaRefs.current[posts[0].id];
       
@@ -75,23 +79,34 @@ const Feed = ({
   }, [isFocused, feedType, posts]);
 
   const onViewableItemsChanged = useRef(
-    ({ viewableItems, changed }: { viewableItems: PostViewToken[], changed: PostViewToken[] }) => {
+    ({ viewableItems, changed }: { viewableItems: FeedItemViewToken[], changed: FeedItemViewToken[] }) => {
+      // Stop videos that are no longer viewable
       if (changed.length > 0) {
         changed.forEach((element) => {
-          const cell = mediaRefs.current[element.key];
+          // Get the correct key for the media ref
+          const key = element.item.post?.id || 'empty-post';
+          const cell = mediaRefs.current[key];
           if (cell && !element.isViewable) {
             cell.stop();
           }
         });
       }
       
+      // Play the first viewable video
       if (viewableItems.length > 0) {
         const firstViewableItem = viewableItems[0];
-        const cell = mediaRefs.current[firstViewableItem.key];
+        // Skip playing if it's an empty post
+        if (!firstViewableItem.item.post) {
+          return;
+        }
+        
+        // Get the correct key for the media ref
+        const key = firstViewableItem.item.post.id;
+        const cell = mediaRefs.current[key];
         
         if (cell) {
           if (!isProfileFeed && setCurrentUserProfileItemInView) {
-            setCurrentUserProfileItemInView(firstViewableItem.item.creator);
+            setCurrentUserProfileItemInView(firstViewableItem.item.post.creator);
           }
           cell.play();
         }
@@ -104,7 +119,7 @@ const Feed = ({
   const bottomInset = insets.bottom;
   const feedItemHeight = screenHeight - bottomTabHeight - bottomInset;
 
-  const renderItem = ({ item }: { item: Post; index: number }) => {
+  const renderItem = ({ item }: { item: FeedItemWrapper; index: number }) => {
     return (
       <View
         style={{
@@ -114,16 +129,28 @@ const Feed = ({
       >
         <PostSingle
           item={item}
-          ref={(PostSingeRef) => (mediaRefs.current[item.id] = PostSingeRef)}
+          ref={(PostSingeRef) => {
+            // Use a unique key for each item based on post ID or a special key for empty posts
+            const key = item.post?.id || 'empty-post';
+            mediaRefs.current[key] = PostSingeRef;
+          }}
         />
       </View>
     );
   };
 
+  // Create feed items with regular posts and always add an empty post at the end
+  const feedItemPosts: FeedItemWrapper[] = posts.map((item) => {
+    return {post: item};
+  });
+  
+  // Always add the empty post at the end
+  const feedItems = [...feedItemPosts, { emptyConfig }];
+
   return (
-    <FlatList
+    <FlatList<FeedItemWrapper>
       ref={flatListRef}
-      data={posts}
+      data={feedItems}
       viewabilityConfig={{
         itemVisiblePercentThreshold: 50,
         minimumViewTime: 300,

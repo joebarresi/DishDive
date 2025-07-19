@@ -5,6 +5,8 @@ import { Post } from "../../../types";
 import { useUser } from "../../hooks/useUser";
 import PostSingleOverlay from "./overlay";
 import { TouchableWithoutFeedback, View, Animated } from "react-native";
+import LastPost from "./LastPost";
+import { FeedItemWrapper } from "../Feed";
 
 export interface PostSingleHandles {
   play: () => Promise<void>;
@@ -14,17 +16,26 @@ export interface PostSingleHandles {
   restart: () => Promise<void>;
 }
 
-/**
- * This component is responsible for displaying a post and play the
- * media associated with it.
- *
- * The ref is forwarded to this component so that the parent component
- * can manage the play status of the video.
- */
-export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
+export interface EmptyPostConfig {
+  message: string;
+}
+
+export interface PostSingleProps {
+  item: FeedItemWrapper;
+}
+
+export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
   ({ item }, parentRef) => {
+    // If this is an empty post, render the LastPost component
+    if (item.emptyConfig) {
+      return <LastPost config={item.emptyConfig} />;
+    }
+
+    // Regular post handling
+    const post: Post = item.post as Post;
+
     const ref = useRef<Video>(null);
-    const user = useUser(item.creator).data;
+    const user = useUser(post.creator).data;
     const [isPlaying, setIsPlaying] = useState(false);
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -37,7 +48,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
     }));
 
     useEffect(() => {
-
       return () => {
         unload()
           .then(() => {})
@@ -47,7 +57,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       };
     }, []);
 
-    // Pause handling
     useEffect(() => {
       if (isPlaying) {
         Animated.timing(fadeAnim, {
@@ -56,17 +65,10 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
           useNativeDriver: true,
         }).start();
       } else {
-        // Show the pause bars immediately when video is paused
         fadeAnim.setValue(1);
       }
     }, [isPlaying, fadeAnim]);
 
-    /**
-     * Plays the video in the component if the ref
-     * of the video is not null.
-     *
-     * @returns {void}
-     */
     const play = async () => {
       if (ref.current == null) {
         return;
@@ -83,12 +85,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       }
     };
 
-    /**
-     * Stops the video in the component if the ref
-     * of the video is not null.
-     *
-     * @returns {void}
-     */
     const stop = async () => {
       if (ref.current == null) {
         return;
@@ -105,15 +101,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       }
     };
 
-    /**
-     * Unloads the video in the component if the ref
-     * of the video is not null.
-     *
-     * This will make sure unnecessary video instances are
-     * not in memory at all times
-     *
-     * @returns {void}
-     */
     const unload = async () => {
       if (ref.current == null) {
         return;
@@ -126,11 +113,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       }
     };
 
-    /**
-     * Toggles between play and pause states
-     * 
-     * @returns {void}
-     */
     const togglePlayPause = async () => {
       if (ref.current == null) {
         return;
@@ -151,11 +133,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       }
     };
 
-    /**
-     * Restarts the video from the beginning
-     * 
-     * @returns {void}
-     */
     const restart = async () => {
       if (ref.current == null) {
         return;
@@ -176,7 +153,7 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
 
     return (
       <>
-        {user && <PostSingleOverlay user={user} post={item} />}
+        {user && <PostSingleOverlay user={user} post={post} />}
         
         <TouchableWithoutFeedback onPress={handlePress}>
           <View style={{ flex: 1 }}>
@@ -187,10 +164,10 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
               shouldPlay={false}
               isLooping
               usePoster
-              posterSource={{ uri: item.media[1] }}
+              posterSource={{ uri: post.media[1] }}
               posterStyle={{ resizeMode: "cover", height: "100%" }}
               source={{
-                uri: item.media[0],
+                uri: post.media[0],
               }}
             />
             <Animated.View 
