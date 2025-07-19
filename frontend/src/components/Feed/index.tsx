@@ -130,7 +130,6 @@ const Feed = ({
         <PostSingle
           item={item}
           ref={(PostSingeRef) => {
-            // Use a unique key for each item based on post ID or a special key for empty posts
             const key = item.post?.id || 'empty-post';
             mediaRefs.current[key] = PostSingeRef;
           }}
@@ -139,12 +138,10 @@ const Feed = ({
     );
   };
 
-  // Create feed items with regular posts and always add an empty post at the end
   const feedItemPosts: FeedItemWrapper[] = posts.map((item) => {
     return {post: item};
   });
   
-  // Always add the empty post at the end
   const feedItems = [...feedItemPosts, { emptyConfig }];
 
   return (

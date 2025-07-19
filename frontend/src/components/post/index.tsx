@@ -37,6 +37,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     const ref = useRef<Video>(null);
     const user = useUser(post.creator).data;
     const [isPlaying, setIsPlaying] = useState(false);
+    const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
     useImperativeHandle(parentRef, () => ({
@@ -80,6 +81,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
         }
         await ref.current.playAsync();
         setIsPlaying(true);
+        setHasStartedPlaying(true);
       } catch (e) {
         console.log("An error occurred:", e);
       }
@@ -126,6 +128,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
           } else {
             await ref.current.playAsync();
             setIsPlaying(true);
+            setHasStartedPlaying(true);
           }
         }
       } catch (e) {
@@ -142,6 +145,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
         await ref.current.setPositionAsync(0);
         await ref.current.playAsync();
         setIsPlaying(true);
+        setHasStartedPlaying(true);
       } catch (e) {
         console.log("An error occurred while restarting video:", e);
       }
@@ -177,7 +181,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
               ]}
               pointerEvents="none"
             >
-              {!isPlaying && (
+              {hasStartedPlaying && !isPlaying && (
                 <View style={styles.pauseBars}>
                   <View style={styles.pauseBar} />
                   <View style={styles.pauseBar} />
