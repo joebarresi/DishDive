@@ -10,9 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../navigation/main";
 import { Avatar } from "react-native-paper";
-import RecipeModal from "./RecipeModal";
 import OtherModal from "./OtherModal";
-import { LikeButton, SaveButton, RecipeButton, OtherButton } from "./buttons";
+import { LikeButton, SaveButton, ShareButton, OtherButton } from "./buttons";
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -37,8 +36,6 @@ export default function PostSingleOverlay({
     state: false,
     counter: post.likesCount,
   });
-  const hasRecipe: boolean = Boolean(post.recipe);
-  const [recipeModalVisible, setRecipeModalVisible] = useState(false);
   const [otherModalVisible, setOtherModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -50,7 +47,6 @@ export default function PostSingleOverlay({
           state: res,
         });
       });
-      //TODO: Implement the getSaveByID
       getSaveById(post.id, currentUser.uid).then((res) => {
         setIsSaved(res);
       });
@@ -90,6 +86,10 @@ export default function PostSingleOverlay({
       }),
     [],
   );
+
+  const handleShare = () => {
+    // Additional share logic can be added here if needed
+  };
 
   return (
     <View style={styles.container}>
@@ -131,16 +131,9 @@ export default function PostSingleOverlay({
           isSaved={isSaved}
           onPress={() => handleSavePost(isSaved)}
         />
-        {hasRecipe && (
-          <RecipeButton onPress={() => setRecipeModalVisible(true)} />
-        )}
+        <ShareButton onPress={handleShare} />
         <OtherButton onPress={() => setOtherModalVisible(true)} />
       </View>
-      <RecipeModal
-        visible={recipeModalVisible}
-        onClose={() => setRecipeModalVisible(false)}
-        post={post}
-      />
       <OtherModal
         visible={otherModalVisible}
         onClose={() => setOtherModalVisible(false)}

@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text } from "react-native";
+import { TouchableOpacity, Text, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "./styles";
 
@@ -15,7 +15,7 @@ interface SaveButtonProps {
   onPress: () => void;
 }
 
-interface RecipeButtonProps {
+interface ShareButtonProps {
   onPress: () => void;
 }
 
@@ -49,11 +49,16 @@ export function SaveButton({ isSaved, onPress }: SaveButtonProps) {
   );
 }
 
-export function RecipeButton({ onPress }: RecipeButtonProps) {
+export function ShareButton({ onPress }: ShareButtonProps) {
+  const handlePress = () => {
+    Alert.alert("Sharing", "Sharing coming soon!");
+    onPress();
+  };
+
   return (
-    <TouchableOpacity style={styles.actionButton} onPress={onPress}>
-      <Ionicons color="white" size={ICON_SIZE} name="restaurant" />
-      <Text style={styles.actionButtonText}>Recipe</Text>
+    <TouchableOpacity style={styles.actionButton} onPress={handlePress}>
+      <Ionicons color="white" size={ICON_SIZE} name="share-outline" />
+      <Text style={styles.actionButtonText}>Share</Text>
     </TouchableOpacity>
   );
 }
