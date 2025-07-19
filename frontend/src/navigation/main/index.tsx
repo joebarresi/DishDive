@@ -21,7 +21,7 @@ import FindChefScreen from "../../screens/search/FindChef";
 import WhatIHaveScreen from "../../screens/search/WhatIHave";
 import { DocumentReference } from "firebase/firestore";
 import UploadScreen from "../../screens/upload";
-import PostSingle from "../../components/common/post";
+import PostSingle from "../../components/post";
 import { RouteProp } from "@react-navigation/native";
 
 // Wrapper component to extract item from route params

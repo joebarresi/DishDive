@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import styles from "./styles";
-import { Post, User } from "../../../../../types";
+import { Post, User } from "../../../../types";
 import { useSelector } from "react-redux";
 import { throttle } from "throttle-debounce";
-import { getLikeById, getSaveById, updateLike, updateSavePost } from "../../../../services/posts";
-import { RootState } from "../../../../redux/store";
+import { getLikeById, getSaveById, updateLike, updateSavePost } from "../../../services/posts";
+import { RootState } from "../../../redux/store";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../../navigation/main";
+import { RootStackParamList } from "../../../navigation/main";
 import { Avatar } from "react-native-paper";
 import RecipeModal from "./RecipeModal";
 import OtherModal from "./OtherModal";

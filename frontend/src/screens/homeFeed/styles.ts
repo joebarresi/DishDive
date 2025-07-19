@@ -5,12 +5,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black'
   },
-  backButton: {
-    position: 'absolute',
-    left: 10,
-    zIndex: 9999,
-    padding: 8,
-  },
   emptyFeedContainer: {
     flex: 1,
     justifyContent: 'center',

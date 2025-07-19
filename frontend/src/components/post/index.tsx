@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import styles from "./styles";
-import { Post } from "../../../../types";
-import { useUser } from "../../../hooks/useUser";
+import { Post } from "../../../types";
+import { useUser } from "../../hooks/useUser";
 import PostSingleOverlay from "./overlay";
 import { TouchableWithoutFeedback, View, Animated } from "react-native";
 
@@ -37,7 +37,6 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
     }));
 
     useEffect(() => {
-  
 
       return () => {
         unload()
@@ -48,13 +47,12 @@ export const PostSingle = forwardRef<PostSingleHandles, { item: Post }>(
       };
     }, []);
 
-    // Fade out the pause bars after a delay when video is playing
+    // Pause handling
     useEffect(() => {
       if (isPlaying) {
-        // Fade out the pause bars when video starts playing
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 300,
+          duration: 10,
           useNativeDriver: true,
         }).start();
       } else {

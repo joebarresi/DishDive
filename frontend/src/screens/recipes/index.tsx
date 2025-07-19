@@ -20,7 +20,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import NavBarGeneral from "../../components/common/navbar";
 import styles from "./styles";
 import { ExternalPost, Post, PostSingleHandles } from "../../../types";
-import PostSingle from "../../components/common/post";
+import PostSingle from "../../components/post";
 import { APP_COLOR } from "../../styles";
 import RecipeModal from "../../components/recipe/RecipeModal";
 import RecipeGridItem from "../../components/recipe/RecipeGridItem";

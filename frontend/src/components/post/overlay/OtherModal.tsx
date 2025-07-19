@@ -1,12 +1,12 @@
 import { Modal, View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Post, User } from "../../../../../types";
+import { Post, User } from "../../../../types";
 import styles from "./styles";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store";
-import { deletePost } from "../../../../services/posts";
+import { RootState } from "../../../redux/store";
+import { deletePost } from "../../../services/posts";
 import { useNavigation } from "@react-navigation/native";
-import { HomeStackParamList } from "../../../../navigation/home";
+import { HomeStackParamList } from "../../../navigation/home";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface OtherModalProps {
