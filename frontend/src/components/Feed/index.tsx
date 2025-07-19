@@ -1,5 +1,5 @@
 import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-native";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
 import PostSingle, { EmptyPostConfig, PostSingleHandles } from "../post";
@@ -45,6 +45,7 @@ const Feed = ({
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const flatListRef = useRef<FlatList>(null);
+  const [currentlyVisibleVideoId, setCurrentlyVisibleVideoId] = useState<string | null>(null);
   
   const prevFeedTypeRef = useRef<string | undefined>();
   
@@ -57,26 +58,23 @@ const Feed = ({
       }
     });
     
-    // Play the first video when component is focused and there are posts
-    if (isFocused && posts.length > 0) {
-      const firstVideoRef = mediaRefs.current[posts[0].id];
-      
-      if (firstVideoRef) {
-        if (prevFeedTypeRef.current !== undefined && 
-            prevFeedTypeRef.current !== feedType) {
-          setTimeout(() => {
-            firstVideoRef.restart();
-          }, 100);
-        } else {
-          setTimeout(() => {
-            firstVideoRef.play();
-          }, 100);
-        }
-      }
-    }
-    
     prevFeedTypeRef.current = feedType;
   }, [isFocused, feedType, posts]);
+
+  // Separate effect to handle playing video when component regains focus
+  useEffect(() => {
+    if (isFocused && posts.length > 0 && currentlyVisibleVideoId) {
+      // Small delay to ensure everything is ready
+      const timer = setTimeout(() => {
+        const videoRef = mediaRefs.current[currentlyVisibleVideoId];
+        if (videoRef) {
+          videoRef.play();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isFocused, currentlyVisibleVideoId]);
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems, changed }: { viewableItems: FeedItemViewToken[], changed: FeedItemViewToken[] }) => {
@@ -92,7 +90,7 @@ const Feed = ({
         });
       }
       
-      // Play the first viewable video
+      // Play the first viewable video and track it
       if (viewableItems.length > 0) {
         const firstViewableItem = viewableItems[0];
         // Skip playing if it's an empty post
@@ -104,11 +102,18 @@ const Feed = ({
         const key = firstViewableItem.item.post.id;
         const cell = mediaRefs.current[key];
         
+        // Update the currently visible video ID
+        setCurrentlyVisibleVideoId(key);
+        
         if (cell) {
           if (!isProfileFeed && setCurrentUserProfileItemInView) {
             setCurrentUserProfileItemInView(firstViewableItem.item.post.creator);
           }
-          cell.play();
+          
+          // Only play if the component is focused
+          if (isFocused) {
+            cell.play();
+          }
         }
       }
     },
