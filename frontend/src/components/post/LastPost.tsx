@@ -8,6 +8,9 @@ interface LastPostProps {
 }
 
 const LastPost = ({ config }: LastPostProps) => {
+  if (config.overrideComponent) {
+    return <>{config.overrideComponent}</>;
+  }
   return (
     <View style={styles.emptyContainer}>
       <Text style={styles.emptyTitle}>Uh-oh! We ran out of posts for your feed</Text>

@@ -4,8 +4,9 @@ import { Post } from "../../../../../types";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../navigation/main";
+import { RootState } from "../../../../redux/store";
 
-export default function ProfilePostListItem({ item }: { item: Post | null }) {
+export default function ProfilePostListItem({ item, user }: { item: Post | null; user: RootState["auth"]["currentUser"]; }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -14,9 +15,9 @@ export default function ProfilePostListItem({ item }: { item: Post | null }) {
       <TouchableOpacity
         style={styles.container}
         onPress={() =>
-          navigation.navigate("userPosts", {
-            creator: item.creator,
+          navigation.navigate("feedMisc", {
             profile: true,
+            creator: user?.uid ?? "",
           })
         }
       >

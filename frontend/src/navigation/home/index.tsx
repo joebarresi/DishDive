@@ -16,14 +16,12 @@ import { APP_COLOR } from "../../styles";
 export type HomeStackParamList = {
   Feed: undefined;
   Discover: undefined;
-  Add: undefined;
   Recipes: undefined;
   Me: { initialUserId: string };
 };
 
 const ICON_SIZE = 20;
 
-// Create a context to track the active tab
 export const ActiveTabContext = createContext<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -34,10 +32,9 @@ export const ActiveTabContext = createContext<{
 
 const Tab = createMaterialBottomTabNavigator<HomeStackParamList>();
 
-// Define theme colors for the app
 const THEME = {
-  primary: APP_COLOR, // Cooking-themed red color for active elements
-  inactive: "#777777", // Dark gray for inactive tabs
+  primary: APP_COLOR, 
+  inactive: "#777777", 
 };
 
 const paperTheme = {

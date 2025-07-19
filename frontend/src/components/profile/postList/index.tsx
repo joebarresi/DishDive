@@ -6,9 +6,11 @@ import { APP_COLOR } from "../../../styles";
 
 export default function ProfilePostList({
   posts,
+  user,
   isLoading = false,
 }: {
   posts: RootState["post"]["currentUserPosts"];
+  user: RootState["auth"]["currentUser"];
   isLoading?: boolean;
 }) {
   const windowWidth = Dimensions.get('window').width;
@@ -30,7 +32,7 @@ export default function ProfilePostList({
         nestedScrollEnabled
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ProfilePostListItem item={item} />}
+        renderItem={({ item }) => <ProfilePostListItem user={user} item={item} />}
         contentContainerStyle={{ alignSelf: 'center', width: windowWidth }}
       />
     </View>

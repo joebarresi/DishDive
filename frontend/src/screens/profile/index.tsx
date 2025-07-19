@@ -100,7 +100,7 @@ export default function ProfileScreen({
         }
       >
         <ProfileHeader user={user} />
-        <ProfilePostList posts={userPosts} isLoading={postsLoading} />
+        <ProfilePostList user={user} posts={userPosts} isLoading={postsLoading} />
       </ScrollView>
     </SafeAreaView>
   );

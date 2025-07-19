@@ -3,26 +3,25 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import HomeFeed from "../../screens/homeFeed";
 import ProfileScreen from "../../screens/profile";
+import FeedMisc from "../../screens/feedMisc";
 
-// Define feed types
 export type FeedType = "Following" | "My Feed" | "Trending";
 
-// Update param list to include feed type
 export type FeedStackParamList = {
-  feedList: {
+  homeFeed: {
     creator: string;
-    profile: boolean;
     feedType: FeedType;
   };
   feedProfile: { initialUserId: string };
+  feedMisc: {},
 };
 
+// Contexts
 interface CurrentUserProfileItemInViewContextType {
   currentUserProfileItemInView: string | null;
   setCurrentUserProfileItemInView: Dispatch<SetStateAction<string | null>>;
 }
 
-// Add context for active feed type to manage which tab is playing videos
 interface ActiveFeedContextType {
   activeFeedType: FeedType;
   setActiveFeedType: Dispatch<SetStateAction<FeedType>>;
@@ -42,17 +41,17 @@ export const ActiveFeedContext = createContext<ActiveFeedContextType>({
   setActiveFeedType: () => {},
 });
 
+
 const FeedNavigation = () => {
   const [currentUserProfileItemInView, setCurrentUserProfileItemInView] =
     useState<string | null>(null);
   const [activeFeedType, setActiveFeedType] = useState<FeedType>("My Feed");
 
-  // Custom tab bar component that's transparent
-  const TopNav = ({ state, descriptors, navigation }: any) => {
+  const TopNav = ({ state, navigation }: any) => {
     return (
       <View style={styles.tabBarContainer}>
         {state.routes.map((route: any, index: number) => {
-          if (route.name !== "feedList") return null;
+          if (route.name !== "homeFeed") return null;
           const tabOptions: FeedType[] = ["Following", "My Feed", "Trending"];
           
           return (
@@ -100,7 +99,7 @@ const FeedNavigation = () => {
         }}
       >
         <Navigator 
-          initialRouteName="feedList" 
+          initialRouteName="homeFeed" 
           tabBar={(props) => <TopNav {...props} />}
           screenOptions={{
             tabBarStyle: { position: 'absolute', top: 0 },
@@ -108,14 +107,19 @@ const FeedNavigation = () => {
           }}
         >
           <Screen
-            name="feedList"
+            name="homeFeed"
             component={HomeFeed}
-            initialParams={{ profile: false, feedType: activeFeedType }}
+            initialParams={{ feedType: activeFeedType }}
           />
           <Screen
             name="feedProfile"
             component={ProfileScreen}
             initialParams={{ initialUserId: "" }}
+          />
+          <Screen
+            name="feedMisc"
+            component={FeedMisc}
+            initialParams={{}}
           />
         </Navigator>
       </CurrentUserProfileItemInViewContext.Provider>

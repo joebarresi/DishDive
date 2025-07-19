@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import styles from "./styles";
 import { Post } from "../../../types";
@@ -20,6 +20,7 @@ export interface PostSingleHandles {
 
 export interface EmptyPostConfig {
   message: string;
+  overrideComponent?: React.ReactNode;
 }
 
 export interface PostSingleProps {

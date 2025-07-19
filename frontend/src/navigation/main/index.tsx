@@ -11,7 +11,6 @@ import SavePostScreen from "../../screens/savePost";
 import EditProfileScreen from "../../screens/profile/edit";
 import EditProfileFieldScreen from "../../screens/profile/edit/field";
 import Modal from "../../components/modal";
-import HomeFeed from "../../screens/homeFeed";
 import ProfileScreen from "../../screens/profile";
 import ChatSingleScreen from "../../screens/chat/single";
 import SettingsScreen from "../../screens/settings";
@@ -23,8 +22,8 @@ import { DocumentReference } from "firebase/firestore";
 import UploadScreen from "../../screens/upload";
 import PostSingle from "../../components/post";
 import { RouteProp } from "@react-navigation/native";
+import FeedMisc from "../../screens/feedMisc";
 
-// Wrapper component to extract item from route params
 const PostScreen = ({ route }: { route: RouteProp<RootStackParamList, "post"> }) => {
   return <PostSingle item={route.params.item} />;
 };
@@ -33,7 +32,7 @@ export type RootStackParamList = {
   home: undefined;
   auth: undefined;
   onboarding: undefined;
-  userPosts: { creator: string; profile: boolean };
+  feedMisc: { creator?: string, profile: boolean};
   profileOther: { initialUserId: string };
   savePost: { docRef: DocumentReference, source: string };
   editProfile: undefined;
@@ -102,11 +101,6 @@ export default function Route() {
               options={{ headerShown: false }}
               />
             <Stack.Screen
-              name="userPosts"
-              component={HomeFeed}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="profileOther"
               component={ProfileScreen}
               options={{ headerShown: false }}
@@ -149,6 +143,11 @@ export default function Route() {
             <Stack.Screen
               name="post"
               component={PostScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="feedMisc"
+              component={FeedMisc}
               options={{ headerShown: false }}
             />
           </>
