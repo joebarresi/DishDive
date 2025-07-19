@@ -7,7 +7,9 @@ import PostSingleOverlay from "./overlay";
 import { TouchableWithoutFeedback, View, Animated } from "react-native";
 import LastPost from "./LastPost";
 import { FeedItemWrapper } from "../Feed";
+import RecipeFullScreen from "./RecipeFullScreen";
 
+export type VoidFunction = () => void;
 export interface PostSingleHandles {
   play: () => Promise<void>;
   stop: () => Promise<void>;
@@ -38,6 +40,8 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     const user = useUser(post.creator).data;
     const [isPlaying, setIsPlaying] = useState(false);
     const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
+    const [showRecipe, setShowRecipe] = useState(false);
+    const [returningFromRecipe, setReturningFromRecipe] = useState(false);
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
     useImperativeHandle(parentRef, () => ({
@@ -58,6 +62,22 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
       };
     }, []);
 
+    let timer: string | number | NodeJS.Timeout | undefined = undefined;
+    const TIMEOUT = 500
+    const debounce = ({onSingle, onDouble}: { onSingle: () => void, onDouble: () => void}) => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+        onDouble();
+      } else {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          timer = undefined;
+          onSingle();
+        }, TIMEOUT);
+      }
+    };
+
     useEffect(() => {
       if (isPlaying) {
         Animated.timing(fadeAnim, {
@@ -70,8 +90,22 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
       }
     }, [isPlaying, fadeAnim]);
 
+    // Effect to handle video playback when recipe view is toggled
+    useEffect(() => {
+      // Only run this effect when showRecipe changes from true to false
+      // and not on initial component mount
+      if (!showRecipe && ref.current && hasStartedPlaying) {
+        // When switching back from recipe view, ensure video plays
+        ref.current.playAsync()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(e => console.log("Error playing video in effect:", e));
+      }
+    }, [showRecipe]);
+
     const play = async () => {
-      if (ref.current == null) {
+      if (ref.current == null || showRecipe) {
         return;
       }
       try {
@@ -88,7 +122,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     };
 
     const stop = async () => {
-      if (ref.current == null) {
+      if (ref.current == null || showRecipe) {
         return;
       }
       try {
@@ -116,7 +150,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     };
 
     const togglePlayPause = async () => {
-      if (ref.current == null) {
+      if (ref.current == null || showRecipe) {
         return;
       }
       try {
@@ -137,7 +171,7 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     };
 
     const restart = async () => {
-      if (ref.current == null) {
+      if (ref.current == null || showRecipe) {
         return;
       }
       try {
@@ -152,13 +186,32 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     };
 
     const handlePress = () => {
-      togglePlayPause();
+      debounce({
+        onSingle: () => {
+          if (!showRecipe) {
+          togglePlayPause();
+          }
+        },
+        onDouble: () => {
+          if (showRecipe) {
+            // Set flag that we're returning from recipe view
+            setReturningFromRecipe(true);
+            setShowRecipe(false);
+          } else {
+            stop();
+            setShowRecipe(true);
+          }
+        }
+      })
+    };
+
+    const handleCloseRecipe = () => {
+      setReturningFromRecipe(true);
+      setShowRecipe(false);
     };
 
     return (
       <>
-        {user && <PostSingleOverlay user={user} post={post} />}
-        
         <TouchableWithoutFeedback onPress={handlePress}>
           <View style={{ flex: 1 }}>
             <Video
@@ -174,7 +227,8 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
                 uri: post.media[0],
               }}
             />
-            <Animated.View 
+            {user && <PostSingleOverlay user={user} post={post} />}
+            <Animated.View
               style={[
                 styles.playPauseContainer,
                 { opacity: fadeAnim }
@@ -190,6 +244,12 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
             </Animated.View>
           </View>
         </TouchableWithoutFeedback>
+
+        <RecipeFullScreen 
+          post={post} 
+          visible={showRecipe} 
+          onClose={handleCloseRecipe} 
+        />
       </>
     );
   },
