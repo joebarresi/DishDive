@@ -20,7 +20,7 @@ export interface ExternalPost {
 }
 
 export enum DietTags {
-  DASH = "DASH (Dietary Approaches to Stop Hypertension)",
+  DASH = "DASH",
   Vegetarian = "Vegetarian",
   Vegan = "Vegan",
   Pescatarian = "Pescatarian",

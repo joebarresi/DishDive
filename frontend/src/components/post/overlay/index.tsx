@@ -12,6 +12,7 @@ import { RootStackParamList } from "../../../navigation/main";
 import { Avatar } from "react-native-paper";
 import OtherModal from "./OtherModal";
 import { LikeButton, SaveButton, ShareButton, OtherButton } from "./buttons";
+import TagsDisplay from "../TagsDisplay";
 
 /**
  * Function that renders a component meant to be overlapped on
@@ -93,46 +94,54 @@ export default function PostSingleOverlay({
 
   return (
     <View style={styles.container}>
-      <View style={styles.contentContainer}>
-        <View style={styles.userInfoContainer}>
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={() =>
-              navigation.navigate("profileOther", {
-                initialUserId: user?.uid ?? "",
-              })
-            }
-          >
-            {user.photoURL ? (
-              <Image style={styles.avatar} source={{ uri: user.photoURL }} />
-            ) : (
-              <Avatar.Icon
-                style={styles.defaultAvatar}
-                size={54}
-                icon={"account"}
-              />
-            )}
-          </TouchableOpacity>
-          
-          <View style={styles.infoContainer}>
-            <Text style={styles.displayName}>{user.displayName || user.email}</Text>
-            <Text style={styles.description}>{post.description}</Text>
+      <View style={styles.bottomContainer}>
+        <View style={styles.contentContainer}>
+          {/* Tags placed right above the description */}
+              {(post.cuisineTags || post.dietTags) && (
+                <View style={styles.tagsContainer}>
+                  <TagsDisplay cuisineTags={post.cuisineTags} dietTags={post.dietTags} />
+                </View>
+              )}
+          <View style={styles.userInfoContainer}>
+            <TouchableOpacity
+              style={styles.avatarContainer}
+              onPress={() =>
+                navigation.navigate("profileOther", {
+                  initialUserId: user?.uid ?? "",
+                })
+              }
+            >
+              {user.photoURL ? (
+                <Image style={styles.avatar} source={{ uri: user.photoURL }} />
+              ) : (
+                <Avatar.Icon
+                  style={styles.defaultAvatar}
+                  size={54}
+                  icon={"account"}
+                />
+              )}
+            </TouchableOpacity>
+            
+            <View style={styles.infoContainer}>
+              <Text style={styles.displayName}>{user.displayName || user.email}</Text>
+              <Text style={styles.description}>{post.description}</Text>
+            </View>
           </View>
         </View>
-      </View>
-      
-      <View style={styles.actionsContainer}>
-        <LikeButton
-          isLiked={currentLikeState.state}
-          likeCount={currentLikeState.counter}
-          onPress={() => handleUpdateLike(currentLikeState)}
-        />
-        <SaveButton
-          isSaved={isSaved}
-          onPress={() => handleSavePost(isSaved)}
-        />
-        <ShareButton onPress={handleShare} />
-        <OtherButton onPress={() => setOtherModalVisible(true)} />
+        
+        <View style={styles.actionsContainer}>
+          <LikeButton
+            isLiked={currentLikeState.state}
+            likeCount={currentLikeState.counter}
+            onPress={() => handleUpdateLike(currentLikeState)}
+          />
+          <SaveButton
+            isSaved={isSaved}
+            onPress={() => handleSavePost(isSaved)}
+          />
+          <ShareButton onPress={handleShare} />
+          <OtherButton onPress={() => setOtherModalVisible(true)} />
+        </View>
       </View>
       <OtherModal
         visible={otherModalVisible}

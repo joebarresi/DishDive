@@ -9,9 +9,12 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingBottom: 20,
     paddingRight: 10,
-    flexDirection: "row",
+  },
+  bottomContainer: {
+    flexDirection: "row", // Row layout for content and actions side by side
     justifyContent: "space-between",
     alignItems: "flex-end",
+    width: "100%",
   },
   contentContainer: {
     flex: 1,
@@ -19,11 +22,16 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start", // Changed to flex-start to align at the top
   },
   infoContainer: {
     flex: 1,
     marginLeft: 10,
+  },
+  tagsContainer: {
+    marginTop: 5,
+    marginBottom: 5,
+    width: "100%",
   },
   displayName: {
     color: "white",
@@ -34,7 +42,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   description: {
-    marginTop: 10,
+    marginTop: 5, // Reduced from 10 to 5 since we have tags above
     color: "white",
     fontSize: 14,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
