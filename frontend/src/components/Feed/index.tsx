@@ -50,7 +50,6 @@ const Feed = ({
   const prevFeedTypeRef = useRef<string | undefined>();
   
   useEffect(() => {
-    // Stop all videos when component loses focus or feed type changes
     Object.keys(mediaRefs.current).forEach((key) => {
       const media = mediaRefs.current[key];
       if (media) {
@@ -61,10 +60,8 @@ const Feed = ({
     prevFeedTypeRef.current = feedType;
   }, [isFocused, feedType, posts]);
 
-  // Separate effect to handle playing video when component regains focus
   useEffect(() => {
     if (isFocused && posts.length > 0 && currentlyVisibleVideoId) {
-      // Small delay to ensure everything is ready
       const timer = setTimeout(() => {
         const videoRef = mediaRefs.current[currentlyVisibleVideoId];
         if (videoRef) {
@@ -78,10 +75,8 @@ const Feed = ({
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems, changed }: { viewableItems: FeedItemViewToken[], changed: FeedItemViewToken[] }) => {
-      // Stop videos that are no longer viewable
       if (changed.length > 0) {
         changed.forEach((element) => {
-          // Get the correct key for the media ref
           const key = element.item.post?.id || 'empty-post';
           const cell = mediaRefs.current[key];
           if (cell && !element.isViewable) {
@@ -90,19 +85,15 @@ const Feed = ({
         });
       }
       
-      // Play the first viewable video and track it
       if (viewableItems.length > 0) {
         const firstViewableItem = viewableItems[0];
-        // Skip playing if it's an empty post
         if (!firstViewableItem.item.post) {
           return;
         }
         
-        // Get the correct key for the media ref
         const key = firstViewableItem.item.post.id;
         const cell = mediaRefs.current[key];
         
-        // Update the currently visible video ID
         setCurrentlyVisibleVideoId(key);
         
         if (cell) {
@@ -110,7 +101,6 @@ const Feed = ({
             setCurrentUserProfileItemInView(firstViewableItem.item.post.creator);
           }
           
-          // Only play if the component is focused
           if (isFocused) {
             cell.play();
           }
