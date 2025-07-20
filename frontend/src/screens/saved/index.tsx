@@ -4,8 +4,6 @@ import {
   Text, 
   FlatList, 
   TouchableOpacity, 
-  Image, 
-  Modal, 
   ActivityIndicator,
   RefreshControl,
   ScrollView,
@@ -19,12 +17,9 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../../firebaseConfig";
 import NavBarGeneral from "../../components/common/navbar";
 import styles from "./styles";
-import { ExternalPost, Post, PostSingleHandles } from "../../../types";
-import PostSingle from "../../components/post";
+import { ExternalPost, Post } from "../../../types";
 import { APP_COLOR } from "../../styles";
-import RecipeModal from "../../components/recipe/RecipeModal";
 import RecipeGridItem from "../../components/recipe/RecipeGridItem";
-import RecipeView from "../../components/recipe/recipe";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 
@@ -33,23 +28,16 @@ const isExternalPost = (post: Post | ExternalPost): post is ExternalPost => {
   return (post as ExternalPost).link !== undefined;
 };
 
-const RecipesScreen = () => {
+const SavedScreen = () => {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [recipeModalVisible, setRecipeModalVisible] = useState(false);
-  const [viewRecipeModalVisible, setViewRecipeModalVisible] = useState(false);
-  const [selectedRecipePost, setSelectedRecipePost] = useState<Post | null>(null);
-  const postRef = useRef<PostSingleHandles | null>(null);
+
   const searchBarHeight = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef<TextInput>(null);
-  
-  // Get the loading state from Redux to know when to refresh after adding an external recipe
   const reduxLoading = useSelector((state: RootState) => state.post.loading);
   const reduxLoadingRef = useRef(reduxLoading);
 
@@ -57,8 +45,7 @@ const RecipesScreen = () => {
     fetchSavedPosts();
   }, []);
   
-  // Refresh posts when Redux loading state changes from true to false
-  // This indicates that an external recipe was just added
+  // Handles auto-refresh
   useEffect(() => {
     if (reduxLoadingRef.current === true && reduxLoading === false) {
       // Redux loading just finished, refresh posts
@@ -67,25 +54,16 @@ const RecipesScreen = () => {
     reduxLoadingRef.current = reduxLoading;
   }, [reduxLoading]);
 
-  // When modal is closed, stop the video
-  useEffect(() => {
-    if (!modalVisible && postRef.current) {
-      postRef.current.stop();
-    }
-  }, [modalVisible]);
-
   // Filter posts when search query changes
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setFilteredPosts(savedPosts);
     } else {
       const query = searchQuery.toLowerCase();
+      // TODO: this will need to get optimized
       const filtered = savedPosts.filter(post => {
-        // Search in recipe title
         const title = post.recipe?.title?.toLowerCase() || "";
-        // Search in recipe ingredients
         const ingredients = post.recipe?.ingredients?.join(" ").toLowerCase() || "";
-        // Search in post description
         const description = post.description?.toLowerCase() || "";
         
         return title.includes(query) || ingredients.includes(query) || description.includes(query);
@@ -169,21 +147,6 @@ const RecipesScreen = () => {
     fetchSavedPosts(true);
   };
 
-  const handlePostPress = (post: Post | ExternalPost) => {
-    if (isExternalPost(post)) {
-      // TODO: Handle Opening link
-      console.log("Would open external link")
-    } else {
-      setSelectedPost(post as Post);
-      setModalVisible(true);
-    }  
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedPost(null);
-  };
-
   const toggleSearch = () => {
     if (searchVisible) {
       // Hide search bar
@@ -214,26 +177,11 @@ const RecipesScreen = () => {
     searchInputRef.current?.focus();
   };
 
-  const openRecipeModal = () => {
-    setRecipeModalVisible(true);
-  };
-
-  const closeRecipeModal = () => {
-    setRecipeModalVisible(false);
-  };
-
-  const handleViewRecipe = (post: Post | ExternalPost) => {
-    if (!isExternalPost(post)) {
-      setSelectedRecipePost(post as Post);
-      setViewRecipeModalVisible(true);
-    }
-  };
-
-  const renderGridItem = ({ item }: { item: Post | ExternalPost }) => (
-    <RecipeGridItem 
+  const renderGridItem = ({ item, index }: { item: Post | ExternalPost, index: number }) => (
+    <RecipeGridItem
       item={item} 
-      onViewVideo={handlePostPress}
-      onViewRecipe={handleViewRecipe}
+      index={index}
+      filteredPosts={filteredPosts}
     />
   );
 
@@ -340,7 +288,8 @@ const RecipesScreen = () => {
         {renderContent()}
       </View>
       
-      {/* Add External Recipe Button */}
+      {/* Commenting out until we decide what to do 
+      Add External Recipe Button
       <View style={styles.addButtonContainer}>
         <TouchableOpacity 
           style={styles.addButton}
@@ -349,64 +298,10 @@ const RecipesScreen = () => {
         >
           <Text style={styles.addButtonText}>Add External Recipe</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
-      {/* Recipe Modal */}
-      <RecipeModal 
-        visible={recipeModalVisible}
-        onClose={closeRecipeModal}
-      />
-
-      {/* View Recipe Modal */}
-      {selectedRecipePost && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={viewRecipeModalVisible}
-          onRequestClose={() => setViewRecipeModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={() => setViewRecipeModalVisible(false)}
-            >
-              <Ionicons name="close" size={24} color="black" />
-            </TouchableOpacity>
-            <RecipeView post={selectedRecipePost} />
-          </View>
-        </Modal>
-      )}
-
-      {/* Full Post Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-            <Ionicons name="close" size={24} color="black" />
-          </TouchableOpacity>
-          
-          {selectedPost && (
-            <View style={{ flex: 1 }}>
-              <PostSingle 
-                item={selectedPost} 
-                ref={(ref) => {
-                  postRef.current = ref;
-                  // Auto-play when modal opens
-                  if (ref) {
-                    ref.play();
-                  }
-                }}
-              />
-            </View>
-          )}
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
 
-export default RecipesScreen;
+export default SavedScreen;

@@ -3,7 +3,6 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import ProfileScreen from "../../screens/profile";
 import SearchScreen from "../../screens/search";
 import FeedNavigation from "../feed";
-import RecipesScreen from "../../screens/recipes";
 import { useChats } from "../../hooks/useChats";
 import { createContext, useState } from "react";
 import {
@@ -12,6 +11,7 @@ import {
 } from "react-native-paper";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
 import { APP_COLOR } from "../../styles";
+import SavedScreen from "../../screens/saved";
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -74,7 +74,7 @@ export default function HomeScreen() {
       >
         <Tab.Screen
           name="Recipes"
-          component={RecipesScreen}
+          component={SavedScreen}
           options={{
             tabBarIcon: ({ color }) => (
               <Feather name="book-open" size={ICON_SIZE} color={color} />

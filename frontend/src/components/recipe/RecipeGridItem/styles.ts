@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   contentContainer: {
-    height: itemWidth * 0.8,
+    height: itemWidth,
     borderRadius: 8,
     overflow: "hidden",
     backgroundColor: "#f0f0f0",

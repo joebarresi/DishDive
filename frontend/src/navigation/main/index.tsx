@@ -23,6 +23,7 @@ import UploadScreen from "../../screens/upload";
 import PostSingle from "../../components/post";
 import { RouteProp } from "@react-navigation/native";
 import FeedMisc from "../../screens/feedMisc";
+import { Post } from "../../../types";
 
 const PostScreen = ({ route }: { route: RouteProp<RootStackParamList, "post"> }) => {
   return <PostSingle item={route.params.item} />;
@@ -32,6 +33,9 @@ export interface FeedMiscProps {
   profile?: {
     creator: string,
   }
+  saved?: {
+    filteredPosts: Post[]
+  },
   postIndex: number,
 }
 

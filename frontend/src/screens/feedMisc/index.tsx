@@ -21,7 +21,7 @@ interface FeedMiscPropss {
  */
 const FeedMisc = ({ route }: FeedMiscPropss) => {
   const insets = useSafeAreaInsets();
-  const { profile, postIndex } = route.params;
+  const { profile, saved, postIndex } = route.params;
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -39,7 +39,8 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
         const {creator} = profile;
         const fetchedPosts = await getPostsByUserId(creator);
         setPosts(fetchedPosts);
-        setStartingIndex(postIndex);
+      } else if (saved) {
+        setPosts(saved.filteredPosts);
       } else {
         return (
           <View style={styles.container}>
@@ -52,6 +53,7 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
           </View>
         );
       }
+      setStartingIndex(postIndex);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -79,6 +81,7 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
         refreshing={refreshing} 
         onRefresh={onRefresh}
         isProfileFeed={Boolean(profile)} 
+        fullScreen={true}
         emptyConfig={{
           // TODO: conditional logic for this
           message: "We need to implement the conditional logic"

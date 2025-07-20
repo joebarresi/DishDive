@@ -24,6 +24,7 @@ interface FeedProps {
   refreshing: boolean;
   onRefresh: () => void;
   isProfileFeed: boolean;
+  fullScreen?: boolean;
   feedType?: string;
   emptyConfig: EmptyPostConfig;
 }
@@ -35,6 +36,7 @@ const Feed = ({
   refreshing,
   onRefresh,
   isProfileFeed,
+  fullScreen,
   feedType = "My Feed",
   emptyConfig,
 }: FeedProps) => {
@@ -110,7 +112,7 @@ const Feed = ({
   );
 
   const screenHeight = Dimensions.get("window").height;
-  const bottomTabHeight = isProfileFeed ? 0 : 90;
+  const bottomTabHeight = fullScreen ? 0 : 90;
   // const bottomInset = insets.bottom; // Want to see on the phone
   const bottomInset = 0;
   const feedItemHeight = screenHeight - bottomTabHeight - bottomInset;
