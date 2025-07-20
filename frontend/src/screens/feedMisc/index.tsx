@@ -39,6 +39,7 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
         const {creator} = profile;
         const fetchedPosts = await getPostsByUserId(creator);
         setPosts(fetchedPosts);
+        setStartingIndex(postIndex);
       } else {
         return (
           <View style={styles.container}>
@@ -66,8 +67,8 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
   
   useEffect(() => {
     getPosts();
-    setStartingIndex(postIndex);
-  }, [])
+  }, [postIndex])
+  
 
   return (
     <>
