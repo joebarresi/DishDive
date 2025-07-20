@@ -43,6 +43,7 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const prevFeedTypeRef = useRef<FeedType | undefined>();
 
   const fetchPosts = async (showRefreshing = false) => {
     const currentUser = FIREBASE_AUTH.currentUser;
@@ -84,8 +85,18 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
     fetchPosts(true);
   };
 
+  // Handle switching feed type
   useEffect(() => {
+    const feedTypeChanged = prevFeedTypeRef.current !== undefined && 
+                           prevFeedTypeRef.current !== feedType;
+    if (feedTypeChanged) {
+      setPosts([]);
+      setLoading(true);
+    }
+    
     fetchPosts();
+    
+    prevFeedTypeRef.current = feedType;
   }, [feedType, creator]);
 
   return (

@@ -65,7 +65,6 @@ export const getTrendingFeed = (currentUser: User | null): Promise<Post[]> => {
       const q = query(
         collection(FIREBASE_DB, "post"),
         where("creator", "!=", currentUser?.uid),
-        orderBy("creator"),
         orderBy("likesCount", "desc"),
       );
       const querySnapshot = await getDocs(q);
