@@ -9,7 +9,7 @@ export enum DietTags {
   Vegan = "Vegan",
   Pescatarian = "Pescatarian",
 
-  Ketogenic = "Ketogenic (Keto)",
+  Ketogenic = "Keto",
   LowCarb = "Low-Carb",
   Atkins = "Atkins",
   GlutenFree = "Gluten-Free",

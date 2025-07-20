@@ -145,6 +145,9 @@ const Feed = ({
   function onLayout() {
     flatListRef.current?.scrollToIndex({index: startingIndex})
   }
+  useEffect(() => {
+    onLayout();
+  }, [startingIndex])
 
   const getItemLayout = (_: ArrayLike<FeedItemWrapper> | null | undefined, index: number) => ({
             length: feedItemHeight,

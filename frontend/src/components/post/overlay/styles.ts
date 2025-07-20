@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     bottom: 0,
     paddingLeft: 20,
-    paddingBottom: 5,
+    paddingBottom: 20,
     paddingRight: 10,
   },
   bottomContainer: {

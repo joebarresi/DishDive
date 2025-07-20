@@ -53,6 +53,7 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
           </View>
         );
       }
+
       setStartingIndex(postIndex);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -68,9 +69,9 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
   };
   
   useEffect(() => {
+    console.log(postIndex)
     getPosts();
   }, [postIndex])
-  
 
   return (
     <>
