@@ -18,6 +18,8 @@ export function generateRecipePrompt({
   'ingredients' (as an array of strings),
   and 'steps' (as an array of strings).
 
+  Ingredients should begin with an amount. For an example, 2 apples. Or 1 tbsp of Cumin.
+
   Here is a Transcription of the audio: ${audioTranscript || ""}
   
   Here is a frame by frame visual analysis of the video 
@@ -62,6 +64,7 @@ export function getDietPrompt(props: {ingredients: string[]}) {
           [${Object.values(DietTags).map((tag) => `"${tag}"`).join(", ")}]
 
           Your output **must** be a JSON array of strings, where each string is a valid diet tag from the list above. Return an empty array if no tags apply.
+          If the recipe is not suitable for any diet, return an empty array. Keep in mind, low-carb means there are very little carbohydrates present in the meal.
 
           Example Input:
           Recipe Name: Spicy Chicken Stir-fry
