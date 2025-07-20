@@ -2,8 +2,6 @@ import { Dispatch, SetStateAction, createContext, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import HomeFeed from "../../screens/homeFeed";
-import ProfileScreen from "../../screens/profile";
-import FeedMisc from "../../screens/feedMisc";
 
 export type FeedType = "Following" | "My Feed" | "Trending";
 
@@ -12,8 +10,6 @@ export type FeedStackParamList = {
     creator: string;
     feedType: FeedType;
   };
-  feedProfile: { initialUserId: string };
-  feedMisc: {},
 };
 
 // Contexts
@@ -110,16 +106,6 @@ const FeedNavigation = () => {
             name="homeFeed"
             component={HomeFeed}
             initialParams={{ feedType: activeFeedType }}
-          />
-          <Screen
-            name="feedProfile"
-            component={ProfileScreen}
-            initialParams={{ initialUserId: "" }}
-          />
-          <Screen
-            name="feedMisc"
-            component={FeedMisc}
-            initialParams={{}}
           />
         </Navigator>
       </CurrentUserProfileItemInViewContext.Provider>
