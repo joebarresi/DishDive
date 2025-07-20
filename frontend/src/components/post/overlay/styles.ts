@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     bottom: 0,
     paddingLeft: 20,
-    paddingBottom: 20,
+    paddingBottom: 5,
     paddingRight: 10,
   },
   bottomContainer: {
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   description: {
-    marginTop: 5, // Reduced from 10 to 5 since we have tags above
+    marginTop: 5, 
     color: "white",
     fontSize: 14,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
@@ -88,11 +88,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   modalContent: {
-    width: "90%",
-    height: "80%",
+    width: "80%", 
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
+    borderRadius: 15,
+    padding: 15, 
     borderWidth: 1,
     borderColor: "#8B54FB",
   },
@@ -102,8 +101,8 @@ const styles = StyleSheet.create({
     right: 10,
     zIndex: 1000,
     backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 5,
+    borderRadius: 15,
+    padding: 3, 
   },
   backButton: {
     position: "absolute",
