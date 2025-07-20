@@ -82,6 +82,7 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
   };
 
   const onRefresh = () => {
+    setRefreshing(true);
     fetchPosts(true);
   };
 

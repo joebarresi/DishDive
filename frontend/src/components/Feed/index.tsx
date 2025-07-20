@@ -1,4 +1,4 @@
-import { FlatList, View, Dimensions, ViewToken, RefreshControl } from "react-native";
+import { FlatList, View, Dimensions, ViewToken, RefreshControl, ActivityIndicator, Text, StyleSheet } from "react-native";
 import { useContext, useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
@@ -158,13 +158,19 @@ const Feed = ({
       }
       snapToInterval={feedItemHeight}
       onViewableItemsChanged={onViewableItemsChanged.current}
+      contentInsetAdjustmentBehavior="never"
+      automaticallyAdjustContentInsets={false}
+      contentInset={{ top: 0 }}
+      contentOffset={{ x: 0, y: 0 }}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={APP_COLOR}
-          colors={[APP_COLOR]}
-          progressBackgroundColor="#ffffff"
+          tintColor="white"
+          colors={["white"]}
+          progressBackgroundColor="transparent"
+          style={{ backgroundColor: 'transparent' }}
+          progressViewOffset={60}
         />
       }
       {...defaultFlatListProps}

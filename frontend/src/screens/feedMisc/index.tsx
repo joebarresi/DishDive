@@ -2,16 +2,20 @@ import React from "react";
 import { View, Text, StyleSheet, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RouteProp } from "@react-navigation/native";
-import { FeedStackParamList } from "../../navigation/feed";
 import BackButton from "../../components/common/misc/BackButton";
 import { RootStackParamList } from "../../navigation/main";
 
-type FeedMiscRouteProp = RouteProp<RootStackParamList, "feedMisc"> | RouteProp<FeedStackParamList, "feedMisc">
+type FeedMiscRouteProp = RouteProp<RootStackParamList, "feedMisc">
 
 interface FeedMiscProps {
   route: FeedMiscRouteProp;
 }
 
+/*
+ * My idea with this page is that based off route params, 
+ * we should be able to deduce the type of posts we want to show,
+ * as well as the starting post. Always show back button to "go back".
+ */
 const FeedMisc = ({ route }: FeedMiscProps) => {
   const insets = useSafeAreaInsets();
 
