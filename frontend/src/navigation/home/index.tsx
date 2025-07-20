@@ -57,7 +57,7 @@ export default function HomeScreen() {
           backgroundColor: "white",
           borderTopWidth: 1,
           borderTopColor: "#EEEEEE",
-          height: 90
+          height: 90 // if you change this, change postEhight in feed as well
         }}
         initialRouteName="Recipes"
         activeColor={THEME.primary}

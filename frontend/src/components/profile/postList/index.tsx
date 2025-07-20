@@ -32,7 +32,7 @@ export default function ProfilePostList({
         nestedScrollEnabled
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ProfilePostListItem user={user} item={item} />}
+        renderItem={(itemIndex) => <ProfilePostListItem user={user} renderItem={itemIndex} />}
         contentContainerStyle={{ alignSelf: 'center', width: windowWidth }}
       />
     </View>

@@ -110,8 +110,9 @@ const Feed = ({
   );
 
   const screenHeight = Dimensions.get("window").height;
-  const bottomTabHeight = isProfileFeed ? 0 : 49;
-  const bottomInset = insets.bottom;
+  const bottomTabHeight = isProfileFeed ? 0 : 90;
+  // const bottomInset = insets.bottom; // Want to see on the phone
+  const bottomInset = 0;
   const feedItemHeight = screenHeight - bottomTabHeight - bottomInset;
 
   const renderItem = ({ item }: { item: FeedItemWrapper; index: number }) => {
@@ -139,42 +140,48 @@ const Feed = ({
   
   const feedItems = [...feedItemPosts, { emptyConfig }];
 
+  function onLayout() {
+    flatListRef.current?.scrollToIndex({index: startingIndex})
+  }
+
+  const getItemLayout = (_: ArrayLike<FeedItemWrapper> | null | undefined, index: number) => ({
+            length: feedItemHeight,
+            offset: feedItemHeight * index,
+            index,
+          })
+
   return (
-    <FlatList<FeedItemWrapper>
-      ref={flatListRef}
-      data={feedItems}
-      viewabilityConfig={{
-        itemVisiblePercentThreshold: 50,
-        minimumViewTime: 300,
-      }}
-      {...(startingIndex > 0 && { initialScrollIndex: startingIndex })}
-      renderItem={renderItem}
-      getItemLayout={
-        (_, index) => ({
-          length: feedItemHeight,
-          offset: feedItemHeight * index,
-          index,
-        })
-      }
-      snapToInterval={feedItemHeight}
-      onViewableItemsChanged={onViewableItemsChanged.current}
-      contentInsetAdjustmentBehavior="never"
-      automaticallyAdjustContentInsets={false}
-      contentInset={{ top: 0 }}
-      contentOffset={{ x: 0, y: 0 }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor="white"
-          colors={["white"]}
-          progressBackgroundColor="transparent"
-          style={{ backgroundColor: 'transparent' }}
-          progressViewOffset={60}
-        />
-      }
-      {...defaultFlatListProps}
-    />
+    <View onLayout={() => onLayout()}>
+      <FlatList<FeedItemWrapper>
+        ref={flatListRef}
+        data={feedItems}
+        viewabilityConfig={{
+          itemVisiblePercentThreshold: 50,
+          minimumViewTime: 300,
+        }}
+        renderItem={renderItem}
+        getItemLayout={getItemLayout}
+        snapToInterval={feedItemHeight}
+        onViewableItemsChanged={onViewableItemsChanged.current}
+        contentInsetAdjustmentBehavior="never"
+        automaticallyAdjustContentInsets={false}
+        contentInset={{ top: 0 }}
+        contentOffset={{ x: 0, y: 0 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="white"
+            colors={["white"]}
+            progressBackgroundColor="transparent"
+            style={{ backgroundColor: 'transparent' }}
+            progressViewOffset={60}
+          />
+        }
+        {...defaultFlatListProps}
+      />
+    </View>
+    
   );
 };
 

@@ -28,11 +28,18 @@ const PostScreen = ({ route }: { route: RouteProp<RootStackParamList, "post"> })
   return <PostSingle item={route.params.item} />;
 };
 
+export interface FeedMiscProps {
+  profile?: {
+    creator: string,
+  }
+  postIndex: number,
+}
+
 export type RootStackParamList = {
   home: undefined;
   auth: undefined;
   onboarding: undefined;
-  feedMisc: { creator?: string, profile: boolean};
+  feedMisc: FeedMiscProps;
   profileOther: { initialUserId: string };
   savePost: { docRef: DocumentReference, source: string };
   editProfile: undefined;
