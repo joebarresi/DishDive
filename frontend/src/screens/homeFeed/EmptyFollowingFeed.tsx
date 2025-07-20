@@ -21,10 +21,10 @@ const EmptyFollowingFeed: React.FC<EmptyFollowingFeedProps> = ({ loading }) => {
   return (
     <View style={styles.emptyFeedContainer}>
       <Text style={styles.emptyFeedText}>
-        No videos from people you follow yet
+        No more videos from people you follow yet
       </Text>
       <Text style={styles.emptyFeedSubText}>
-        Videos from accounts you follow will appear here. Follow some accounts to get started.
+        Videos from accounts you follow will appear here. Follow some more accounts to get started.
       </Text>
       <TouchableOpacity 
         style={styles.followButton}

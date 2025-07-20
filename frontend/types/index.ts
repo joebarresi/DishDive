@@ -9,6 +9,7 @@ export interface Post {
   recipe?: Recipe;
   cuisineTags?: CuisineTags[];
   dietTags?: DietTags[];
+  uploadStatus: "published" | "draft"
 }
 
 export interface ExternalPost {

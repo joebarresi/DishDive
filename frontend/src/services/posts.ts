@@ -37,7 +37,7 @@ export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
       const q = query(
         collection(FIREBASE_DB, "post"),
         where("creator", "!=", currentUser?.uid),
-        orderBy("creator"),
+        where("uploadStatus", "==", "published"),
         orderBy("creation", "desc"),
       );
       const querySnapshot = await getDocs(q);
@@ -65,6 +65,7 @@ export const getTrendingFeed = (currentUser: User | null): Promise<Post[]> => {
       const q = query(
         collection(FIREBASE_DB, "post"),
         where("creator", "!=", currentUser?.uid),
+        where("uploadStatus", "==", "published"),
         orderBy("likesCount", "desc"),
       );
       const querySnapshot = await getDocs(q);
@@ -90,18 +91,20 @@ export const getFollowingFeed = (currentUser: User | null): Promise<Post[]> => {
       }
 
       const followingSnapshot = await getDocs(
-        collection(FIREBASE_DB, "users", currentUser.uid, "following")
+        collection(FIREBASE_DB, "user", currentUser.uid, "following")
       );
       const followingIds: string[] = followingSnapshot.docs.map(doc => doc.id);
 
       if (followingIds.length === 0) {
         resolve([]);
+        console.log("We accidentaly reoslve")
         return;
       }
 
       const q = query(
         collection(FIREBASE_DB, "post"),
-        where("userId", "in", followingIds),
+        where("creator", "in", followingIds),
+        where("uploadStatus", "==", "published"),
         orderBy("creation", "desc"),
       );
 

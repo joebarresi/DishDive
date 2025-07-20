@@ -145,6 +145,7 @@ export const getPostsByUser = createAsyncThunk(
       const q = query(
         collection(FIREBASE_DB, "post"),
         where("creator", "==", uid),
+        where("uploadStatus", "==", "published"),
         orderBy("creation", "desc"),
       );
 
