@@ -7,5 +7,7 @@ export interface User {
   phoneNumber?: string;
   following?: string[];
   followers?: string[];
-  // Add any other user properties here
+  followersCount: number;
+  followingCount: number;
+  likesCount: number;
 }

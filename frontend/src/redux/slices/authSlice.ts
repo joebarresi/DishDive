@@ -53,7 +53,10 @@ export const getCurrentUserData = createAsyncThunk(
           photoURL: firebaseUser.photoURL || undefined,
           bio: "",
           following: [],
-          followers: []
+          followers: [],
+          followersCount: 0,
+          followingCount: 0,
+          likesCount: 0
         };
         
         // Set the user state with the auth data while we create the Firestore document

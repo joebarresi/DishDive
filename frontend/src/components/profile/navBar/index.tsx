@@ -20,7 +20,7 @@ export default function ProfileNavBar({
   return (
     user && (
       <NavBarGeneral
-        title={user.displayName || user.email}
+        title={user.displayName ?? "Profile"}
         leftButton={{
           display: !myProfile
         }}

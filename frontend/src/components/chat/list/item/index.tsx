@@ -32,7 +32,7 @@ const ChatListItem = ({ chat }: { chat: Chat }) => {
       <View style={{ flex: 1 }}>
         {userData && (
           <Text style={styles.userDisplayName}>
-            {userData.displayName || userData.email}
+            {userData.displayName}
           </Text>
         )}
         <Text style={styles.lastMessage}>{chat.lastMessage}</Text>

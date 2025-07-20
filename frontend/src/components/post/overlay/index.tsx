@@ -123,7 +123,7 @@ export default function PostSingleOverlay({
             </TouchableOpacity>
             
             <View style={styles.infoContainer}>
-              <Text style={styles.displayName}>{user.displayName || user.email}</Text>
+              <Text style={styles.displayName}>{user.displayName}</Text>
               <Text style={styles.description}>{post.description}</Text>
             </View>
           </View>

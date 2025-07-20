@@ -22,7 +22,7 @@ const CommentItem = ({ item }: { item: Comment }) => {
       <View style={styles.containerText}>
         {user && (
           <Text style={styles.displayName}>
-            {user.displayName || user.email}
+            {user.displayName}
           </Text>
         )}
         <Text>{item.comment}</Text>

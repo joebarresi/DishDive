@@ -18,7 +18,7 @@ export default function SearchUserItem({ item }: { item: SearchUser }) {
         navigation.navigate("profileOther", { initialUserId: item?.uid ?? "" })
       }
     >
-      <Text style={styles.text}>{item.displayName || item.email}</Text>
+      <Text style={styles.text}>{item.displayName}</Text>
       {item.photoURL ? (
         <Image style={styles.image} source={{ uri: item.photoURL }} />
       ) : (
