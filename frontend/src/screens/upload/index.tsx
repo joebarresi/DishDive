@@ -53,6 +53,7 @@ export default function UploadScreen() {
         const errorMsg = errorPayload?.message || "Failed to process video. Please try again.";
         
         console.error("Create raw post failed:", errorMsg);
+        console.error("Error payload:", errorPayload);
         setFailedUpload(true);
         setErrorMessage(errorMsg);
         

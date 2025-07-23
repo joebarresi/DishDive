@@ -11,7 +11,10 @@ import * as admin from "firebase-admin";
 // Initialize Firebase Admin SDK first, before any other imports
 admin.initializeApp();
 
-import {generateRecipeFromVideo} from "./AI/recipeGenerator";
+import {
+  generateRecipeFromVideo,
+  generateRecipeFromVideoV2,
+} from "./AI/recipeGenerator";
 import {createTags} from "./AI/tagging";
 import {generateRecipeFromIngredients} from "./AI/sousChef";
 import {
@@ -25,6 +28,7 @@ import {
 
 export {
   generateRecipeFromVideo,
+  generateRecipeFromVideoV2,
   generateRecipeFromIngredients,
   createTags,
   likeCreate,

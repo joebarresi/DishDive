@@ -55,7 +55,7 @@ export const createRawPost = createAsyncThunk(
         
         const getRecipe = await httpsCallable(
           FIREBASE_FUNCTIONS, 
-          "generateRecipeFromVideo"
+          "generateRecipeFromVideoV2"
         );
 
         let recipe;

@@ -1,5 +1,6 @@
 /* eslint-disable indent */
 import * as functions from "firebase-functions";
+import {HttpsError, onCall} from "firebase-functions/v2/https";
 import * as path from "path";
 import * as os from "os";
 import * as fs from "fs";
@@ -137,6 +138,86 @@ export const generateRecipeFromVideo = functions.https
       return undefined;
     }
   });
+
+export const generateRecipeFromVideoV2 = onCall({
+  memory: "512MiB",
+  timeoutSeconds: 120,
+}, async ({data}) => {
+  if (!data.filePath) {
+    throw new HttpsError("invalid-argument", "Missing filepath to generate");
+  }
+  const {filePath} = data;
+
+  const bucket = storage.bucket("recipetok-40c2a.firebasestorage.app");
+  const videoId = path.basename(filePath).split(".")[0];
+  const tempFilePath = path.join(os.tmpdir(), path.basename(filePath));
+  const tempOutputDir = path.join(os.tmpdir(), `frames-${videoId}`);
+  const tempAudioPath = path.join(os.tmpdir(), `audio-${videoId}.wav`);
+
+  try {
+    fs.mkdirSync(tempOutputDir, {recursive: true});
+
+    await bucket.file(filePath).download({destination: tempFilePath});
+
+    console.log("Starting parallel processing of frames and transcript...");
+    const parallelStartTime = Date.now();
+
+    // Process in parallel
+    const [visualAnalysisTexts, audioTranscript] = await Promise.all([
+      (async () => {
+        const frameStartTime = Date.now();
+        console.log("Starting extractAndAnalyzeFrames...");
+        const result = await extractAndAnalyzeFrames(
+          tempFilePath,
+          tempOutputDir,
+        );
+        console.log(
+          `extractAndAnalyzeFrames completed in 
+          ${Date.now() - frameStartTime}ms`);
+        return result;
+      })(),
+      (async () => {
+        const transcriptStartTime = Date.now();
+        console.log("Starting generateTranscript...");
+        const result = await generateTranscript(
+          tempFilePath,
+          tempAudioPath,
+          speechClient,
+          bucket,
+          videoId,
+        );
+        console.log(
+          `generateTranscript completed in 
+          ${Date.now() - transcriptStartTime}ms`);
+        return result;
+      })(),
+    ]);
+
+    console.log(
+      `Parallel processing completed in ${Date.now() - parallelStartTime}ms`);
+
+    // Combine analyses to generate recipe
+    console.log("Starting generateRecipe...");
+    const recipeStartTime = Date.now();
+    const recipe = await generateRecipe({
+      audioTranscript,
+      visualAnalysis: visualAnalysisTexts,
+    });
+    console.log(
+      `generateRecipe completed in ${Date.now() - recipeStartTime}ms`);
+
+    cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
+      .catch((err) => console.error("Background cleanup failed:", err));
+
+    return recipe;
+  } catch (error) {
+    console.error("Error generating recipe:", error);
+
+    cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
+      .catch((err) => console.error("Background cleanup failed:", err));
+    return undefined;
+  }
+});
 
 /**
  * Generate a recipe using Google's LLM based on audio transcript and visual
