@@ -143,7 +143,7 @@ const Feed = ({
   const feedItems = [...feedItemPosts, { emptyConfig }];
 
   function onLayout() {
-    flatListRef.current?.scrollToIndex({index: startingIndex})
+    flatListRef.current?.scrollToIndex({index: startingIndex, animated: false})
   }
   useEffect(() => {
     onLayout();
