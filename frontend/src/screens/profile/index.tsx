@@ -20,7 +20,6 @@ import { APP_COLOR } from "../../styles";
 type ProfileScreenRouteProp =
   | RouteProp<RootStackParamList, "profileOther">
   | RouteProp<HomeStackParamList, "Me">
-  | RouteProp<FeedStackParamList, "feedProfile">;
 
 export default function ProfileScreen({
   route,
