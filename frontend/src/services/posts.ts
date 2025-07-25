@@ -268,6 +268,11 @@ export const getPostsByUserId = (
   });
 };
 
+// GIven a post object, get the reference to the document
+export const getPostRef = (post: Post) => {
+  return doc(FIREBASE_DB, "post", post.id);
+};
+
 export const deletePost = async (post: Post) => {
   console.log("Deleting post:", post.id)
   try {

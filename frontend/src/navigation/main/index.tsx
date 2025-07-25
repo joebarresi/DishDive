@@ -47,7 +47,7 @@ export type RootStackParamList = {
   onboarding: undefined;
   feedMisc: FeedMiscProps;
   profileOther: { initialUserId: string };
-  savePost: { docRef: DocumentReference, source: string };
+  savePost: { docRef: DocumentReference, source: string, isEdit?: boolean };
   editProfile: undefined;
   editProfileField: { title: string; field: string; value: string };
   chatSingle: { chatId?: string; contactId?: string };

@@ -32,6 +32,8 @@ interface SavePostScreenProps {
 }
 
 export default function SavePostScreen({ route }: SavePostScreenProps) {
+  const { isEdit } = route.params;
+
   const [description, setDescription] = useState("");
   const [requestRunning, setRequestRunning] = useState(false);
   const [loadingRecipe, setLoadingRecipe] = useState(true);
@@ -41,7 +43,6 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
 
   const dispatch: AppDispatch = useDispatch();
 
-  // Fetch the recipe data when the component mounts
   useEffect(() => {
     const fetchRecipeData = async () => {
       try {
@@ -60,6 +61,10 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
               ingredients: [""],
               steps: [""]
             });
+          }
+          
+          if (isEdit) {
+            setDescription(postData.description);
           }
         }
       } catch (error) {
@@ -109,7 +114,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
 
   return (
     <ScreenContainer 
-      title="Create Post" 
+      title={isEdit ? "Edit Post" : "Create Post"}
       showBackButton={true}
       loading={requestRunning}
       loadingComponent={loadingComponent}
@@ -133,7 +138,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
                 multiline
                 numberOfLines={4}
                 onChangeText={(text) => setDescription(text)}
-                placeholder="Describe your recipe video..."
+                placeholder={isEdit ? description : "Describe your recipe video..."}
                 placeholderTextColor="#999"
                 textAlignVertical="top"
               />
@@ -169,7 +174,7 @@ export default function SavePostScreen({ route }: SavePostScreenProps) {
             disabled={requestRunning}
           >
             <Feather name="check" size={24} color="white" />
-            <Text style={styles.postButtonText}>Post</Text>
+            <Text style={styles.postButtonText}>{isEdit ? "Edit Post" : "Post"}</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

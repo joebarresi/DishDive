@@ -4,12 +4,13 @@ import { Post, User } from "../../../../types";
 import styles from "./styles";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { deletePost } from "../../../services/posts";
+import { deletePost, getPostRef } from "../../../services/posts";
 import { submitReport } from "../../../services/reports";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackParamList } from "../../../navigation/home";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useState } from "react";
+import { RootStackParamList } from "../../../navigation/main";
 
 interface OtherModalProps {
   visible: boolean;
@@ -22,6 +23,7 @@ export default function OtherModal({ visible, onClose, user, post }: OtherModalP
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
   const myPost = currentUser && user.uid === currentUser.uid;
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+  const rootNav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   // Report state
   const [showReportForm, setShowReportForm] = useState(false);
@@ -34,6 +36,15 @@ export default function OtherModal({ visible, onClose, user, post }: OtherModalP
       initialUserId: user.uid,
     }
     navigation.navigate("Me", params)
+  }
+  
+  function navigateToEditPost(): void {
+    onClose();
+    rootNav.navigate("savePost", { 
+      docRef: getPostRef(post),
+      source: post.media[1],
+      isEdit: true,
+    });
   }
   
   function initiateReport(): void {
@@ -82,14 +93,25 @@ export default function OtherModal({ visible, onClose, user, post }: OtherModalP
     }
   }
 
-  // Calculate modal height based on view state
-  let modalHeight = 120;
+  // Calculate modal height based on actual number of buttons and their styling
+  let modalHeight;
   
   if (showReportForm) {
-    modalHeight = 250; // Taller for report form
+    modalHeight = 280; // Fixed height for report form
   } else {
-    const buttonCount = 1 + (myPost ? 1 : 0); // Report + Delete (if my post)
-    modalHeight = 120 + (buttonCount * 50); // Base height + button heights
+    // Count actual buttons that will render
+    let buttonCount = 1; // Always have Report button
+    if (myPost) {
+      buttonCount += 2; // Add Edit Post + Delete Post buttons
+    }
+    
+    
+    const modalPadding = 30; // 15px top + 15px bottom
+    const closeButtonArea = 40; // Space for close button at top
+    const buttonContainerMargin = 20; // marginTop on buttonContainer
+    const buttonHeight = 30; // 15px top + 15px bottom padding per button
+    
+    modalHeight = modalPadding + closeButtonArea + buttonContainerMargin + (buttonHeight * buttonCount);
   }
 
   return (
@@ -132,13 +154,23 @@ export default function OtherModal({ visible, onClose, user, post }: OtherModalP
               </TouchableOpacity>
               
               {myPost && (
-                <TouchableOpacity 
-                  style={modalStyles.deleteButton} 
-                  onPress={() => deletePostAndNavigate()}
-                >
-                  <Ionicons name="trash-outline" size={20} color="#8B54FB" style={modalStyles.buttonIcon} />
-                  <Text style={modalStyles.deleteButtonText}>Delete Post</Text>
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity 
+                    style={modalStyles.button}
+                    onPress={navigateToEditPost}
+                  >
+                    <Ionicons name="create-outline" size={20} color="#8B54FB" style={modalStyles.buttonIcon} />
+                    <Text style={modalStyles.editButtonText}>Edit Post</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={modalStyles.deleteButton} 
+                    onPress={() => deletePostAndNavigate()}
+                  >
+                    <Ionicons name="trash-outline" size={20} color="#8B54FB" style={modalStyles.buttonIcon} />
+                    <Text style={modalStyles.deleteButtonText}>Delete Post</Text>
+                  </TouchableOpacity>
+                </>
               )}
             </View>
           ) : (
@@ -191,7 +223,7 @@ export default function OtherModal({ visible, onClose, user, post }: OtherModalP
 
 const modalStyles = StyleSheet.create({
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 0, // Increased from 20 to account for close button space
     width: "100%",
   },
   button: {
@@ -212,6 +244,10 @@ const modalStyles = StyleSheet.create({
   reportButtonText: {
     fontSize: 16,
     color: "#FF5252",
+  },
+  editButtonText: {
+    fontSize: 16,
+    color: "#8B54FB",
   },
   deleteButton: {
     width: "100%",
