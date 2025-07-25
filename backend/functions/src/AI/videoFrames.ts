@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import * as fs from "fs";
 import * as ffmpeg from "fluent-ffmpeg";
 import {analyzeFrame} from "./imageAnalysis";
@@ -15,13 +16,12 @@ export async function extractAndAnalyzeFrames(
 ): Promise<string[]> {
   await new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
-        .outputOptions(["-vf fps=1/1"])
+        .outputOptions(["-vf", "select='gt(scene,0.22)',fps=fps=1/1", "-vsync", "vfr"])
         .output(`${outputDir}/frame-%03d.jpg`)
         .on("end", () => resolve())
         .on("error", (err) => reject(err))
         .run();
   });
-
   // Get all extracted frames
   const frameFiles = fs.readdirSync(outputDir)
       .filter((file) => file.match(/frame-\d+\.jpg/));

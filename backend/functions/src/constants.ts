@@ -3,13 +3,17 @@ import * as admin from "firebase-admin";
 
 const vertexAI = new VertexAI({
   project: "recipetok-40c2a",
-  location: "us-central1",
 });
 
-const geminiModel = "gemini-2.5-flash";
+const geminiModel = "gemini-2.5-flash-lite";
 
 export const generativeModel =
-vertexAI.getGenerativeModel({model: geminiModel});
+vertexAI.getGenerativeModel({model: geminiModel,
+  generationConfig: {
+    temperature: 0.3,
+    candidateCount: 1,
+  },
+});
 
 export const db = admin.firestore();
 

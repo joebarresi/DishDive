@@ -15,11 +15,9 @@ import {extractAndAnalyzeFrames} from "./videoFrames";
 import {generativeModel} from "../constants";
 import {generateRecipePrompt} from "./prompts";
 
-// Set ffmpeg path
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
 const storage = new Storage();
-// const visionClient = new ImageAnnotatorClient();
 const speechClient = new SpeechClient();
 
 /**
@@ -159,14 +157,11 @@ export const generateRecipeFromVideoV2 = onCall({
 
     await bucket.file(filePath).download({destination: tempFilePath});
 
-    console.log("Starting parallel processing of frames and transcript...");
     const parallelStartTime = Date.now();
 
-    // Process in parallel
     const [visualAnalysisTexts, audioTranscript] = await Promise.all([
       (async () => {
         const frameStartTime = Date.now();
-        console.log("Starting extractAndAnalyzeFrames...");
         const result = await extractAndAnalyzeFrames(
           tempFilePath,
           tempOutputDir,
@@ -178,7 +173,6 @@ export const generateRecipeFromVideoV2 = onCall({
       })(),
       (async () => {
         const transcriptStartTime = Date.now();
-        console.log("Starting generateTranscript...");
         const result = await generateTranscript(
           tempFilePath,
           tempAudioPath,
@@ -196,9 +190,8 @@ export const generateRecipeFromVideoV2 = onCall({
     console.log(
       `Parallel processing completed in ${Date.now() - parallelStartTime}ms`);
 
-    // Combine analyses to generate recipe
-    console.log("Starting generateRecipe...");
     const recipeStartTime = Date.now();
+
     const recipe = await generateRecipe({
       audioTranscript,
       visualAnalysis: visualAnalysisTexts,
@@ -209,13 +202,13 @@ export const generateRecipeFromVideoV2 = onCall({
     cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
       .catch((err) => console.error("Background cleanup failed:", err));
 
+    console.log(`$Entire time: ${Date.now() - parallelStartTime}`);
     return recipe;
   } catch (error) {
     console.error("Error generating recipe:", error);
-
     cleanupFilesAsync(tempFilePath, tempOutputDir, tempAudioPath)
       .catch((err) => console.error("Background cleanup failed:", err));
-    return undefined;
+    throw new Error("Error generating recipe");
   }
 });
 
@@ -247,7 +240,6 @@ async function generateRecipe({
 
     const data = resp.response;
 
-    // Parse the response - assuming it returns JSON as requested
     let parsedRecipe;
     try {
       const generatedText = data.candidates?.[0].content.parts[0].text;
@@ -264,7 +256,6 @@ async function generateRecipe({
       parsedRecipe = JSON.parse(jsonContent);
     } catch (parseError) {
       console.error("Error parsing LLM response:", parseError);
-      // Fallback to a basic structure if parsing fails
       parsedRecipe = fallbackRecipe;
     }
 
@@ -279,6 +270,6 @@ async function generateRecipe({
     };
   } catch (error) {
     console.error("Error generating recipe with Google AI:", error);
-    return fallbackRecipe;
+    throw new Error("Error generating recipe with Google AI");
   }
 }

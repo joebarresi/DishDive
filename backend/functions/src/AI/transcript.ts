@@ -19,7 +19,6 @@ export async function generateTranscript(
   bucket: Bucket,
   videoId: string,
 ): Promise<string> {
-  // Extract audio from video
   await new Promise<void>((resolve, reject) => {
     ffmpeg(videoPath)
       .output(audioPath)
@@ -31,13 +30,11 @@ export async function generateTranscript(
       .run();
   });
 
-  // Upload audio to Cloud Storage for long audio files
   const audioGcsUri = `gs://${bucket.name}/temp-audio/${videoId}.wav`;
   await bucket.upload(audioPath, {
     destination: `temp-audio/${videoId}.wav`,
   });
 
-  // Transcribe audio
   const [operation] = await speechClient.longRunningRecognize({
     audio: {uri: audioGcsUri},
     config: {
@@ -50,10 +47,8 @@ export async function generateTranscript(
     },
   });
 
-  // Wait for transcription to complete
   const [response] = await operation.promise();
 
-  // Process transcript
   let fullTranscript = "";
 
   if (!response.results) {
@@ -66,7 +61,6 @@ export async function generateTranscript(
     }
   });
 
-  // Delete temporary audio file from storage
   try {
     await bucket.file(`temp-audio/${videoId}.wav`).delete();
   } catch (error) {
