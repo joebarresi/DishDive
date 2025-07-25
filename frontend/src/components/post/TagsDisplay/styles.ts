@@ -21,8 +21,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 3,
-    width: "30%", // Approximately 3 per row with margins
-    maxWidth: 100, // Maximum width to prevent oversized tags
+    // Remove fixed width to allow text-length adjusted width
+    // width: "30%", // Removed: was approximately 3 per row with margins
+    // maxWidth: 100, // Removed: was maximum width to prevent oversized tags
+    alignSelf: 'flex-start', // Allow tag to size to its content
   },
   tagText: {
     color: "white",
@@ -32,6 +34,8 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0.5, height: 0.5 },
     textShadowRadius: 1,
     textAlign: "center", // Center text in tag
+    // Ensure single line text
+    flexShrink: 1,
   },
 });
 

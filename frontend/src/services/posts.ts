@@ -217,6 +217,28 @@ export const clearCommentListener = () => {
   }
 };
 
+/**
+ * Returns a specific post by its ID.
+ *
+ * @param {string} postId - The ID of the post to retrieve
+ * @returns {Promise<Post | null>} post if found, null otherwise.
+ */
+export const getPostById = async (postId: string): Promise<Post | null> => {
+  try {
+    const postDoc = await getDoc(doc(FIREBASE_DB, "post", postId));
+    if (postDoc.exists()) {
+      const data = postDoc.data();
+      return { id: postDoc.id, ...data } as Post;
+    } else {
+      console.log("No post found with ID:", postId);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching post by ID:", error);
+    return null;
+  }
+};
+
 export const getPostsByUserId = (
   uid = FIREBASE_AUTH.currentUser?.uid,
 ): Promise<Post[]> => {

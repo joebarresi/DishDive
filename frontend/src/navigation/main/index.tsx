@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userAuthStateListener } from "../../redux/slices/authSlice"; // Make sure the path is correct
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as Linking from 'expo-linking';
 import AuthScreen from "../../screens/auth";
 import { AppDispatch, RootState } from "../../redux/store";
 import HomeScreen from "../home";
@@ -37,6 +38,7 @@ export interface FeedMiscProps {
     filteredPosts: Post[]
   },
   postIndex: number,
+  postId?: string, // For deep link navigation
 }
 
 export type RootStackParamList = {
@@ -56,10 +58,33 @@ export type RootStackParamList = {
   uploadScreen: undefined;
   creator: undefined;
   notifications: undefined;
-  post: { item: any };
+  post: { item?: any; id?: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Configure deep linking
+const linking = {
+  prefixes: [Linking.createURL('/'), 'dishdive://'],
+  config: {
+    screens: {
+      home: '',
+      feedMisc: {
+        path: '/post',
+        parse: {
+          postId: (id: string) => id,
+        },
+      },
+      profileOther: {
+        path: '/profile/:initialUserId',
+        parse: {
+          initialUserId: (id: string) => id,
+        },
+      },
+      // Add other screens as needed
+    },
+  },
+};
 
 export default function Route() {
   const currentUserObj = useSelector((state: RootState) => state.auth);
@@ -78,7 +103,7 @@ export default function Route() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator>
         {currentUserObj.currentUser == null ? (
           <Stack.Screen

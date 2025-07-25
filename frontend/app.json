@@ -31,6 +31,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "dishdive",
     "extra": {
       "eas": {
         "projectId": "9b417687-35ff-4127-95b9-79152dcf863a"
@@ -44,7 +45,26 @@
           "microphonePermission": "Allow DishDive to access your microphone",
           "recordAudioAndroid": true
         }
-      ]
+      ],
+      [
+      "react-native-share",
+      {
+        "ios": [
+          "fb",
+          "instagram",
+          "twitter",
+          "tiktoksharesdk",
+          "sms"
+        ],
+        "android": [
+          "com.facebook.katana",
+          "com.instagram.android",
+          "com.twitter.android",
+          "com.zhiliaoapp.musically"
+        ],
+        "enableBase64ShareAndroid": true
+      }
+    ]
     ]
   }
 }

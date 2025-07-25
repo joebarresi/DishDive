@@ -139,7 +139,7 @@ export default function PostSingleOverlay({
             isSaved={isSaved}
             onPress={() => handleSavePost(isSaved)}
           />
-          <ShareButton onPress={handleShare} />
+          <ShareButton post={post} user={user} onPress={handleShare} />
           <OtherButton onPress={() => setOtherModalVisible(true)} />
         </View>
       </View>

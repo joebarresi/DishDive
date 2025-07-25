@@ -6,7 +6,7 @@ import BackButton from "../../components/common/misc/BackButton";
 import { RootStackParamList } from "../../navigation/main";
 import Feed from "../../components/Feed";
 import { Post } from "../../../types";
-import { getPostsByUserId } from "../../services/posts";
+import { getPostsByUserId, getPostById } from "../../services/posts";
 
 type FeedMiscRouteProp = RouteProp<RootStackParamList, "feedMisc">
 
@@ -21,7 +21,7 @@ interface FeedMiscPropss {
  */
 const FeedMisc = ({ route }: FeedMiscPropss) => {
   const insets = useSafeAreaInsets();
-  const { profile, saved, postIndex } = route.params;
+  const { profile, saved, postIndex, postId } = route.params;
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -35,12 +35,25 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
     }
 
     try {
-      if (profile) {
+      if (postId) {
+        // Handle deep link - fetch single post by ID
+        const post = await getPostById(postId);
+        if (post) {
+          setPosts([post]);
+          setStartingIndex(0);
+        } else {
+          // Post not found, show error or redirect
+          console.error("Post not found:", postId);
+          setPosts([]);
+        }
+      } else if (profile) {
         const {creator} = profile;
         const fetchedPosts = await getPostsByUserId(creator);
         setPosts(fetchedPosts);
+        setStartingIndex(postIndex);
       } else if (saved) {
         setPosts(saved.filteredPosts);
+        setStartingIndex(postIndex);
       } else {
         return (
           <View style={styles.container}>
@@ -53,8 +66,6 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
           </View>
         );
       }
-
-      setStartingIndex(postIndex);
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
@@ -69,9 +80,9 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
   };
   
   useEffect(() => {
-    console.log(postIndex)
+    console.log(postIndex, postId)
     getPosts();
-  }, [postIndex])
+  }, [postIndex, postId])
 
   return (
     <>
@@ -85,7 +96,7 @@ const FeedMisc = ({ route }: FeedMiscPropss) => {
         fullScreen={true}
         emptyConfig={{
           // TODO: conditional logic for this
-          message: "We need to implement the conditional logic"
+          message: postId ? "Post not found" : "We need to implement the conditional logic"
         }}
         startingIndex={startingIndex}
       />

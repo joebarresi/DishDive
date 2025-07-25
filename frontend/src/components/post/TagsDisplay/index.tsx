@@ -92,23 +92,46 @@ const TagsDisplay: React.FC<TagsDisplayProps> = ({ cuisineTags, dietTags }) => {
     });
   }
 
+  // Reorganize tags to fill bottom row first
+  // For 2 rows, we want to distribute tags so bottom row fills first
+  const reorganizedTags = [];
+  const totalTags = allTags.length;
+  
+  if (totalTags <= 3) {
+    // If 3 or fewer tags, put them all in bottom row
+    reorganizedTags.push([], allTags);
+  } else {
+    // If more than 3 tags, distribute to fill bottom row first
+    const bottomRowCount = Math.ceil(totalTags / 2); // Bottom row gets more if odd number
+    const topRowCount = totalTags - bottomRowCount;
+    
+    reorganizedTags.push(
+      allTags.slice(0, topRowCount), // Top row
+      allTags.slice(topRowCount)     // Bottom row
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.tagsRow}>
-        {allTags.map((item, index) => (
-          <View 
-            key={`tag-${index}`} 
-            style={[
-              styles.tagContainer, 
-              { backgroundColor: item.color }
-            ]}
-          >
-            <Text style={styles.tagText}>
-              {item.emoji} {item.tag}
-            </Text>
+      {reorganizedTags.map((rowTags, rowIndex) => (
+        rowTags.length > 0 && (
+          <View key={`row-${rowIndex}`} style={styles.tagsRow}>
+            {rowTags.map((item, tagIndex) => (
+              <View 
+                key={`tag-${rowIndex}-${tagIndex}`} 
+                style={[
+                  styles.tagContainer, 
+                  { backgroundColor: item.color }
+                ]}
+              >
+                <Text style={styles.tagText} numberOfLines={1}>
+                  {item.emoji} {item.tag}
+                </Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        )
+      ))}
     </View>
   );
 };
