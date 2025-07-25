@@ -35,22 +35,29 @@ const styles = StyleSheet.create({
     margin: 8,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "white",
+    borderWidth: 2,
+    borderColor: APP_COLOR,
   },
   gridItemText: {
-    color: "white",
+    color: APP_COLOR,
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 12,
     textAlign: "center",
   },
   searchRecipe: {
-    backgroundColor: APP_COLOR, // Purple
+    backgroundColor: APP_COLOR,
+    borderColor: APP_COLOR,
+  },
+  searchRecipeText: {
+    color: "white",
   },
   findChef: {
-    backgroundColor: "#4ECDC4", // Teal
+    // Uses default gridItem styles (white background, purple border)
   },
   whatIHave: {
-    backgroundColor: "#6B5B95", // Purple
+    // Uses default gridItem styles (white background, purple border)
   },
   searchButton: {
     backgroundColor: APP_COLOR,

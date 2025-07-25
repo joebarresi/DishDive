@@ -5,6 +5,7 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../navigation/main";
+import { APP_COLOR } from "../../styles";
 import styles from "./styles";
 import ScreenContainer from "../../components/common/ScreenContainer";
 
@@ -42,7 +43,7 @@ export default function SearchScreen() {
             onPress={() => navigateToScreen('Search by Recipe')}
           >
             <Feather name="search" size={40} color="white" />
-            <Text style={styles.gridItemText}>Search by Recipe</Text>
+            <Text style={[styles.gridItemText, styles.searchRecipeText]}>Search by Recipe</Text>
           </TouchableOpacity>
         </View>
         
@@ -53,7 +54,7 @@ export default function SearchScreen() {
             style={[styles.gridItem, styles.findChef]} 
             onPress={() => navigateToScreen('Find a Chef')}
           >
-            <Feather name="user" size={32} color="white" />
+            <Feather name="user" size={32} color={APP_COLOR} />
             <Text style={styles.gridItemText}>Find a Chef</Text>
           </TouchableOpacity>
           
@@ -62,7 +63,7 @@ export default function SearchScreen() {
             style={[styles.gridItem, styles.whatIHave]} 
             onPress={() => navigateToScreen('What I Have at Home')}
           >
-            <Feather name="shopping-bag" size={32} color="white" />
+            <Feather name="shopping-bag" size={32} color={APP_COLOR} />
             <Text style={styles.gridItemText}>What I Have at Home</Text>
           </TouchableOpacity>
         </View>
