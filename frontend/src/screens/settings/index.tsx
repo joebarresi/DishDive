@@ -38,18 +38,6 @@ export default function SettingsScreen() {
           <Text style={styles.itemText}>Edit Profile</Text>
           <Feather name="chevron-right" size={20} />
         </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.settingsItem}
-          onPress={() => {
-            // Add any additional settings navigation here
-          }}
-        >
-          <Feather name="settings" size={20} style={styles.itemIcon} />
-          <Text style={styles.itemText}>Preferences</Text>
-          <Feather name="chevron-right" size={20} />
-        </TouchableOpacity>
-
         <TouchableOpacity 
           style={[styles.settingsItem, styles.signOutButton]}
           onPress={() => {
@@ -66,6 +54,16 @@ export default function SettingsScreen() {
           <Feather name="log-out" size={20} style={styles.itemIcon} color="#8B54FB" />
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
+        {/* Until we get preferences ignore
+         * <TouchableOpacity 
+          style={styles.settingsItem}
+          onPress={() => {
+          }}
+        >
+          <Feather name="settings" size={20} style={styles.itemIcon} />
+          <Text style={styles.itemText}>Preferences</Text>
+          <Feather name="chevron-right" size={20} />
+        </TouchableOpacity> */}
       </View>
     </ScreenContainer>
   );

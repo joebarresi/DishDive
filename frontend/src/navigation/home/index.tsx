@@ -87,7 +87,7 @@ export default function HomeScreen() {
           component={FeedNavigation}
           options={{
             tabBarIcon: ({ color }) => (
-              <Feather name="home" size={ICON_SIZE} color={color} />
+              <Feather name="video" size={ICON_SIZE} color={color} />
             ),
             tabBarLabel: "Feed",
           }}
