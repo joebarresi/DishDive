@@ -8,6 +8,7 @@ import { TouchableWithoutFeedback, View, Animated } from "react-native";
 import LastPost from "./LastPost";
 import { FeedItemWrapper } from "../Feed";
 import RecipeFullScreen from "./RecipeFullScreen";
+import { useRecordViews } from "../../hooks/useRecordViews";
 
 export type VoidFunction = () => void;
 export interface PostSingleHandles {
@@ -44,6 +45,12 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
     const [showRecipe, setShowRecipe] = useState(false);
     const [returningFromRecipe, setReturningFromRecipe] = useState(false);
     const fadeAnim = useRef(new Animated.Value(1)).current;
+
+    useRecordViews({
+      videoRef: ref,
+      postId: post.id,
+      isPlaying
+    });
 
     useImperativeHandle(parentRef, () => ({
       play,
@@ -91,12 +98,8 @@ export const PostSingle = forwardRef<PostSingleHandles, PostSingleProps>(
       }
     }, [isPlaying, fadeAnim]);
 
-    // Effect to handle video playback when recipe view is toggled
     useEffect(() => {
-      // Only run this effect when showRecipe changes from true to false
-      // and not on initial component mount
       if (!showRecipe && ref.current && hasStartedPlaying) {
-        // When switching back from recipe view, ensure video plays
         ref.current.playAsync()
           .then(() => {
             setIsPlaying(true);

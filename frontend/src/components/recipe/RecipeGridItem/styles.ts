@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
 const { width } = Dimensions.get("window");
 const numColumns = 2;
@@ -40,6 +40,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
+    fontFamily: Platform.select({
+      ios: 'Montserrat-SemiBold',
+    })
   },
   externalPostContainer: {
     flex: 1,

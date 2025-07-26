@@ -9,7 +9,25 @@ export interface Post {
   recipe?: Recipe;
   cuisineTags?: CuisineTags[];
   dietTags?: DietTags[];
-  uploadStatus: "published" | "draft"
+  uploadStatus: "published" | "draft";
+  viewCount: number; // Total unique viewers
+  totalViews: number; // Total views (including repeat views)
+  lastViewedAt: string; 
+}
+
+// View tracking (posts/{postId}/views/{userId})
+export interface PostView {
+  userId: string;
+  viewCount: number; 
+  firstViewedAt: string;
+  lastViewedAt: string;
+}
+
+// User's viewed posts index (users/{userId}/viewedPosts/{postId})
+export interface UserViewedPost {
+  postId: string;
+  viewCount: number; 
+  lastViewedAt: string;
 }
 
 export interface ExternalPost {
