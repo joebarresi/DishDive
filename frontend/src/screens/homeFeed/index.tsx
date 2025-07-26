@@ -1,9 +1,9 @@
-import { View, Text, StatusBar } from "react-native";
+import { View, StatusBar } from "react-native";
 import styles from "./styles";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { getFollowingFeed, getMyFeed, getPostsByUserId, getTrendingFeed } from "../../services/posts";
+import { getFollowingFeed, getMyFeed, } from "../../services/posts";
 import { Post } from "../../../types";
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../navigation/main";
 import { HomeStackParamList } from "../../navigation/home";
 import {
@@ -12,8 +12,6 @@ import {
   FeedType,
 } from "../../navigation/feed";
 import { FIREBASE_AUTH } from "../../../firebaseConfig";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import BackButton from "../../components/common/misc/BackButton";
 import Feed from "../../components/Feed";
 import EmptyFollowingFeed from "./EmptyFollowingFeed";
 
@@ -59,9 +57,6 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
       switch (activeFeedType) {
         case "Following":
           fetchedPosts = await getFollowingFeed(currentUser);
-          break;
-        case "Trending":
-          fetchedPosts = await getTrendingFeed(currentUser);
           break;
         case "My Feed":
         default:
@@ -113,9 +108,7 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
         emptyConfig={{
           message: feedType === "Following" 
             ? "Follow some chefs to see their delicious recipes!" 
-            : feedType === "Trending" 
-              ? "No trending recipes at the moment. Check back soon!" 
-              : "No more recipes to show. Pull to refresh for new content!",
+            : "No more recipes to show. Pull to refresh for new content!",
           overrideComponent: feedType === "Following" ? <EmptyFollowingFeed loading={loading} /> : undefined,
         }}
       />

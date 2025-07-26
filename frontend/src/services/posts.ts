@@ -54,34 +54,6 @@ export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
   });
 };
 
-export const getTrendingFeed = (currentUser: User | null): Promise<Post[]> => {
-  return new Promise(async (resolve, reject) => {
-    if (!currentUser) {
-      reject(new Error("User not logged in"));
-      return;
-    }
-
-    try {
-      const q = query(
-        collection(FIREBASE_DB, "post"),
-        where("creator", "!=", currentUser?.uid),
-        where("uploadStatus", "==", "published"),
-        orderBy("likesCount", "desc"),
-      );
-      const querySnapshot = await getDocs(q);
-      const posts = querySnapshot.docs.map((doc) => {
-        const id = doc.id;
-        const data = doc.data();
-        return { id, ...data } as Post;
-      });
-      resolve(posts);
-    } catch (error) {
-      console.error("Failed to get feed: ", error);
-      reject(error);
-    }
-  });
-};
-
 export const getFollowingFeed = (currentUser: User | null): Promise<Post[]> => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -349,3 +321,31 @@ export const commentListener = (
 
   return unsubscribe;
 };
+
+// export const getTrendingFeed = (currentUser: User | null): Promise<Post[]> => {
+//   return new Promise(async (resolve, reject) => {
+//     if (!currentUser) {
+//       reject(new Error("User not logged in"));
+//       return;
+//     }
+
+//     try {
+//       const q = query(
+//         collection(FIREBASE_DB, "post"),
+//         where("creator", "!=", currentUser?.uid),
+//         where("uploadStatus", "==", "published"),
+//         orderBy("likesCount", "desc"),
+//       );
+//       const querySnapshot = await getDocs(q);
+//       const posts = querySnapshot.docs.map((doc) => {
+//         const id = doc.id;
+//         const data = doc.data();
+//         return { id, ...data } as Post;
+//       });
+//       resolve(posts);
+//     } catch (error) {
+//       console.error("Failed to get feed: ", error);
+//       reject(error);
+//     }
+//   });
+// };

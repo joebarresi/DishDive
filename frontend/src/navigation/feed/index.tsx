@@ -3,7 +3,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import HomeFeed from "../../screens/homeFeed";
 
-export type FeedType = "Following" | "My Feed" | "Trending";
+export type FeedType = "Following" | "My Feed" ;
 
 export type FeedStackParamList = {
   homeFeed: {
@@ -48,7 +48,7 @@ const FeedNavigation = () => {
       <View style={styles.tabBarContainer}>
         {state.routes.map((route: any, index: number) => {
           if (route.name !== "homeFeed") return null;
-          const tabOptions: FeedType[] = ["Following", "My Feed", "Trending"];
+          const tabOptions: FeedType[] = ["Following", "My Feed"];
           
           return (
             <View key={index} style={styles.tabsRow}>
