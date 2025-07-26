@@ -19,14 +19,7 @@ import { User } from "firebase/auth";
 
 let commentListenerInstance: (() => void) | null = null;
 
-/**
- * Returns all the posts in the database.
- *
- * @param {string} feedType - Optional feed type to filter posts
- * @returns {Promise<[<Post>]>} post list if successful.
- */
-
-export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
+export const getViewedPostIds = (currentUser: User | null): Promise<string[]> => {
   return new Promise(async (resolve, reject) => {
     if (!currentUser) {
       reject(new Error("User not logged in"));
@@ -34,19 +27,62 @@ export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
     }
 
     try {
-      const q = query(
-        collection(FIREBASE_DB, "post"),
-        where("creator", "!=", currentUser?.uid),
-        where("uploadStatus", "==", "published"),
-        orderBy("creation", "desc"),
+      const viewedQuery = query(
+        collection(FIREBASE_DB, `user/${currentUser.uid}/viewedPosts`),
+        orderBy('lastViewedAt', 'desc')
       );
+
+      const viewedSnap = await getDocs(viewedQuery);
+      const viewedPostIds = viewedSnap.docs.map(doc => doc.id);
+
+      resolve(viewedPostIds);
+    } catch (error) {
+      console.error("Failed to get viewed posts: ", error);
+      reject(error);
+    }
+  });
+
+}
+
+export const getMyFeed = (currentUser: User | null): Promise<Post[]> => {
+  console.log('Getting my feed');
+  return new Promise(async (resolve, reject) => {
+    if (!currentUser) {
+      reject(new Error("User not logged in"));
+      return;
+    }
+
+    try {
+      const viewedPostIds = await getViewedPostIds(currentUser)
+      console.log('viewedPostIds', viewedPostIds.length);
+
+      let q;
+      if (viewedPostIds.length > 0) {
+        q = query(
+          collection(FIREBASE_DB, "post"),
+          where("creator", "!=", currentUser?.uid),
+          where("uploadStatus", "==", "published"),
+          orderBy("likesCount", "desc"),
+        );
+      } else {
+        q = query(
+          collection(FIREBASE_DB, "post"),
+          where("creator", "!=", currentUser?.uid),
+          where("uploadStatus", "==", "published"),
+          orderBy("likesCount", "desc"),
+        );
+      }
+
       const querySnapshot = await getDocs(q);
-      const posts = querySnapshot.docs.map((doc) => {
+      const allPosts = querySnapshot.docs.map((doc) => {
         const id = doc.id;
         const data = doc.data();
         return { id, ...data } as Post;
       });
-      resolve(posts);
+
+      const unviewedPosts = allPosts.filter(post => !(viewedPostIds.includes(post.id)));
+      
+      resolve(unviewedPosts);
     } catch (error) {
       console.error("Failed to get feed: ", error);
       reject(error);
@@ -69,10 +105,12 @@ export const getFollowingFeed = (currentUser: User | null): Promise<Post[]> => {
 
       if (followingIds.length === 0) {
         resolve([]);
-        console.log("We accidentaly reoslve")
         return;
       }
 
+      const viewedPostIds = await getViewedPostIds(currentUser);
+
+      // Get all posts from following users
       const q = query(
         collection(FIREBASE_DB, "post"),
         where("creator", "in", followingIds),
@@ -81,13 +119,15 @@ export const getFollowingFeed = (currentUser: User | null): Promise<Post[]> => {
       );
 
       const querySnapshot = await getDocs(q);
-      const posts = querySnapshot.docs.map((doc) => {
+      const allPosts = querySnapshot.docs.map((doc) => {
         const id = doc.id;
         const data = doc.data();
         return { id, ...data } as Post;
       });
 
-      resolve(posts);
+      const unviewedPosts = allPosts.filter(post => !(viewedPostIds.includes(post.id)));
+
+      resolve(unviewedPosts);
     } catch (error) {
       console.error("Failed to get following feed: ", error);
       reject(error);

@@ -81,7 +81,6 @@ export default function HomeFeed({ route }: { route: FeedScreenRouteProp }) {
     fetchPosts(true);
   };
 
-  // Handle switching feed type
   useEffect(() => {
     const feedTypeChanged = prevFeedTypeRef.current !== undefined && 
                            prevFeedTypeRef.current !== feedType;

@@ -41,7 +41,6 @@ export const useRecordViews = ({ videoRef, postId, isPlaying }: UseRecordViewsPr
             if (elapsedFromCycleStart >= 3000 && lastRecordedCycleRef.current !== currentCycleStartRef.current) {
               try {
                 await recordPostView(postId, FIREBASE_AUTH.currentUser.uid);
-                console.log('View recorded successfully');
                 lastRecordedCycleRef.current = currentCycleStartRef.current;
               } catch (error) {
                 console.error('Failed to record view:', error);
