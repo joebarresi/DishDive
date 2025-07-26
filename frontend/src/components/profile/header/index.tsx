@@ -95,9 +95,6 @@ export default function ProfileHeader({
         ) : (
           <Avatar.Icon size={90} icon={"account"} style={{borderWidth: 2, borderColor: "#8B54FB", borderRadius: 45}} />
         )}
-        <Text style={styles.emailText} numberOfLines={1} ellipsizeMode="tail">
-          {user.displayName}
-        </Text>
         <View style={styles.counterContainer}>
           <View style={styles.counterItemContainer}>
             <Text style={styles.counterNumberText}>{user.followingCount}</Text>

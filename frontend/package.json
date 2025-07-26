@@ -11,6 +11,8 @@
     "format": "prettier \"**/*.{ts,tsx}\" --write"
   },
   "dependencies": {
+    "@expo-google-fonts/inter": "^0.4.1",
+    "@expo-google-fonts/montserrat": "^0.4.1",
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^4.4.7",
     "@react-native-async-storage/async-storage": "1.23.1",

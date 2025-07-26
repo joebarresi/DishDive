@@ -1,4 +1,5 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
@@ -16,6 +17,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: Platform.select({
+      ios: 'Montserrat-SemiBold',
+    })
   },
 });
 

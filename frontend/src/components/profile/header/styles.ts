@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     borderColor: "lightgray",
   },
   counterContainer: {
+    paddingTop: 20,
     paddingBottom: 20,
     flexDirection: "row",
   },
