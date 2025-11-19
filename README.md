@@ -1,3 +1,4 @@
+---- This has since been archived in favor of using a private repo ----
 This project is to be the app for all things cooking. It's a fork of a react-native tiktok with filling in missing implementations.
 
 ## Setup & Usage
